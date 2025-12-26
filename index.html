@@ -3,7 +3,7 @@
 <head>
 <base target="_self">
     <meta charset="UTF-8">
-
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
     <title>Michael "Dimucc" DiMuccio - Digital Creator</title>
     <style>
 /* 1. THE DESKTOP & WIDE TABLET "BLACK SCREEN" KILLER */
@@ -1056,11 +1056,11 @@ nav a {
 }
 
 
-/* --- SLIM NAV FOR MOBILE LANDSCAPE ONLY --- */
-@media screen and (orientation: landscape) and (max-height: 600px) {
+/* --- SLIM NAV: MOBILE LANDSCAPE ONLY (FIXED FOR DESKTOP) --- */
+@media screen and (orientation: landscape) and (max-height: 500px) and (max-width: 950px) {
     /* 1. Reduce overall Nav height */
     nav {
-        padding: 0.4rem 0 !important; 
+        padding: 0.3rem 0 !important; 
     }
 
     /* 2. Tighten the nav container spacing */
@@ -1072,26 +1072,27 @@ nav a {
 
     /* 3. Shrink Logo */
     .logo img {
-        height: 28px !important; 
+        height: 24px !important; 
         width: auto !important;
     }
 
     /* 4. Ensure Nav Links align */
     .nav-links {
-        gap: 1.5rem !important;
-        display: flex !important; /* Forces nav to stay a bar, not a menu */
+        gap: 1.2rem !important;
+        display: flex !important; 
     }
 
     .nav-links a {
-        font-size: 0.9rem !important;
+        font-size: 0.85rem !important;
     }
     
-    /* Hide the burger menu so it doesn't overlap the slim bar */
+    /* Hide the burger so it doesn't crowd the slim bar */
     #hamburger {
         display: none !important;
     }
 }
 
+        
         
     </style>
 </head>
@@ -2695,36 +2696,18 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
 
 <script>
     (function() {
-        // 1. THE VIEWPORT SCALER (Forced Zoom Reset)
+        // 1. CLEAN VIEWPORT (Standard mobile behavior)
         function handleOrientation() {
-            let viewport = document.querySelector('meta[name="viewport"]');
-            
-            // If the tag doesn't exist (because you deleted it from head), create it
-            if (!viewport) {
-                viewport = document.createElement('meta');
-                viewport.name = "viewport";
-                document.head.appendChild(viewport);
-            }
-
-            if (window.innerWidth > window.innerHeight) {
-                // LANDSCAPE: Force a snap-to-fit 1280px without zooming
-                viewport.setAttribute('content', 'width=1280, initial-scale=0.25, minimum-scale=0.25, maximum-scale=5.0');
-                
-                // Immediate timeout to "nudge" Safari to recalculate the zoom
-                setTimeout(() => {
-                    viewport.setAttribute('content', 'width=1280, initial-scale=1.0, shrink-to-fit=no');
-                }, 1);
-            } else {
-                // PORTRAIT: Standard mobile view
-                viewport.setAttribute('content', 'width=device-width, initial-scale=1.0');
+            const viewport = document.querySelector('meta[name="viewport"]');
+            if (viewport) {
+                viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0');
             }
         }
-        
         window.addEventListener('resize', handleOrientation);
         window.addEventListener('orientationchange', handleOrientation);
         handleOrientation(); 
 
-        // 2. REVEAL LOGIC (Keep as is)
+        // 2. REVEAL LOGIC
         const revealObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -2732,38 +2715,29 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
                     revealObserver.unobserve(entry.target);
                 }
             });
-        }, { threshold: 0.05, rootMargin: "0px 0px -20px 0px" });
-
+        }, { threshold: 0.05 });
         const items = document.querySelectorAll('.hero-content, .stat-item, .about-grid, .achievement-card, .platform-item, .video-item, .contact-reveal');
         items.forEach(el => revealObserver.observe(el));
 
-        // 3. NAVIGATION SPY (Keep as is)
+        // 3. NAVIGATION SPY
         const sections = document.querySelectorAll("section[id]");
         const navLinks = document.querySelectorAll("nav ul li a");
-        const mobileLinks = document.querySelectorAll("#mobile-menu a");
-
         function updateNav() {
             let current = "";
             const scrollPos = window.pageYOffset;
-            const winHeight = window.innerHeight;
-
             sections.forEach(s => {
-                if (scrollPos >= s.offsetTop - (winHeight / 3)) {
+                if (scrollPos >= s.offsetTop - (window.innerHeight / 3)) {
                     current = s.getAttribute("id");
                 }
             });
-
-            [...navLinks, ...mobileLinks].forEach(link => {
+            navLinks.forEach(link => {
                 link.classList.remove("active");
-                if (link.getAttribute("href") === "#" + current) {
-                    link.classList.add("active");
-                }
+                if (link.getAttribute("href") === "#" + current) link.classList.add("active");
             });
         }
         window.addEventListener('scroll', updateNav, { passive: true });
-        updateNav();
 
-        // 4. BURGER MENU TOGGLE
+        // 4. BURGER MENU
         window.toggleMenu = function() {
             const menu = document.getElementById('mobile-menu');
             if (menu) {
