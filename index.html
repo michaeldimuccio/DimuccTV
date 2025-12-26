@@ -1055,9 +1055,9 @@ nav a {
 }
 
 
-/* --- MASTER LANDSCAPE: TOTAL DESKTOP RESTORATION --- */
+/* --- THE ULTIMATE DESKTOP RESTORATION (LANDSCAPE) --- */
 @media screen and (orientation: landscape) and (max-height: 600px) {
-    /* 1. THE ZOOM ENGINE */
+    /* 1. THE ZOOM ENGINE: Fits desktop world to mobile screen */
     body {
         zoom: calc(100vw / 1280); 
         width: 1280px !important;
@@ -1065,15 +1065,66 @@ nav a {
         overflow-x: hidden !important;
     }
 
-    /* 2. NAVIGATION: KILL BURGER & RESET LINKS */
-    #hamburger, #mobile-menu { 
-        display: none !important; 
+    /* 2. HOME SECTION: Stop Text Overlapping */
+    .hero h1 {
+        font-size: 5.5rem !important; 
+        line-height: 1.1 !important; /* Fixes text stacking on itself */
+        margin-bottom: 1.5rem !important;
     }
+    .hero .subtitle {
+        margin-bottom: 1rem !important;
+        line-height: 1.2 !important;
+    }
+
+    /* 3. ABOUT & AUDIENCE: Shrunk Margins & Enlarged Content */
+    #about .container, #audience .container {
+        padding-left: 2rem !important; /* Shrunk from 5rem to give more room */
+        padding-right: 2rem !important;
+        max-width: 1240px !important;
+    }
+    .about-grid {
+        display: grid !important;
+        grid-template-columns: 1.2fr 0.8fr !important; /* Enlarged Image Side */
+        gap: 3rem !important;
+    }
+    .about-image img {
+        height: 88vh !important; /* Maximized height */
+        width: auto !important;
+    }
+
+    /* 4. KEY MILESTONES: Force 2 Per Row */
+    .achievements-grid {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 1.5rem !important;
+        width: 100% !important;
+    }
+
+    /* 5. CONTACT SECTION: Side-by-Side (Unstacked) */
+    .contact-grid {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 2rem !important;
+        align-items: stretch !important;
+    }
+    .contact-form-container, .contact-right-reveal {
+        width: 100% !important;
+    }
+
+    /* 6. STATS & BRANDS: Desktop Linear Layouts */
+    .stats-grid {
+        grid-template-columns: repeat(4, 1fr) !important;
+    }
+    .brand-grid {
+        grid-template-columns: repeat(4, 1fr) !important;
+    }
+
+    /* 7. NAVIGATION: Kill Burger & Reset Links */
+    #hamburger, #mobile-menu { display: none !important; }
     .nav-links { 
         display: flex !important; 
         flex-direction: row !important;
         gap: 2.5rem !important;
-        margin-left: auto !important;
     }
     nav .container {
         display: flex !important;
@@ -1081,68 +1132,11 @@ nav a {
         flex-direction: row !important;
     }
 
-    /* 3. STATS: FORCE 4 IN A ROW */
-    .stats-grid {
-        display: grid !important;
-        grid-template-columns: repeat(4, 1fr) !important;
-        gap: 2rem !important;
-        width: 100% !important;
-    }
-
-    /* 4. ABOUT: FIX MARGINS & IMAGE SIZE */
-    #about .container {
-        padding-left: 5rem !important;
-        padding-right: 5rem !important;
-    }
-    .about-grid {
-        display: grid !important;
-        grid-template-columns: 1.1fr 0.9fr !important;
-        gap: 5rem !important;
-        align-items: center !important;
-    }
-    .about-image img {
-        height: 85vh !important; /* Made larger */
-        width: auto !important;
-        max-width: none !important;
-    }
-
-    /* 5. AUDIENCE & REACH: CENTER & 3-COLUMN */
+    /* 8. AUDIENCE CARDS: Side-by-Side */
     .audience-cards {
         display: grid !important;
-        grid-template-columns: repeat(2, 1fr) !important; /* Standard Desktop split */
-        gap: 3rem !important;
-        max-width: 1200px !important;
-        margin: 0 auto !important;
-    }
-
-    /* 6. PRESS: 3 PER ROW */
-    .press-grid {
-        display: grid !important;
-        grid-template-columns: repeat(3, 1fr) !important;
-        gap: 1.5rem !important;
-        width: 100% !important;
-    }
-
-    /* 7. BRAND DEALS: 4 PER ROW */
-    .brand-grid {
-        display: grid !important;
-        grid-template-columns: repeat(4, 1fr) !important;
-        gap: 1.5rem !important;
-    }
-
-    /* 8. VIDEOS & MUSIC: 3 PER ROW */
-    .video-grid, .music-grid {
-        display: grid !important;
-        grid-template-columns: repeat(3, 1fr) !important;
+        grid-template-columns: 1fr 1fr !important;
         gap: 2rem !important;
-    }
-
-    /* 9. RESET GLOBAL OVERRIDES */
-    .container {
-        width: 1280px !important;
-        max-width: 1280px !important;
-        margin: 0 auto !important;
-        padding: 0 5rem !important;
     }
 }
  
