@@ -1057,29 +1057,33 @@ nav a {
 
 /* --- MASTER LANDSCAPE: Desktop-Style 3-Column Layout --- */
 @media screen and (orientation: landscape) and (max-height: 600px) {
-    /* Magic Zoom: Scales the 1280px desktop layout to fit mobile */
+    /* 1. FORCE DESKTOP CANVAS: Locks width to 1280px before scaling */
     body {
         zoom: calc(100vw / 1280); 
+        width: 1280px !important;
         min-height: 100vh;
-        overflow-x: hidden;
+        margin: 0 auto !important;
+        overflow-x: hidden !important;
+        position: relative;
     }
 
-    /* Desktop-style container proportions */
+    /* 2. CENTERED DESKTOP CONTAINER */
     .container {
-        max-width: 1200px !important;
+        width: 1280px !important;
+        max-width: 1280px !important;
         padding-left: 5rem !important; 
         padding-right: 5rem !important;
         margin: 0 auto !important;
     }
 
-    /* 3-Column Grids for Videos, Music, and Press */
+    /* 3. RESTORE 3-COLUMN GRIDS */
     .video-grid, .music-grid, .press-grid {
         display: grid !important;
         grid-template-columns: repeat(3, 1fr) !important;
         gap: 2rem !important;
     }
 
-    /* Side-by-Side About Section */
+    /* 4. ABOUT SECTION: Side-by-Side */
     .about-grid {
         display: grid !important;
         grid-template-columns: 1.1fr 0.9fr !important; 
@@ -1096,8 +1100,13 @@ nav a {
         border: 3px solid var(--bright-blue) !important;
     }
 
-    /* Forced Desktop Navigation Bar */
-    nav { padding: 0.4rem 0 !important; }
+    /* 5. FORCE DESKTOP NAVIGATION */
+    nav { 
+        width: 1280px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        padding: 0.4rem 0 !important; 
+    }
     .logo img { height: 28px !important; }
     #hamburger, #mobile-menu { display: none !important; }
     .nav-links { 
@@ -2676,18 +2685,18 @@ function toggleMenu() {
 </script>
 <script>
     (function() {
-        // 1. VIEWPORT HANDLER: Uses natural width to prevent zoom bugs
+        // 1. CLEAN VIEWPORT: Natural scale, no magnification glitch
         function handleOrientation() {
             const viewport = document.querySelector('meta[name="viewport"]');
             if (!viewport) return;
-            // No more width=1280; device-width stops the magnification glitch
+            // Setting device-width prevents the browser from "auto-zooming"
             viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
         }
         window.addEventListener('resize', handleOrientation);
         window.addEventListener('orientationchange', handleOrientation);
         handleOrientation(); 
 
-        // 2. SILENT FORMS: No alerts or pop-up windows
+        // 2. SILENT FORMS: Alerts removed
         const scriptURL = 'https://script.google.com/macros/s/AKfycbwyD-d5Ka405oHl6FsBTQUJ95OYZVuFxmJsJL6hRSjcy8K_W8hqKyAMBCbUc6k-tcsCYg/exec';
 
         function setupSilentForm(formId, loadingText, successText) {
