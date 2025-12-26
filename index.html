@@ -1026,6 +1026,18 @@ nav a {
     }
 
 }
+
+
+        /* Add this to your existing CSS */
+.about-grid.reveal-active, 
+.stat-item.reveal-active, 
+.achievement-card.reveal-active {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+    visibility: visible !important;
+    /* This stops the "sliding out" animation if it tries to reset */
+    transition: none !important; 
+}
     </style>
 </head>
 <body>
@@ -2560,17 +2572,14 @@ nav a {
 
 <script>
     (function() {
+        const winHeight = window.innerHeight;
+
+        // 1. NAVIGATION SPY LOGIC (Keeps the orange menu lines working)
         const sections = document.querySelectorAll("section[id]");
         const navLinks = document.querySelectorAll("nav ul li a");
-        
-        // Items that need to stay "locked" once seen
-        const tallElements = document.querySelectorAll('.about-grid, .achievement-card, .stat-item');
 
-        function handleScroll() {
+        function updateNav() {
             const scrollPos = window.pageYOffset;
-            const winHeight = window.innerHeight;
-
-            // 1. NAVIGATION SPY LOGIC
             let currentId = "";
             sections.forEach(s => {
                 if (scrollPos >= s.offsetTop - (winHeight / 3)) {
@@ -2581,44 +2590,26 @@ nav a {
                 l.classList.remove("active");
                 if (l.getAttribute("href") === "#" + currentId) l.classList.add("active");
             });
-
-            // 2. THE "LOCKED" REVEAL LOGIC
-            // Once these hit the screen, they stay active until you go back to the top
-            tallElements.forEach(el => {
-                const rect = el.getBoundingClientRect();
-                const triggerPoint = winHeight * 0.9; // Triggers when 10% on screen
-
-                if (rect.top < triggerPoint) {
-                    el.classList.add('reveal-active');
-                }
-                
-                // RESET: Only if you scroll all the way back to the Hero
-                if (scrollPos < 100) {
-                    el.classList.remove('reveal-active');
-                }
-            });
         }
 
-        // 3. OBSERVER FOR SMALLER ITEMS (Videos & Audience)
-        const smallItemObserver = new IntersectionObserver((entries) => {
+        // 2. THE PERMANENT REVEALER (The Fix)
+        const revealObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('reveal-active');
-                } else {
-                    // Only reset if it's below the screen
-                    if (entry.boundingClientRect.top > winHeight) {
-                        entry.target.classList.remove('reveal-active');
-                    }
+                    // This kills the observer for the element so it NEVER disappears again
+                    revealObserver.unobserve(entry.target);
                 }
             });
-        }, { threshold: 0.1 });
+        }, { threshold: 0.01 });
 
-        document.querySelectorAll('.platform-item, .video-item, .contact-reveal').forEach(el => {
-            smallItemObserver.observe(el);
-        });
+        // Target all your animated elements
+        document.querySelectorAll('.stat-item, .about-grid, .achievement-card, .platform-item, .video-item, .contact-reveal')
+            .forEach(el => revealObserver.observe(el));
 
-        window.addEventListener('scroll', handleScroll, { passive: true });
-        handleScroll(); // Run on load
+        // 3. LISTENERS
+        window.addEventListener('scroll', updateNav, { passive: true });
+        updateNav(); 
     })();
 </script>
 
