@@ -1055,51 +1055,49 @@ nav a {
 }
 
 
-/* --- LANDSCAPE: FORCED IMAGE SHRINK --- */
+/* --- LANDSCAPE: NUCLEAR SIZE RESET --- */
 @media screen and (orientation: landscape) and (max-width: 1024px) {
-    /* 1. Slim the Nav (Keep your slim settings) */
-    nav { padding: 0.2rem 0 !important; }
-
-    /* 2. The About Section Re-balance */
+    /* 1. Force the container to stop stretching everything */
     .about-grid {
-        display: grid !important;
-        /* Give the text column significantly more room */
-        grid-template-columns: 1fr 1.5fr !important; 
+        display: flex !important; /* Switch from Grid to Flex for better control */
+        flex-direction: row !important;
         align-items: center !important;
-        gap: 5rem !important;
-    }
-
-    .about-image {
-        display: flex !important;
         justify-content: center !important;
+        gap: 50px !important;
         width: 100% !important;
     }
 
+    /* 2. SHRINK THE IMAGE: Forced Pixel Width */
+    .about-image {
+        flex: 0 0 auto !important; /* Prevents column from growing */
+        width: 280px !important;    /* Hard pixel width - adjust this number to go smaller/larger */
+        display: block !important;
+    }
+
     .about-image img {
-        /* This is the 'Choke Point' - adjust this % to go smaller/larger */
-        width: 70% !important; 
-        max-width: 350px !important; /* Hard cap on how big it can get */
-        
+        width: 100% !important;
         height: auto !important;
         aspect-ratio: 3 / 4 !important;
         object-fit: cover !important;
-        
-        border-radius: 1rem !important;
+        border-radius: 12px !important;
         border: 3px solid var(--bright-blue) !important;
     }
 
-    /* 3. Make the text column larger and readable */
+    /* 3. ENLARGE THE TEXT: Let it take the remaining space */
     .about-content {
+        flex: 1 !important; /* Tells text to take all remaining room */
+        max-width: 600px !important;
         text-align: left !important;
     }
 
     .about-content h2 {
-        font-size: 2.8rem !important; /* Larger heading */
-        margin-bottom: 1.5rem !important;
+        font-size: 32px !important; /* Forced pixel size for the heading */
+        margin-bottom: 20px !important;
+        color: var(--rich-black);
     }
 
     .about-content p {
-        font-size: 1.25rem !important; /* Larger body text */
+        font-size: 18px !important; /* Forced pixel size for the body */
         line-height: 1.6 !important;
     }
 }
