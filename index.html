@@ -3,7 +3,7 @@
 <head>
 <base target="_self">
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
     <title>Michael "Dimucc" DiMuccio - Digital Creator</title>
     <style>
 /* 1. THE DESKTOP & WIDE TABLET "BLACK SCREEN" KILLER */
@@ -1053,6 +1053,73 @@ nav a {
     border: none !important;
     text-decoration: none !important;
 }
+
+
+/* --- LANDSCAPE MASTER: 3-VIDEOS, 3-ARTICLES, 4-BRANDS, FIXED IMAGE & SLIM NAV --- */
+@media screen and (orientation: landscape) and (max-width: 1024px) {
+    /* 1. Slim Navigation Bar */
+    nav {
+        padding: 0.3rem 0 !important; /* Extremely slim for landscape */
+    }
+
+    nav .container {
+        padding-top: 2px !important;
+        padding-bottom: 2px !important;
+    }
+
+    .logo img {
+        height: 24px !important; /* Smaller logo to reduce bar height */
+    }
+
+    /* 2. About: Fix Image Cutoff & Size */
+    .about-grid {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important; 
+        align-items: center !important;
+        gap: 2.5rem !important;
+    }
+
+    .about-image img {
+        max-height: 75vh !important; /* Height-lock */
+        width: 100% !important;
+        object-fit: contain !important; /* FIX: Prevents cropping top/bottom */
+        border-radius: 0.75rem !important;
+        background: transparent !important;
+    }
+
+    /* 3. Force Side-by-Side Density */
+    .video-grid, .music-grid, .press-grid {
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 1.25rem !important;
+    }
+
+    .brand-grid {
+        display: grid !important;
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 1rem !important;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(4, 1fr) !important;
+    }
+
+    /* 4. Section & Hero Tweaks */
+    section {
+        padding: 4rem 0 !important;
+    }
+
+    .hero {
+        padding-top: 5rem !important;
+        min-height: 100vh !important;
+    }
+    
+    .container { max-width: 1000px !important; }
+    .nav-links { display: flex !important; }
+    #hamburger, #mobile-menu { display: none !important; }
+}
+
+        
     </style>
 </head>
 <body>
@@ -2675,13 +2742,26 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
 
 <script>
     (function() {
-        // 1. REVEAL LOGIC
+        // 1. THE VIEWPORT SCALER (Fixed for 3-Column Video Grid)
+        function handleOrientation() {
+            const viewport = document.querySelector('meta[name="viewport"]');
+            if (window.innerWidth > window.innerHeight) {
+                // LANDSCAPE: Set to 1024px so 3 videos per row look big and fill the screen
+                viewport.setAttribute('content', 'width=1024');
+            } else {
+                // PORTRAIT: Standard mobile responsive view
+                viewport.setAttribute('content', 'width=device-width, initial-scale=1.0');
+            }
+        }
+        window.addEventListener('resize', handleOrientation);
+        window.addEventListener('orientationchange', handleOrientation);
+        handleOrientation(); 
+
+        // 2. REVEAL LOGIC (Animations & Wave)
         const revealObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('reveal-active');
-                    // THE FIX: Stop watching once revealed. 
-                    // This creates the permanent state you see when the menu is open.
                     revealObserver.unobserve(entry.target);
                 }
             });
@@ -2690,11 +2770,10 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
             rootMargin: "0px 0px -20px 0px" 
         });
 
-        // Targeted items (Individual cards for the wave effect)
         const items = document.querySelectorAll('.hero-content, .stat-item, .about-grid, .achievement-card, .platform-item, .video-item, .contact-reveal');
         items.forEach(el => revealObserver.observe(el));
 
-        // 2. NAVIGATION SPY (The Orange Line Fix)
+        // 3. NAVIGATION SPY (Orange Line)
         const sections = document.querySelectorAll("section[id]");
         const navLinks = document.querySelectorAll("nav ul li a");
         const mobileLinks = document.querySelectorAll("#mobile-menu a");
@@ -2721,7 +2800,7 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
         window.addEventListener('scroll', updateNav, { passive: true });
         updateNav();
 
-        // 3. BURGER MENU TOGGLE
+        // 4. BURGER MENU TOGGLE
         window.toggleMenu = function() {
             const menu = document.getElementById('mobile-menu');
             if (menu) {
