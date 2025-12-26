@@ -1496,7 +1496,7 @@ nav a {
 
     <!-- Audience & Reach -->
 <style>
-    /* 1. Refined Animations */
+/* 1. Refined Animations */
     @keyframes titleGlideUp {
         0% { opacity: 0; transform: translateY(10px); }
         100% { opacity: 1; transform: translateY(0); }
@@ -1514,12 +1514,20 @@ nav a {
         100% { opacity: 1; transform: translateY(0); }
     }
 
-    /* 2. Initial States */
+    /* 2. Initial States (MOVED POSITIONS ADDED HERE) */
     .audience-title-reveal, .comedy-glide, .music-glide, .platform-item {
         opacity: 0;
         will-change: transform, opacity;
+        transition: transform 0.5s ease, opacity 0.5s ease; /* Helps the reset feel smooth */
     }
 
+    /* Base positions for reset */
+    .audience-title-reveal { transform: translateY(10px); }
+    .comedy-glide { transform: translateX(-100px); }
+    .music-glide { transform: translateX(100px); }
+    .platform-item { transform: translateY(25px); }
+
+    /* 3. Active States */
     .audience-title-reveal.reveal-active { animation: titleGlideUp 1s ease forwards; }
     .comedy-glide.reveal-active { animation: containerGlideFromLeft 2s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
     .music-glide.reveal-active { animation: containerGlideFromRight 2s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
@@ -1685,7 +1693,6 @@ nav a {
     (function() {
         let animationQueue = [];
         let isProcessing = false;
-        let lastScrollTop = window.pageYOffset || document.documentElement.scrollTop;
 
         async function processQueue() {
             if (isProcessing || animationQueue.length === 0) return;
@@ -1700,17 +1707,10 @@ nav a {
             isProcessing = false;
         }
 
-        // rootMargin bottom -100px ensures it doesn't trigger/reset at the very edge
-        const observerOptions = { threshold: 0, rootMargin: "0px 0px -100px 0px" };
-        
+        // 1. REVEAL LOGIC (Standard Intersection Observer)
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
-                const st = window.pageYOffset || document.documentElement.scrollTop;
-                const scrollingUp = st < lastScrollTop;
-                const rect = entry.boundingClientRect;
-
                 if (entry.isIntersecting) {
-                    // Always trigger if coming onto screen
                     if (entry.target.classList.contains('platform-item')) {
                         if (!entry.target.classList.contains('reveal-active') && !animationQueue.includes(entry.target)) {
                             animationQueue.push(entry.target);
@@ -1719,20 +1719,29 @@ nav a {
                     } else {
                         entry.target.classList.add('reveal-active');
                     }
-                } else {
-                    // RESET LOGIC: 
-                    // 1. If the element is below the viewport (scrolling UP back to top)
-                    // 2. We use a 100px buffer to make sure it's actually gone
-                    if (rect.top > (window.innerHeight || document.documentElement.clientHeight)) {
-                        entry.target.classList.remove('reveal-active');
-                        animationQueue = animationQueue.filter(el => el !== entry.target);
-                    }
                 }
-                lastScrollTop = st <= 0 ? 0 : st; 
             });
-        }, observerOptions);
+        }, { threshold: 0.01, rootMargin: "0px 0px -50px 0px" });
 
         document.querySelectorAll('.platform-item, .comedy-glide, .music-glide, .audience-title-reveal').forEach(el => observer.observe(el));
+
+        // 2. FORCED RESET LOGIC (Hardware-Level Scroll Check)
+        // This resets the items as soon as you scroll away from the section upward
+        window.addEventListener('scroll', () => {
+            const section = document.getElementById('audience');
+            if (!section) return;
+
+            const rect = section.getBoundingClientRect();
+            
+            // If the top of the Audience section is more than 300px below the viewport
+            // (meaning you've scrolled back up toward the Hero/About)
+            if (rect.top > window.innerHeight + 100) {
+                document.querySelectorAll('.platform-item, .comedy-glide, .music-glide, .audience-title-reveal').forEach(el => {
+                    el.classList.remove('reveal-active');
+                });
+                animationQueue = []; // Clear the queue so it can start fresh
+            }
+        }, { passive: true });
     })();
 </script>
 
