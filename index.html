@@ -1026,19 +1026,23 @@ nav a {
     }
 
 }
-/* 1. The 'Heartbeat' that keeps the sections awake */
-@keyframes stay-awake {
-    from { opacity: 0.999; }
-    to { opacity: 1; }
+/* 1. Remove the animation and force the sections to stay 'awake' */
+#about, #stats, #achievements, #videos, #contact {
+    display: block !important;
+    visibility: visible !important;
+    /* Force the browser to stop 'optimizing' these away */
+    contain: none !important; 
+    transform: none !important;
+    perspective: none !important;
 }
 
-/* 2. Apply to all sections giving you trouble */
-#about, #stats, #achievements, #videos, #contact {
-    animation: stay-awake 1s infinite !important;
-    will-change: transform, opacity !important;
-    /* Keeps the section from being 'culled' by Safari */
-    transform: translateZ(0); 
-    -webkit-transform: translateZ(0);
+/* 2. Lock the inner items to 100% visibility immediately */
+.about-grid, .stat-item, .achievement-card {
+    opacity: 1 !important;
+    transform: none !important;
+    visibility: visible !important;
+    /* Stop any 'fading' that might trigger a flicker */
+    transition: none !important;
 }
     </style>
 </head>
@@ -2662,54 +2666,52 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
 
 <script>
     (function() {
-        // 1. REVEAL LOGIC (With Unobserve to prevent disappearing)
+        // 1. MANUAL OVERRIDE: Force show the problem sections immediately
+        // This stops them from waiting for a scroll trigger that Safari might miss
+        const problemSections = document.querySelectorAll('.stat-item, .about-grid, .achievement-card');
+        problemSections.forEach(el => {
+            el.classList.add('reveal-active');
+            el.style.opacity = "1";
+            el.style.transform = "none";
+        });
+
+        // 2. KEEP OBSERVER ONLY for smaller items (Videos/Contact/Platforms)
         const revealObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('reveal-active');
-                    // Stop watching immediately so it can never be hidden again
                     revealObserver.unobserve(entry.target);
                 }
             });
         }, { threshold: 0.05 });
 
-        const items = document.querySelectorAll('.hero-content, .stat-item, .about-grid, .achievement-card, .platform-item, .video-item, .contact-reveal');
-        items.forEach(el => revealObserver.observe(el));
+        document.querySelectorAll('.platform-item, .video-item, .contact-reveal').forEach(el => {
+            revealObserver.observe(el);
+        });
 
-        // 2. NAVIGATION SPY & FORCED RE-RENDER
+        // 3. NAVIGATION SPY (The Orange Line Fix)
         const sections = document.querySelectorAll("section[id]");
         const navLinks = document.querySelectorAll("nav ul li a");
         const mobileLinks = document.querySelectorAll("#mobile-menu a");
 
-        function updateEverything() {
+        function updateNav() {
             let current = "";
             const scrollPos = window.pageYOffset;
-
-            // Update Nav Spy
             sections.forEach(s => {
                 if (scrollPos >= s.offsetTop - (window.innerHeight / 3)) {
                     current = s.getAttribute("id");
                 }
-                
-                // FORCED RE-RENDER: This imitates the 'Burger Menu' effect
-                // It slightly nudges the section to keep Safari from hiding it
-                if (scrollPos > s.offsetTop - window.innerHeight && scrollPos < s.offsetTop + s.offsetHeight) {
-                     s.style.zIndex = (s.style.zIndex === "1") ? "1.0001" : "1";
-                }
             });
-
             [...navLinks, ...mobileLinks].forEach(link => {
                 link.classList.remove("active");
-                if (link.getAttribute("href") === "#" + current) {
-                    link.classList.add("active");
-                }
+                if (link.getAttribute("href") === "#" + current) link.classList.add("active");
             });
         }
 
-        window.addEventListener('scroll', updateEverything, { passive: true });
-        updateEverything();
+        window.addEventListener('scroll', updateNav, { passive: true });
+        updateNav();
 
-        // 3. BURGER MENU TOGGLE
+        // 4. BURGER MENU TOGGLE
         window.toggleMenu = function() {
             const menu = document.getElementById('mobile-menu');
             if (menu) {
