@@ -2557,60 +2557,61 @@ nav a {
         </div>
     </div>
 </footer>
+
 <script>
     (function() {
-        // --- 1. THE STICKY REVEALER ---
-        const revealObserver = new IntersectionObserver((entries) => {
+        // 1. THE STICKY REVEALER (Fixes About, Stats, Achievements)
+        const stickyObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('reveal-active');
+                    // THE LOCK: Once seen, we STOP watching it. 
+                    // This makes it physically impossible for the section to disappear.
+                    stickyObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.01 });
+
+        // Target individual items to restore the staggering "Wave"
+        const stickyItems = document.querySelectorAll('.stat-item, .about-grid, .achievement-card');
+        stickyItems.forEach(el => stickyObserver.observe(el));
+
+        // 2. THE RESETTING REVEALER (For smaller items like Videos/Contact)
+        const resetObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 const rect = entry.target.getBoundingClientRect();
-                
                 if (entry.isIntersecting) {
-                    // Item enters from bottom: Reveal it
                     entry.target.classList.add('reveal-active');
                 } else {
-                    // THE FIX: Only remove if item is BELOW the screen
-                    // This ignores Safari's "culling" at the top search bar
+                    // Only reset if scrolling back UP (item is below the phone screen)
                     if (rect.top > (window.innerHeight || document.documentElement.clientHeight)) {
                         entry.target.classList.remove('reveal-active');
                     }
                 }
             });
-        }, { 
-            threshold: 0.01, 
-            rootMargin: "0px 0px -20px 0px" 
-        });
+        }, { threshold: 0.01 });
 
-        // Targeting individual items restores the staggered "Wave" effect
-        const itemsToAnimate = document.querySelectorAll(
-            '.hero-content, .stat-item, .about-grid, .achievement-card, .platform-item, .video-item, .contact-reveal'
-        );
-        itemsToAnimate.forEach(el => revealObserver.observe(el));
+        const resetItems = document.querySelectorAll('.platform-item, .video-item, .contact-reveal');
+        resetItems.forEach(el => resetObserver.observe(el));
 
-        // --- 2. NAVIGATION SPY ---
+        // 3. NAVIGATION SPY (Keeps your menu highlights working)
         const sections = document.querySelectorAll("section[id]");
         const navLinks = document.querySelectorAll("nav ul li a");
-
         function updateNav() {
             let current = "";
             const scrollPos = window.pageYOffset;
-            const winHeight = window.innerHeight;
-
-            sections.forEach((s) => {
-                if (scrollPos >= s.offsetTop - (winHeight / 3)) {
+            sections.forEach(s => {
+                if (scrollPos >= s.offsetTop - (window.innerHeight / 3)) {
                     current = s.getAttribute("id");
                 }
             });
-
-            navLinks.forEach((link) => {
-                link.classList.remove("active");
-                if (link.getAttribute("href") === "#" + current) {
-                    link.classList.add("active");
-                }
+            navLinks.forEach(l => {
+                l.classList.remove("active");
+                if (l.getAttribute("href") === "#" + current) l.classList.add("active");
             });
         }
-
         window.addEventListener('scroll', updateNav, { passive: true });
-        updateNav(); 
+        updateNav();
     })();
 </script>
 
