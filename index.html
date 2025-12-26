@@ -1041,6 +1041,26 @@ nav ul li a.active {
     color: var(--bright-blue) !important;
     border-bottom: 2px solid var(--accent-orange) !important;
 }
+
+/* --- MOBILE PERSISTENCE CLAUSE --- */
+@media screen and (max-width: 1024px) {
+    /* Forces the browser to treat these as active "video-like" layers */
+    #about, #stats-section, #achievements-section {
+        -webkit-transform: translate3d(0,0,0) !important;
+        transform: translate3d(0,0,0) !important;
+        will-change: transform, opacity !important;
+        /* Invisible "heartbeat" prevents Safari hibernation */
+        perspective: 1000px;
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+    }
+
+    /* Ensure children don't flicker when parent stays awake */
+    .about-grid, .stat-item, .achievement-card {
+        -webkit-transform-style: preserve-3d;
+        transform-style: preserve-3d;
+    }
+}
     </style>
 </head>
 <body>
@@ -2663,7 +2683,9 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
 
 <script>
     (function() {
-        // 1. STICKY REVEAL (Fixes About, Stats, Achievements, Contact disappearing)
+        // --- 1. STICKY REVEAL (Fixes About, Stats, Achievements, Contact disappearing) ---
+        // This observer only runs ONCE per element. Once the class is added, the observer
+        // stops watching, making it physically impossible for the section to vanish.
         const revealObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -2674,11 +2696,13 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
             });
         }, { threshold: 0.05 });
 
-        // Target individual items for the "Wave" effect
-        const items = document.querySelectorAll('.hero-content, .stat-item, .about-grid, .achievement-card, .platform-item, .video-item, .contact-reveal');
+        // Target individual items for the "Wave" effect and parent containers for stability
+        const items = document.querySelectorAll(
+            '.hero-content, .stat-item, .about-grid, .achievement-card, .platform-item, .video-item, .contact-reveal, #stats-section, #about, #achievements-section'
+        );
         items.forEach(el => revealObserver.observe(el));
 
-        // 2. NAVIGATION SPY (Fixes the Blue Highlighting/Orange Line)
+        // --- 2. NAVIGATION SPY (Fixes Blue Highlighting/Orange Line) ---
         const sections = document.querySelectorAll("section[id]");
         const navLinks = document.querySelectorAll("nav ul li a");
         const mobileLinks = document.querySelectorAll("#mobile-menu a");
@@ -2690,7 +2714,7 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
 
             sections.forEach(s => {
                 const sectionTop = s.offsetTop;
-                // If the section is in the top 3rd of the screen, it's "active"
+                // If the section is in the top 3rd of the screen, mark it as "active"
                 if (scrollPos >= sectionTop - (winHeight / 3)) {
                     current = s.getAttribute("id");
                 }
@@ -2705,16 +2729,17 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
             });
         }
 
-        // 3. EVENT LISTENERS
+        // --- 3. EVENT LISTENERS ---
         window.addEventListener('scroll', updateNav, { passive: true });
         window.addEventListener('resize', updateNav);
         updateNav();
 
-        // 4. MOBILE MENU TOGGLE
+        // --- 4. MOBILE MENU TOGGLE ---
         window.toggleMenu = function() {
             const menu = document.getElementById('mobile-menu');
             if (menu) {
                 const isOpen = menu.style.display === 'flex';
+                // Force display with important to override browser optimizations
                 menu.style.setProperty('display', isOpen ? 'none' : 'flex', 'important');
             }
         };
