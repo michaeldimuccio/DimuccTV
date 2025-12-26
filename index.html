@@ -1024,29 +1024,6 @@ nav a {
             footer { padding: 1rem 0 !important; }
             .footer-bottom { flex-direction: row !important; font-size: 0.7rem !important; }
         }
-
-
-
-/* 1. Base State - Everything is visible by default to prevent "Black Holes" */
-.hero-content, .stat-item, .about-grid, .achievement-card, 
-.platform-item, .video-item, .contact-reveal {
-    opacity: 1; /* Start at 1 so nothing is invisible on load */
-    transform: translateY(0);
-    transition: opacity 0.6s ease-out, transform 0.6s ease-out !important;
-}
-
-/* 2. Reset State - Only hide it when the script EXPLICITLY says it's off-screen */
-.reveal-reset {
-    opacity: 0 !important;
-    transform: translateY(30px) !important;
-}
-
-/* 3. Active State - Bring it back when on screen */
-.reveal-active {
-    opacity: 1 !important;
-    transform: translateY(0) !important;
-}
-        
         
     </style>
 </head>
@@ -2629,23 +2606,15 @@ nav a {
         setupSilentForm('emailCaptureForm', 'Joining...', 'Joined!');
         setupSilentForm('contactForm', 'Sending...', 'Sent!');
 
-// 3. REVEAL LOGIC: Clean Fade-In / Reset on Scroll
+        // 3. REVEAL LOGIC: Intersection Observer for smooth animations
         const revealObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    // Element is coming into view: Show it
                     entry.target.classList.add('reveal-active');
-                    entry.target.classList.remove('reveal-reset');
-                } else {
-                    // Element is fully off-screen: Reset it quietly
-                    entry.target.classList.remove('reveal-active');
-                    entry.target.classList.add('reveal-reset');
+                    revealObserver.unobserve(entry.target);
                 }
             });
-        }, { 
-            threshold: 0.1, // Triggers when 10% is visible
-            rootMargin: "0px" // Triggers exactly at the screen edge
-        });
+        }, { threshold: 0.05, rootMargin: "0px 0px -20px 0px" });
 
         const items = document.querySelectorAll('.hero-content, .stat-item, .about-grid, .achievement-card, .platform-item, .video-item, .contact-reveal');
         items.forEach(el => revealObserver.observe(el));
@@ -2689,4 +2658,3 @@ nav a {
     
 </body>
 </html>
-`update 9
