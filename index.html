@@ -1075,31 +1075,45 @@ header, nav, section, footer {
   max-width: none;
 }
 
-/* 1. UNIVERSAL FLUID CONTAINER (inner content only) */
+/* 0. UNBOX THE PAGE (kills the hidden fixed-width wrapper problem) */
+html, body {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-x: hidden !important;
+  margin: 0 !important;
+}
+
+/* If ANY parent wrapper is constraining width, this forces full-bleed */
+body > header,
+body > nav,
+body > main,
+body > footer,
+header, nav, main, footer,
+section,
+#wrapper, #page, #app, #root,
+.site, .page, .layout, .wrapper, .content, .main, .container-wrap {
+  width: 100% !important;
+  max-width: none !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+/* 1. UNIVERSAL FLUID CONTAINER (this only controls inner content width) */
 .container {
-  box-sizing: border-box;
-  width: 100%;
-  max-width: 1280px;
-  margin: 0 auto;
-  /* Fluid padding: 20px on small screens, scaling up to 80px on PC */
-  padding-inline: clamp(1.25rem, 5vw, 5rem);
+  width: 100% !important;
+  max-width: 1280px !important;
+  margin-inline: auto !important;
+  padding-inline: clamp(1.25rem, 5vw, 5rem) !important;
 }
 
 /* 2. THE CLEAN LANDSCAPE RESTORATION (No Zoom Hacks) */
 @media screen and (orientation: landscape) and (max-width: 932px) {
-
   /* Reset body to natural behavior */
   body {
     zoom: 1 !important;
     width: 100% !important;
     max-width: 100% !important;
     overflow-x: hidden !important;
-  }
-
-  /* Kill any 100vw offenders that create “fake” side gutters */
-  header, nav, section, footer, .hero {
-    width: 100% !important;
-    max-width: 100% !important;
   }
 
   /* Force Desktop Navigation & Kill Burger */
@@ -1123,14 +1137,14 @@ header, nav, section, footer {
   /* Force 3-Column Video/Press Grids */
   .video-grid, .music-grid, .press-grid {
     display: grid !important;
-    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    grid-template-columns: repeat(3, 1fr) !important;
     gap: 1.5rem !important;
   }
 
   /* Force 4-Column Stats/Brands */
   .stats-grid, .brand-grid {
     display: grid !important;
-    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    grid-template-columns: repeat(4, 1fr) !important;
     gap: 1rem !important;
   }
 
@@ -1141,13 +1155,13 @@ header, nav, section, footer {
     flex-direction: row !important;
     justify-content: center !important;
     gap: 1rem !important;
-    flex-wrap: wrap !important;
   }
   .btn { width: auto !important; margin: 0 !important; padding: 0.8rem 1.5rem !important; }
 
   /* Fix About Image Size */
   .about-image img { height: 75vh !important; width: auto !important; }
 }
+
 
 
     </style>
