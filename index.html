@@ -1055,40 +1055,44 @@ nav a {
 }
 
 
-/* --- LANDSCAPE MASTER: BALANCED IMAGE SIZE --- */
-@media screen and (orientation: landscape) and (max-width: 1024px) {
-    /* 1. Reset container to standard desktop margins for balance */
-    #about .container {
+/* --- MASTER LANDSCAPE: NO-ZOOM 3-COLUMN LAYOUT --- */
+@media screen and (orientation: landscape) and (max-width: 1280px) {
+    /* 1. Reset container to standard desktop margins */
+    .container {
         max-width: 1200px !important;
         padding-left: 5rem !important; 
         padding-right: 5rem !important;
     }
 
+    /* 2. Restore 3-Column Video/Music Grid */
+    .video-grid, .music-grid, .press-grid {
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 2rem !important;
+    }
+
+    /* 3. About Section: Side-by-Side */
     .about-grid {
         display: grid !important;
-        /* Balanced split: 1.1fr for image, 0.9fr for text */
         grid-template-columns: 1.1fr 0.9fr !important; 
         align-items: center !important;
         gap: 4rem !important; 
     }
 
-    .about-image {
-        display: flex !important;
-        justify-content: center !important; /* Centers the bubble in its space */
-        width: 100% !important;
-    }
-
     .about-image img {
-        /* Reducing height slightly from 94vh to 82vh for that "touch smaller" feel */
         height: 82vh !important; 
         width: auto !important;
         aspect-ratio: 3 / 4 !important;
         object-fit: cover !important;
-        
         border-radius: 1rem !important;
         border: 3px solid var(--bright-blue) !important;
-        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25) !important;
     }
+
+    /* 4. Slim Navigation (Landscape Only) */
+    nav { padding: 0.4rem 0 !important; }
+    .logo img { height: 28px !important; }
+    #hamburger, #mobile-menu { display: none !important; }
+    .nav-links { display: flex !important; gap: 2rem !important; }
 }
 
         
@@ -2661,47 +2665,46 @@ function toggleMenu() {
 </script>
 <script>
     (function() {
-        // 1. THE VIEWPORT SCALER (Fixed: Prevents half-zoom glitch)
+        // 1. THE VIEWPORT SCALER: Forced 100% Zoom Reset
         function handleOrientation() {
             const viewport = document.querySelector('meta[name="viewport"]');
-            if (viewport) {
-                if (window.innerWidth > window.innerHeight) {
-                    // LANDSCAPE: Set width only to let the browser scale naturally
-                    viewport.setAttribute('content', 'width=1280');
-                } else {
-                    // PORTRAIT: Reset to standard mobile behavior
-                    viewport.setAttribute('content', 'width=device-width, initial-scale=1.0');
-                }
+            if (!viewport) return;
+
+            if (window.innerWidth > window.innerHeight) {
+                // LANDSCAPE: Force 1280px width & snap scale to 100%
+                // We set it twice with a tiny delay to override browser "auto-zoom"
+                viewport.setAttribute('content', 'width=1280, initial-scale=1.0, maximum-scale=1.0, user-scalable=0');
+                
+                setTimeout(() => {
+                    viewport.setAttribute('content', 'width=1280, initial-scale=1.0, maximum-scale=1.0, shrink-to-fit=no');
+                }, 50);
+            } else {
+                // PORTRAIT: Standard mobile reset
+                viewport.setAttribute('content', 'width=device-width, initial-scale=1.0');
             }
         }
         window.addEventListener('resize', handleOrientation);
         window.addEventListener('orientationchange', handleOrientation);
         handleOrientation(); 
 
-        // 2. SILENT FORM LOGIC (Newsletter & Contact - Alerts Removed)
+        // 2. SILENT FORMS: No alerts, no pop-ups, no mail app triggers
         const scriptURL = 'https://script.google.com/macros/s/AKfycbwyD-d5Ka405oHl6FsBTQUJ95OYZVuFxmJsJL6hRSjcy8K_W8hqKyAMBCbUc6k-tcsCYg/exec';
 
         function setupSilentForm(formId, loadingText, successText) {
             const form = document.getElementById(formId);
             if (!form) return;
-
             form.addEventListener('submit', function(e) {
-                e.preventDefault();
+                e.preventDefault(); // Kills the mail app/redirect behavior
                 const btn = this.querySelector('button');
                 const originalText = btn.innerText;
-                
                 btn.innerText = loadingText;
                 btn.disabled = true;
 
                 fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: new FormData(this) })
                     .then(() => {
-                        // Success: Update button text silently
                         btn.innerText = successText;
                         this.reset();
-                        setTimeout(() => {
-                            btn.innerText = originalText;
-                            btn.disabled = false;
-                        }, 3000);
+                        setTimeout(() => { btn.innerText = originalText; btn.disabled = false; }, 3000);
                     })
                     .catch(() => {
                         btn.innerText = "Error";
@@ -2709,7 +2712,6 @@ function toggleMenu() {
                     });
             });
         }
-
         setupSilentForm('emailCaptureForm', 'Joining...', 'Joined!');
         setupSilentForm('contactForm', 'Sending...', 'Sent!');
 
@@ -2721,33 +2723,30 @@ function toggleMenu() {
                     revealObserver.unobserve(entry.target);
                 }
             });
-        }, { threshold: 0.05, rootMargin: "0px 0px -20px 0px" });
-
+        }, { threshold: 0.05 });
         const items = document.querySelectorAll('.hero-content, .stat-item, .about-grid, .achievement-card, .platform-item, .video-item, .contact-reveal');
         items.forEach(el => revealObserver.observe(el));
 
-        // 4. NAVIGATION SPY & BURGER MENU
+        // 4. NAVIGATION & BURGER MENU
         const sections = document.querySelectorAll("section[id]");
         const navLinks = document.querySelectorAll("nav ul li a");
-        const mobileLinks = document.querySelectorAll("#mobile-menu a");
-
         function updateNav() {
             let current = "";
             const scrollPos = window.pageYOffset;
             sections.forEach(s => {
                 if (scrollPos >= s.offsetTop - (window.innerHeight / 3)) current = s.getAttribute("id");
             });
-            [...navLinks, ...mobileLinks].forEach(link => {
+            navLinks.forEach(link => {
                 link.classList.remove("active");
                 if (link.getAttribute("href") === "#" + current) link.classList.add("active");
             });
         }
         window.addEventListener('scroll', updateNav, { passive: true });
-
+        
         window.toggleMenu = function() {
             const menu = document.getElementById('mobile-menu');
             if (menu) {
-                const isOpen = menu.style.display === 'flex';
+                const isOpen = (menu.style.display === 'flex');
                 menu.style.setProperty('display', isOpen ? 'none' : 'flex', 'important');
             }
         };
