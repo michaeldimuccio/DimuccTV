@@ -836,7 +836,7 @@ nav a {
 
     /* 4. Home (Hero) & Buttons Fix */
 
-    .hero { padding-top: 10rem !important; }
+    .hero { padding-top: 8rem !important; }
 
     
 
@@ -865,6 +865,42 @@ nav a {
     }
 
 
+/* 10. Stats side-by-side Add-in */
+
+    .stats {
+        padding: 3rem 0 !important; /* Slims down the vertical section space */
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr !important; /* Stacks the stat categories vertically */
+        gap: 1.2rem !important;
+    }
+
+    .stat-item {
+        display: flex !important;
+        flex-direction: row !important; /* Moves "Views" next to the number */
+        justify-content: center !important; /* Centers the whole line */
+        align-items: baseline !important; /* Aligns text bottoms for a clean look */
+        gap: 8px !important;
+        margin-bottom: 0.5rem !important;
+    }
+
+    .stat-value {
+        font-size: 2.2rem !important; /* Slightly smaller to fit better on one line */
+        margin-bottom: 0 !important;
+        line-height: 1 !important;
+    }
+
+    .stat-label {
+        font-size: 0.85rem !important;
+        white-space: nowrap !important; /* Prevents "YouTube Views" from breaking into 2 lines */
+        margin: 0 !important;
+    }
+
+    .stat-icon {
+        display: none !important; /* Removes icons on mobile to keep it slim and centered */
+    }
+    
 
     /* 5. VIDEOS: 2 Per Row (3 Rows of 2) */
 
