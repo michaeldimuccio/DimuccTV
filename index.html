@@ -2654,13 +2654,13 @@ function toggleMenu() {
 </script>
 <script>
     (function() {
-        // 1. THE VIEWPORT SCALER (Fixes Landscape Zoom/Width)
+        // 1. THE VIEWPORT SCALER (Fixed: Removed conflicting scale commands)
         function handleOrientation() {
             const viewport = document.querySelector('meta[name="viewport"]');
             if (viewport) {
                 if (window.innerWidth > window.innerHeight) {
-                    // LANDSCAPE: Force 1280px width for the "Desktop" look
-                    viewport.setAttribute('content', 'width=1280, initial-scale=1.0, shrink-to-fit=no');
+                    // LANDSCAPE: Only set width. Removing scale commands stops the "Auto-Zoom" glitch.
+                    viewport.setAttribute('content', 'width=1280');
                 } else {
                     // PORTRAIT: Reset to standard mobile width
                     viewport.setAttribute('content', 'width=device-width, initial-scale=1.0');
