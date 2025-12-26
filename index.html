@@ -1055,48 +1055,47 @@ nav a {
 }
 
 
-/* --- LANDSCAPE MASTER: FIXED BUBBLE ASPECT RATIO --- */
+/* --- LANDSCAPE MASTER: ENLARGED PORTRAIT BUBBLE --- */
 @media screen and (orientation: landscape) and (max-width: 1024px) {
-    /* 1. Slim Navigation (Keep your previous slim settings) */
+    /* 1. Slim Navigation */
     nav { padding: 0.3rem 0 !important; }
     .logo img { height: 24px !important; }
 
-    /* 2. About: Fix Bubble Aspect Ratio */
+    /* 2. About: Larger Image Column */
     .about-grid {
         display: grid !important;
-        grid-template-columns: 1fr 1fr !important; 
+        /* Shifted weight: 1.2fr for the image, 0.8fr for the text */
+        grid-template-columns: 1.2fr 0.8fr !important; 
         align-items: center !important;
-        gap: 3rem !important;
+        gap: 2rem !important;
     }
 
     .about-image {
         display: flex !important;
-        justify-content: center !important; /* Centers the bubble in its half of the screen */
+        justify-content: center !important;
         width: 100% !important;
     }
 
     .about-image img {
-        /* This forces the blue border to wrap the photo exactly */
-        width: auto !important;
+        width: 90% !important; /* Expands to fill more of its column */
         height: auto !important;
-        max-height: 75vh !important; 
-        aspect-ratio: 3 / 4 !important; /* Matches original portrait photo shape */
+        max-height: 82vh !important; /* Increased from 75vh for that 'touch larger' feel */
+        aspect-ratio: 3 / 4 !important; 
         object-fit: cover !important;
         
-        /* The "Bubble" styling */
         border-radius: 1rem !important;
         border: 3px solid var(--bright-blue) !important;
-        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2) !important;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3) !important;
     }
 
-    /* 3. The 3-Column Grids (Videos, Music, Articles) */
+    /* 3. 3-Column Grids (Videos, Music, Press) */
     .video-grid, .music-grid, .press-grid {
         display: grid !important;
         grid-template-columns: repeat(3, 1fr) !important;
         gap: 1.25rem !important;
     }
 
-    /* 4. The 4-Column Grids (Brands, Stats) */
+    /* 4. 4-Column Grids (Brands, Stats) */
     .brand-grid, .stats-grid {
         display: grid !important;
         grid-template-columns: repeat(4, 1fr) !important;
@@ -1104,7 +1103,7 @@ nav a {
     }
 
     /* Layout cleanup */
-    .container { max-width: 1000px !important; }
+    .container { max-width: 1100px !important; } /* Slightly wider to accommodate larger image */
     .nav-links { display: flex !important; }
     #hamburger, #mobile-menu { display: none !important; }
 }
