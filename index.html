@@ -1055,66 +1055,52 @@ nav a {
 }
 
 
-/* --- LANDSCAPE MASTER: 3-VIDEOS, 3-ARTICLES, 4-BRANDS, FIXED IMAGE & SLIM NAV --- */
+/* --- LANDSCAPE MASTER: ABSOLUTE MAX IMAGE SIZE --- */
 @media screen and (orientation: landscape) and (max-width: 1024px) {
-    /* 1. Slim Navigation Bar */
-    nav {
-        padding: 0.3rem 0 !important; /* Extremely slim for landscape */
-    }
+    /* Slim Nav to save vertical room */
+    nav { padding: 0.2rem 0 !important; }
+    .logo img { height: 22px !important; }
 
-    nav .container {
-        padding-top: 2px !important;
-        padding-bottom: 2px !important;
-    }
-
-    .logo img {
-        height: 24px !important; /* Smaller logo to reduce bar height */
-    }
-
-    /* 2. About: Fix Image Cutoff & Size */
+    /* About: The Big Image Layout */
     .about-grid {
         display: grid !important;
-        grid-template-columns: 1fr 1fr !important; 
+        /* Image column is now nearly double the size of the text column */
+        grid-template-columns: 1.3fr 0.7fr !important; 
         align-items: center !important;
-        gap: 2.5rem !important;
+        gap: 4rem !important;
+        max-width: 1200px !important;
+    }
+
+    .about-image {
+        display: flex !important;
+        justify-content: center !important;
     }
 
     .about-image img {
-        max-height: 75vh !important; /* Height-lock */
-        width: 100% !important;
-        object-fit: contain !important; /* FIX: Prevents cropping top/bottom */
-        border-radius: 0.75rem !important;
-        background: transparent !important;
+        /* Force the image to be as tall as the screen allows */
+        height: 92vh !important; 
+        width: auto !important;
+        aspect-ratio: 3 / 4 !important; 
+        object-fit: cover !important;
+        
+        border-radius: 1.25rem !important;
+        border: 4px solid var(--bright-blue) !important;
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4) !important;
     }
 
-    /* 3. Force Side-by-Side Density */
+    /* Keep the other grids consistent */
     .video-grid, .music-grid, .press-grid {
         display: grid !important;
         grid-template-columns: repeat(3, 1fr) !important;
-        gap: 1.25rem !important;
+        gap: 1.5rem !important;
     }
 
-    .brand-grid {
+    .brand-grid, .stats-grid {
         display: grid !important;
         grid-template-columns: repeat(4, 1fr) !important;
-        gap: 1rem !important;
     }
 
-    .stats-grid {
-        grid-template-columns: repeat(4, 1fr) !important;
-    }
-
-    /* 4. Section & Hero Tweaks */
-    section {
-        padding: 4rem 0 !important;
-    }
-
-    .hero {
-        padding-top: 5rem !important;
-        min-height: 100vh !important;
-    }
-    
-    .container { max-width: 1000px !important; }
+    .container { max-width: 1200px !important; }
     .nav-links { display: flex !important; }
     #hamburger, #mobile-menu { display: none !important; }
 }
@@ -2743,13 +2729,12 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
 <script>
     (function() {
         // 1. THE VIEWPORT SCALER (Fixed for 3-Column Video Grid)
-        function handleOrientation() {
+function handleOrientation() {
             const viewport = document.querySelector('meta[name="viewport"]');
             if (window.innerWidth > window.innerHeight) {
-                // LANDSCAPE: Set to 1024px so 3 videos per row look big and fill the screen
-                viewport.setAttribute('content', 'width=1024');
+                // LANDSCAPE: 1280px provides more horizontal room for a large image
+                viewport.setAttribute('content', 'width=1280');
             } else {
-                // PORTRAIT: Standard mobile responsive view
                 viewport.setAttribute('content', 'width=device-width, initial-scale=1.0');
             }
         }
