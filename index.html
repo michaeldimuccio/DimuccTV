@@ -1056,39 +1056,59 @@ nav a {
 }
 
 
-/* --- SLIM NAV: MOBILE LANDSCAPE ONLY (FIXED FOR DESKTOP) --- */
-@media screen and (orientation: landscape) and (max-height: 500px) and (max-width: 950px) {
-    /* 1. Reduce overall Nav height */
+/* --- MASTER LANDSCAPE: 3-COLUMNS + SLIM NAV + BIG IMAGE --- */
+@media screen and (orientation: landscape) and (max-width: 1100px) {
+    /* 1. SLIM NAV (Only on these screen sizes) */
     nav {
-        padding: 0.3rem 0 !important; 
+        padding: 0.3rem 0 !important;
     }
-
-    /* 2. Tighten the nav container spacing */
     nav .container {
         padding-top: 0 !important;
         padding-bottom: 0 !important;
-        height: auto !important;
     }
-
-    /* 3. Shrink Logo */
     .logo img {
-        height: 24px !important; 
-        width: auto !important;
+        height: 26px !important;
     }
-
-    /* 4. Ensure Nav Links align */
     .nav-links {
-        gap: 1.2rem !important;
-        display: flex !important; 
+        display: flex !important; /* Forces desktop-style links */
+        gap: 1.5rem !important;
+    }
+    #hamburger, #mobile-menu {
+        display: none !important;
     }
 
-    .nav-links a {
-        font-size: 0.85rem !important;
+    /* 2. ABOUT SECTION (Side-by-Side & Large) */
+    .about-grid {
+        display: grid !important;
+        grid-template-columns: 1.1fr 0.9fr !important; 
+        align-items: center !important;
+        gap: 3rem !important;
     }
-    
-    /* Hide the burger so it doesn't crowd the slim bar */
-    #hamburger {
-        display: none !important;
+    .about-image img {
+        height: 82vh !important; 
+        width: auto !important;
+        aspect-ratio: 3 / 4 !important;
+        object-fit: cover !important;
+        border: 3px solid var(--bright-blue) !important;
+        border-radius: 1rem !important;
+    }
+
+    /* 3. 3-COLUMN GRIDS (The Desktop Look) */
+    .video-grid, .music-grid, .press-grid {
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 1.5rem !important;
+    }
+
+    /* 4. 4-COLUMN GRIDS (Brands/Stats) */
+    .brand-grid, .stats-grid {
+        display: grid !important;
+        grid-template-columns: repeat(4, 1fr) !important;
+    }
+
+    /* 5. CONTAINER TWEAK */
+    .container {
+        max-width: 95% !important;
     }
 }
 
