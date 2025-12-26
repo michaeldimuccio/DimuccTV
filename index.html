@@ -2560,65 +2560,67 @@ nav a {
 
 <script>
     (function() {
-        const sections = document.querySelectorAll("section[id]");
-        const navLinks = document.querySelectorAll("nav ul li a");
-        
-        // Items that need to stay "locked" once seen
-        const tallElements = document.querySelectorAll('.about-grid, .achievement-card, .stat-item');
+        // --- 1. UNIVERSAL REVEAL LOGIC ---
+        // This handles About, Achievements, Stats, Videos, and Contact
+        const revealOptions = {
+            threshold: 0.01,
+            rootMargin: "0px 0px -50px 0px"
+        };
 
-        function handleScroll() {
-            const scrollPos = window.pageYOffset;
-            const winHeight = window.innerHeight;
-
-            // 1. NAVIGATION SPY LOGIC
-            let currentId = "";
-            sections.forEach(s => {
-                if (scrollPos >= s.offsetTop - (winHeight / 3)) {
-                    currentId = s.getAttribute("id");
-                }
-            });
-            navLinks.forEach(l => {
-                l.classList.remove("active");
-                if (l.getAttribute("href") === "#" + currentId) l.classList.add("active");
-            });
-
-            // 2. THE "LOCKED" REVEAL LOGIC
-            // Once these hit the screen, they stay active until you go back to the top
-            tallElements.forEach(el => {
-                const rect = el.getBoundingClientRect();
-                const triggerPoint = winHeight * 0.9; // Triggers when 10% on screen
-
-                if (rect.top < triggerPoint) {
-                    el.classList.add('reveal-active');
-                }
-                
-                // RESET: Only if you scroll all the way back to the Hero
-                if (scrollPos < 100) {
-                    el.classList.remove('reveal-active');
-                }
-            });
-        }
-
-        // 3. OBSERVER FOR SMALLER ITEMS (Videos & Audience)
-        const smallItemObserver = new IntersectionObserver((entries) => {
+        const revealObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
+                const rect = entry.target.getBoundingClientRect();
+                
                 if (entry.isIntersecting) {
                     entry.target.classList.add('reveal-active');
                 } else {
-                    // Only reset if it's below the screen
-                    if (entry.boundingClientRect.top > winHeight) {
+                    // Only reset if the element is BELOW the screen (scrolling back up)
+                    // This keeps sections visible while you are reading them
+                    if (rect.top > (window.innerHeight || document.documentElement.clientHeight)) {
                         entry.target.classList.remove('reveal-active');
                     }
                 }
             });
-        }, { threshold: 0.1 });
+        }, revealOptions);
 
-        document.querySelectorAll('.platform-item, .video-item, .contact-reveal').forEach(el => {
-            smallItemObserver.observe(el);
-        });
+        // Target all animated elements
+        const animatedElements = document.querySelectorAll(
+            '.hero-content, .stat-item, .about-grid, .achievement-card, .platform-item, .video-item, .contact-reveal'
+        );
+        animatedElements.forEach(el => revealObserver.observe(el));
 
-        window.addEventListener('scroll', handleScroll, { passive: true });
-        handleScroll(); // Run on load
+
+        // --- 2. NAVIGATION SPY LOGIC ---
+        // Handles the active orange line in the menu
+        const sections = document.querySelectorAll("section[id]");
+        const navLinks = document.querySelectorAll("nav ul li a");
+
+        function updateNav() {
+            let currentSectionId = "";
+            sections.forEach((section) => {
+                const sectionTop = section.offsetTop;
+                // Switch active link when section is 30% down the viewport
+                if (window.pageYOffset >= sectionTop - (window.innerHeight / 3)) {
+                    currentSectionId = section.getAttribute("id");
+                }
+            });
+
+            navLinks.forEach((link) => {
+                link.classList.remove("active");
+                const href = link.getAttribute("href");
+                if (href === "#" + currentSectionId) {
+                    link.classList.add("active");
+                }
+            });
+        }
+
+
+        // --- 3. EVENT LISTENERS ---
+        window.addEventListener('scroll', () => {
+            updateNav();
+        }, { passive: true });
+
+        updateNav(); // Initial run on load
     })();
 </script>
 
