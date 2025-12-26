@@ -1055,45 +1055,35 @@ nav a {
 }
 
 
-/* --- MINI-DESKTOP SCALE (Framer Style) --- */
+/* --- LANDSCAPE "FILL SCREEN" RESTORE --- */
 @media screen and (orientation: landscape) and (max-width: 1024px) {
-    /* 1. Reset Container and Section Padding to Desktop values */
+    /* 1. Reset Container to fill the 980px width */
     .container {
-        width: 1200px !important;
-        max-width: 1200px !important;
-        padding: 0 5rem !important;
+        width: 100% !important;
+        max-width: 940px !important; /* Slightly less than 980 for breathing room */
+        padding: 0 20px !important;
         margin: 0 auto !important;
     }
 
-    section {
-        padding: 5rem 0 !important;
+    /* 2. Force Videos to fill the grid */
+    .video-grid {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important; /* 2 videos per row to fill space */
+        gap: 20px !important;
     }
 
-    /* 2. Force Nav back to Desktop Bar */
-    .nav-links {
-        display: flex !important;
-    }
-    #hamburger, #mobile-menu {
-        display: none !important;
-    }
-
-    /* 3. Restore 4-Column Stats and 2-Column Grids */
+    /* 3. Force Stats to 4-column row */
     .stats-grid {
+        display: grid !important;
         grid-template-columns: repeat(4, 1fr) !important;
     }
 
-    .about-grid, .achievements-grid, .video-grid, .audience-cards {
-        display: grid !important;
-        grid-template-columns: 1fr 1fr !important;
-        flex-direction: row !important;
-        text-align: left !important;
-    }
+    /* 4. Restore Desktop Nav */
+    .nav-links { display: flex !important; gap: 1.5rem !important; }
+    #hamburger, #mobile-menu { display: none !important; }
 
-    /* 4. Fix Hero height for landscape */
-    .hero {
-        min-height: 100vh !important;
-        padding: 8rem 0 !important;
-    }
+    /* 5. Adjust Hero height so it doesn't feel endless */
+    .hero { min-height: 100vh !important; padding: 4rem 0 !important; }
 }
 
         
@@ -2719,21 +2709,21 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
 
 <script>
     (function() {
-        // 1. THE VIEWPORT SCALER (This triggers the "Mini-Desktop" look sideways)
+        // 1. THE VIEWPORT SCALER (Fixes the "Too Zoomed Out" issue)
         function handleOrientation() {
             const viewport = document.querySelector('meta[name="viewport"]');
             if (window.innerWidth > window.innerHeight) {
-                // Sideways: Tell the phone to act like a 1280px wide desktop
-                // This "zooms out" so you see the bubbles in one row
-                viewport.setAttribute('content', 'width=1280, initial-scale=0.25');
+                // LANDSCAPE: 980px is the "Sweet Spot" for filling the screen
+                // while keeping the desktop 4-column bubble layout.
+                viewport.setAttribute('content', 'width=980');
             } else {
-                // Upright: Go back to normal mobile view
+                // PORTRAIT: Back to standard mobile logic
                 viewport.setAttribute('content', 'width=device-width, initial-scale=1.0');
             }
         }
         window.addEventListener('resize', handleOrientation);
         window.addEventListener('orientationchange', handleOrientation);
-        handleOrientation(); // Run once on load
+        handleOrientation(); 
 
         // 2. REVEAL LOGIC (Animations & Wave)
         const revealObserver = new IntersectionObserver((entries) => {
