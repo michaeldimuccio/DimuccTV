@@ -1040,6 +1040,19 @@ nav a {
 .stat-item, .about-grid, .achievement-card {
     will-change: transform, opacity;
 }
+
+        /* Removes the orange underline specifically from the logo link */
+.logo a::after, 
+.logo-link::after {
+    display: none !important;
+    width: 0 !important;
+}
+
+/* Ensures no border or shadow appears on hover for the logo */
+.logo-link:hover {
+    border: none !important;
+    text-decoration: none !important;
+}
     </style>
 </head>
 <body>
