@@ -2560,40 +2560,36 @@ nav a {
 
 <script>
     (function() {
-        // --- 1. UNIVERSAL REVEAL LOGIC ---
-        const revealOptions = {
-            threshold: 0.01,
-            rootMargin: "0px 0px -50px 0px"
-        };
-
+        // --- 1. STICKY REVEAL LOGIC ---
         const revealObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
-                const rect = entry.target.getBoundingClientRect();
-                const isBelowScreen = rect.top > (window.innerHeight || document.documentElement.clientHeight);
-                
+                // If it hits the screen even 1%, lock it to ACTIVE
                 if (entry.isIntersecting) {
-                    // Activate animation
                     entry.target.classList.add('reveal-active');
-                } else {
-                    // ONLY reset if scrolling back UP (element is below the screen)
-                    // If isBelowScreen is false, it means the element is ABOVE the screen
-                    // so we keep 'reveal-active' attached.
-                    if (isBelowScreen) {
-                        entry.target.classList.remove('reveal-active');
-                    }
-                }
+                } 
+                
+                // We REMOVED the 'else' reset here. 
+                // This prevents the "vanishing" act entirely while scrolling down.
             });
-        }, revealOptions);
+        }, { threshold: 0.01 });
 
-        // This list covers every section you mentioned
-        const elementsToWatch = document.querySelectorAll(
-            '.stat-item, .about-grid, .achievement-card, .platform-item, .video-item, .contact-reveal, #about, #achievements, .stats-grid'
+        const elements = document.querySelectorAll(
+            '.stat-item, .about-grid, .achievement-card, .platform-item, .video-item, .contact-reveal'
         );
-        
-        elementsToWatch.forEach(el => revealObserver.observe(el));
+        elements.forEach(el => revealObserver.observe(el));
 
+        // --- 2. GLOBAL RESET (Only when returning to Top) ---
+        window.addEventListener('scroll', () => {
+            // If you scroll back to the very top (Hero section), reset the animations
+            if (window.pageYOffset < 100) {
+                elements.forEach(el => el.classList.remove('reveal-active'));
+            }
+            
+            // Run Nav Spy
+            updateNav();
+        }, { passive: true });
 
-        // --- 2. NAVIGATION SPY LOGIC ---
+        // --- 3. NAVIGATION SPY ---
         const sections = document.querySelectorAll("section[id]");
         const navLinks = document.querySelectorAll("nav ul li a");
 
@@ -2614,9 +2610,7 @@ nav a {
                 }
             });
         }
-
-        window.addEventListener('scroll', updateNav, { passive: true });
-        updateNav(); 
+        updateNav();
     })();
 </script>
 
