@@ -880,35 +880,46 @@ nav a {
 
     }
 
-/* --- AUDIENCE & REACH STATS FIX --- */
+/* --- AUDIENCE & REACH STATS FIX (Aligned Right) --- */
+    
     #audience .platform-item {
         display: flex !important;
-        flex-direction: row !important; /* This moves "Views" next to the number */
-        justify-content: center !important; /* This centers the whole block */
-        align-items: baseline !important; /* Keeps the text bottoms aligned */
-        gap: 8px !important;
-        text-align: center !important;
+        flex-direction: row !important; /* Logo on left, Stats on right */
+        justify-content: space-between !important; /* Pushes them to opposite ends */
+        align-items: center !important;
+        padding: 1.2rem !important;
+        min-height: 90px !important;
     }
 
-    /* Target the view count specifically */
     #audience .view-stats {
-        position: static !important; /* Removes absolute positioning from desktop */
+        position: static !important; /* Removes desktop pinning */
         display: flex !important;
-        flex-direction: row !important;
-        align-items: baseline !important;
-        gap: 5px !important;
-        margin: 0 !important;
+        flex-direction: column !important; /* Stack: 3.7B+ over Views */
+        align-items: flex-end !important; /* Align text to the right */
+        text-align: right !important;
+        margin-left: auto !important;
     }
 
     #audience .view-stats div:first-child {
-        font-size: 1.5rem !important; /* Size of the 3.7B+ */
-        margin: 0 !important;
+        font-size: 1.4rem !important; /* Size of 3.7B+ */
+        line-height: 1.1 !important;
+        font-weight: 800 !important;
+        color: var(--bright-blue) !important;
     }
 
     #audience .view-stats div:last-child {
-        font-size: 0.8rem !important; /* Size of the word 'views' */
-        text-transform: uppercase;
-        color: #6b7280;
+        font-size: 0.7rem !important; /* Size of 'views' */
+        text-transform: uppercase !important;
+        letter-spacing: 0.05em !important;
+        color: #6b7280 !important;
+        margin-top: 2px !important;
+    }
+
+    /* Keep the Logo and Text together on the left */
+    #audience .platform-info {
+        display: flex !important;
+        align-items: center !important;
+        gap: 12px !important;
     }
 
     /* --- 6. NEW: MUSIC ONE PER ROW --- */
