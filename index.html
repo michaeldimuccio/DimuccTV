@@ -963,7 +963,7 @@ nav a {
 
 /* --- LANDSCAPE FORCE: RESTORES DESKTOP LOOK --- */
         @media screen and (orientation: landscape) and (max-height: 600px) {
-            section { padding: 3rem 0 !important; }
+            section { padding: 2.5rem 0 !important; } /* Slightly tighter section spacing */
             
             /* 1. GRIDS: Force Desktop Columns */
             .about-grid, .contact-grid, .audience-cards, .achievements-grid { 
@@ -973,7 +973,6 @@ nav a {
                 max-width: 100% !important;
             }
             
-            /* UPDATED: Added .press-grid for 3 per row news articles */
             .video-grid, .music-grid, .press-grid {
                 display: grid !important;
                 grid-template-columns: repeat(3, 1fr) !important;
@@ -987,13 +986,18 @@ nav a {
             }
 
             /* 2. SIZING & PADDING */
-            /* UPDATED: Increased height to 85vh for a larger About image */
+            /* UPDATED: Image at 95% of screen height for maximum size */
             .about-image img { 
-                height: 85vh !important; 
+                height: 95vh !important; 
                 width: auto !important; 
-                margin: 0 auto !important; 
-                max-height: 500px; /* Safety cap so it doesn't overflow small screens */
+                margin: 0 auto !important;
+                object-fit: contain !important; /* Ensures the whole face stays visible */
             }
+            
+            /* UPDATED: Thinner Navigation for Landscape */
+            nav { padding: 0.2rem 0 !important; } /* Minimum padding */
+            nav img { height: 20px !important; } /* Smaller logo to save vertical pixels */
+            nav a { font-size: 0.75rem !important; padding-bottom: 2px !important; }
             
             .platform-card { padding: 1.5rem !important; }
             .platform-list { gap: 0.8rem !important; }
@@ -1003,19 +1007,19 @@ nav a {
             .form-group textarea { min-height: 80px !important; }
 
             /* 3. FORMS: Horizontal Layout */
-            .email-capture { padding: 3rem 0 !important; }
+            .email-capture { padding: 2.5rem 0 !important; }
             .email-form { 
                 display: flex !important;
                 flex-direction: row !important; 
                 max-width: 500px !important; 
                 margin: 1rem auto 0 !important; 
             }
-            .email-form input { padding: 0.7rem 1.2rem !important; }
-            .email-form button { padding: 0.7rem 1.5rem !important; }
+            .email-form input { padding: 0.6rem 1rem !important; }
+            .email-form button { padding: 0.6rem 1.2rem !important; }
 
             /* 4. FOOTER: Restore Layout */
             .footer-grid { grid-template-columns: repeat(3, 1fr) !important; gap: 1.5rem !important; margin-bottom: 1.5rem !important; }
-            footer { padding: 2rem 0 1rem !important; }
+            footer { padding: 1.5rem 0 1rem !important; }
             .footer-bottom { 
                 display: flex !important;
                 flex-direction: row !important; 
@@ -2657,4 +2661,4 @@ nav a {
     
 </body>
 </html>
-`update 4
+`update 5
