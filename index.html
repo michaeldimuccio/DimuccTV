@@ -2695,12 +2695,25 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
 
 <script>
     (function() {
-        // 1. THE VIEWPORT SCALER (Fixed Zoom for Landscape)
+        // 1. THE VIEWPORT SCALER (Forced Zoom Reset)
         function handleOrientation() {
-            const viewport = document.querySelector('meta[name="viewport"]');
+            let viewport = document.querySelector('meta[name="viewport"]');
+            
+            // If the tag doesn't exist (because you deleted it from head), create it
+            if (!viewport) {
+                viewport = document.createElement('meta');
+                viewport.name = "viewport";
+                document.head.appendChild(viewport);
+            }
+
             if (window.innerWidth > window.innerHeight) {
-                // LANDSCAPE: Set width but reset scale so it doesn't zoom in
-                viewport.setAttribute('content', 'width=1280, initial-scale=1.0, maximum-scale=1.0, user-scalable=0');
+                // LANDSCAPE: Force a snap-to-fit 1280px without zooming
+                viewport.setAttribute('content', 'width=1280, initial-scale=0.25, minimum-scale=0.25, maximum-scale=5.0');
+                
+                // Immediate timeout to "nudge" Safari to recalculate the zoom
+                setTimeout(() => {
+                    viewport.setAttribute('content', 'width=1280, initial-scale=1.0, shrink-to-fit=no');
+                }, 1);
             } else {
                 // PORTRAIT: Standard mobile view
                 viewport.setAttribute('content', 'width=device-width, initial-scale=1.0');
@@ -2711,7 +2724,7 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
         window.addEventListener('orientationchange', handleOrientation);
         handleOrientation(); 
 
-        // 2. REVEAL LOGIC (Animations & Wave)
+        // 2. REVEAL LOGIC (Keep as is)
         const revealObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -2719,15 +2732,12 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
                     revealObserver.unobserve(entry.target);
                 }
             });
-        }, { 
-            threshold: 0.05,
-            rootMargin: "0px 0px -20px 0px" 
-        });
+        }, { threshold: 0.05, rootMargin: "0px 0px -20px 0px" });
 
         const items = document.querySelectorAll('.hero-content, .stat-item, .about-grid, .achievement-card, .platform-item, .video-item, .contact-reveal');
         items.forEach(el => revealObserver.observe(el));
 
-        // 3. NAVIGATION SPY (Orange Line)
+        // 3. NAVIGATION SPY (Keep as is)
         const sections = document.querySelectorAll("section[id]");
         const navLinks = document.querySelectorAll("nav ul li a");
         const mobileLinks = document.querySelectorAll("#mobile-menu a");
@@ -2750,7 +2760,6 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
                 }
             });
         }
-
         window.addEventListener('scroll', updateNav, { passive: true });
         updateNav();
 
