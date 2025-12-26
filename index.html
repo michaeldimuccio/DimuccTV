@@ -2695,16 +2695,18 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
 
 <script>
     (function() {
-        // 1. THE VIEWPORT SCALER (Fixed for 3-Column Video Grid)
-function handleOrientation() {
+        // 1. THE VIEWPORT SCALER (Fixed Zoom for Landscape)
+        function handleOrientation() {
             const viewport = document.querySelector('meta[name="viewport"]');
             if (window.innerWidth > window.innerHeight) {
-                // LANDSCAPE: 1280px provides more horizontal room for a large image
-                viewport.setAttribute('content', 'width=1280');
+                // LANDSCAPE: Set width but reset scale so it doesn't zoom in
+                viewport.setAttribute('content', 'width=1280, initial-scale=1.0, maximum-scale=1.0, user-scalable=0');
             } else {
+                // PORTRAIT: Standard mobile view
                 viewport.setAttribute('content', 'width=device-width, initial-scale=1.0');
             }
         }
+        
         window.addEventListener('resize', handleOrientation);
         window.addEventListener('orientationchange', handleOrientation);
         handleOrientation(); 
