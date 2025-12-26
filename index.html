@@ -1026,19 +1026,6 @@ nav a {
     }
 
 }
-        body {
-    background-color: #000 !important; /* Forces the black background logic */
-    overflow-x: hidden;
-    /* This next line is the magic - it fixes the Safari bar flicker */
-    perspective: 1000px; 
-}
-
-section {
-    /* This tells the browser to keep these sections 'alive' even when scrolling */
-    backface-visibility: hidden;
-    transform: translateZ(0);
-    -webkit-font-smoothing: antialiased;
-}
     </style>
 </head>
 <body>
@@ -2573,55 +2560,67 @@ section {
 
 <script>
     (function() {
-        // 1. REVEAL LOGIC
-        // This is the only part that handles the disappearing sections
+        // --- 1. UNIVERSAL REVEAL LOGIC ---
+        // This handles About, Achievements, Stats, Videos, and Contact
+        const revealOptions = {
+            threshold: 0.01,
+            rootMargin: "0px 0px -50px 0px"
+        };
+
         const revealObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
+                const rect = entry.target.getBoundingClientRect();
+                
                 if (entry.isIntersecting) {
-                    // Add the class to show the section
                     entry.target.classList.add('reveal-active');
-                    // THE LOCK: This prevents the script from ever hiding it again
-                    revealObserver.unobserve(entry.target);
+                } else {
+                    // Only reset if the element is BELOW the screen (scrolling back up)
+                    // This keeps sections visible while you are reading them
+                    if (rect.top > (window.innerHeight || document.documentElement.clientHeight)) {
+                        entry.target.classList.remove('reveal-active');
+                    }
                 }
             });
-        }, { 
-            threshold: 0.01, // Trigger as soon as 1% is visible
-            rootMargin: "0px 0px -50px 0px" 
-        });
+        }, revealOptions);
 
-        // Apply to your specific sections
-        const elementsToAnimate = document.querySelectorAll(
+        // Target all animated elements
+        const animatedElements = document.querySelectorAll(
             '.hero-content, .stat-item, .about-grid, .achievement-card, .platform-item, .video-item, .contact-reveal'
         );
-        elementsToAnimate.forEach(el => revealObserver.observe(el));
+        animatedElements.forEach(el => revealObserver.observe(el));
 
 
-        // 2. NAVIGATION SPY
-        // This keeps your orange menu lines working without touching the menu itself
+        // --- 2. NAVIGATION SPY LOGIC ---
+        // Handles the active orange line in the menu
         const sections = document.querySelectorAll("section[id]");
         const navLinks = document.querySelectorAll("nav ul li a");
 
         function updateNav() {
             let currentSectionId = "";
-            const scrollPos = window.pageYOffset;
-            const winHeight = window.innerHeight;
-
             sections.forEach((section) => {
-                if (scrollPos >= section.offsetTop - (winHeight / 3)) {
+                const sectionTop = section.offsetTop;
+                // Switch active link when section is 30% down the viewport
+                if (window.pageYOffset >= sectionTop - (window.innerHeight / 3)) {
                     currentSectionId = section.getAttribute("id");
                 }
             });
 
             navLinks.forEach((link) => {
                 link.classList.remove("active");
-                if (link.getAttribute("href") === "#" + currentSectionId) {
+                const href = link.getAttribute("href");
+                if (href === "#" + currentSectionId) {
                     link.classList.add("active");
                 }
             });
         }
 
-        window.addEventListener('scroll', updateNav, { passive: true });
-        updateNav();
+
+        // --- 3. EVENT LISTENERS ---
+        window.addEventListener('scroll', () => {
+            updateNav();
+        }, { passive: true });
+
+        updateNav(); // Initial run on load
     })();
 </script>
 
