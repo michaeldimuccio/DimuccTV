@@ -3,11 +3,14 @@
 <head>
   <base target="_self">
   <meta charset="UTF-8">
+  <!-- KEEP VIEWPORT SIMPLE. Do NOT rewrite this in JS. -->
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Michael "Dimucc" DiMuccio - Digital Creator</title>
 
   <style>
-    /* 1. RESET & CORE */
+    /* =========================
+       0) RESET
+    ========================== */
     * { margin: 0; padding: 0; box-sizing: border-box; }
     :root {
       --bright-blue: #1DA1FF;
@@ -21,44 +24,57 @@
       width: 100%;
       max-width: 100%;
       overflow-x: hidden;
-      background: var(--rich-black);
+      background: var(--off-white); /* IMPORTANT: don’t make body black */
       font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
     }
 
-    /* 2. FLUID CONTAINER (inner content only) */
-    .container {
-      width: 100%;
-      max-width: 1280px;
-      margin: 0 auto;
-      padding-inline: clamp(1.25rem, 5vw, 5rem);
+    /* =========================
+       1) THE REAL FIX: FULL-BLEED BREAKOUT
+       If ANY wrapper is centering/boxing the page, this forces full width.
+       This is why your nav/hero are still boxed in your screenshots.
+    ========================== */
+    nav, header, main, section, footer, .hero, .stats {
+      width: 100vw !important;
+      max-width: 100vw !important;
+      margin-left: calc(50% - 50vw) !important;
+      margin-right: calc(50% - 50vw) !important;
     }
 
-    /* 3. LANDSCAPE PHONE/TABLET: FORCE DESKTOP (NO ZOOM/NO "BOX") */
+    /* Kill any transforms/zooms that can make fixed elements “boxed” */
+    html, body, body * {
+      transform: none !important;
+    }
+    body { zoom: 1 !important; }
+
+    /* =========================
+       2) CONTAINER (INNER CONTENT ONLY)
+    ========================== */
+    .container {
+      width: min(1280px, 100%) !important;
+      margin: 0 auto !important;
+      padding-inline: clamp(12px, 4vw, 60px) !important; /* smaller max padding than 5rem */
+    }
+
+    /* =========================
+       3) LANDSCAPE: desktop-ish layout
+       NOTE: use MAX-WIDTH not max-height for phones.
+    ========================== */
     @media screen and (orientation: landscape) and (max-width: 932px) {
-
-      html, body {
-        width: 100% !important;
-        max-width: 100% !important;
-        overflow-x: hidden !important;
-      }
-
-      /* IMPORTANT: prevent any nested container padding/width overrides */
-      nav .container,
-      section .container,
-      footer .container {
-        width: 100% !important;
-        max-width: 1280px !important;
-        margin-inline: auto !important;
-        padding-inline: clamp(1.25rem, 5vw, 5rem) !important;
-      }
-
       #hamburger, #mobile-menu { display: none !important; }
       .nav-links { display: flex !important; gap: 2rem !important; flex-direction: row !important; }
+
+      .about-grid, .contact-grid, .audience-cards {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 2rem !important;
+        align-items: center !important;
+        text-align: left !important;
+      }
 
       .video-grid, .music-grid, .press-grid {
         display: grid !important;
         grid-template-columns: repeat(3, 1fr) !important;
-        gap: 1.5rem !important;
+        gap: 1.25rem !important;
       }
 
       .stats-grid, .brand-grid {
@@ -67,27 +83,21 @@
         gap: 1rem !important;
       }
 
-      .about-grid, .contact-grid, .audience-cards {
-        display: grid !important;
-        grid-template-columns: 1fr 1fr !important;
-        gap: 4rem !important;
-        text-align: left !important;
-        align-items: center !important;
-      }
-
       .hero { padding-top: 6rem !important; min-height: 100vh !important; }
       .hero-btn-container {
         display: flex !important;
         flex-direction: row !important;
-        gap: 1.5rem !important;
         justify-content: center !important;
+        gap: 1rem !important;
       }
       .btn { width: auto !important; margin: 0 !important; }
 
-      .about-image img { height: 80vh !important; width: auto !important; }
+      .about-image img { height: 75vh !important; width: auto !important; }
     }
 
-    /* 4. PORTRAIT MOBILE ONLY */
+    /* =========================
+       4) PORTRAIT MOBILE ONLY
+    ========================== */
     @media screen and (max-width: 768px) and (orientation: portrait) {
       .nav-links { display: none !important; }
       #hamburger { display: flex !important; }
@@ -98,7 +108,9 @@
       }
     }
 
-    /* 5. SHARED ELEMENTS (Nav, Buttons, Animations) */
+    /* =========================
+       5) SHARED (keep your basics)
+    ========================== */
     nav {
       position: fixed;
       top: 0; left: 0; right: 0;
@@ -126,20 +138,19 @@
       transition: 0.3s;
       text-decoration: none;
     }
-
     .btn-primary { background: var(--bright-blue); color: white; border: none; }
-    .btn-second { background: #FFFFFF; color: var(--bright-blue); border: 2px solid var(--bright-blue); }
+    .btn-second { background: #fff; color: var(--bright-blue); border: 2px solid var(--bright-blue); }
 
-    /* Animation Reveal State */
+    /* Reveal animations */
     .hero-content, .stat-item, .about-grid, .achievement-card, .platform-item, .video-item {
       opacity: 0;
       transform: translateY(20px);
       transition: all 0.8s ease-out;
     }
     .reveal-active { opacity: 1 !important; transform: translateY(0) !important; }
-
   </style>
 </head>
+
 
 <body>
     <!-- Navigation -->
@@ -1674,10 +1685,9 @@
 
 <script>
 (function() {
+  // DO NOT touch meta viewport here.
 
-  /* =========================
-     1. SILENT FORMS (UNCHANGED)
-     ========================= */
+  // 1) Silent forms
   const scriptURL = 'https://script.google.com/macros/s/AKfycbwyD-d5Ka405oHl6FsBTQUJ95OYZVuFxmJsJL6hRSjcy8K_W8hqKyAMBCbUc6k-tcsCYg/exec';
 
   function setupForm(id, loadTxt, succTxt) {
@@ -1686,7 +1696,6 @@
 
     f.addEventListener('submit', function(e) {
       e.preventDefault();
-
       const b = this.querySelector('button');
       if (!b) return;
 
@@ -1698,10 +1707,11 @@
         .then(() => {
           b.innerText = succTxt;
           this.reset();
-          setTimeout(() => {
-            b.innerText = orig;
-            b.disabled = false;
-          }, 3000);
+          setTimeout(() => { b.innerText = orig; b.disabled = false; }, 3000);
+        })
+        .catch(() => {
+          b.innerText = orig;
+          b.disabled = false;
         });
     });
   }
@@ -1709,37 +1719,27 @@
   setupForm('emailCaptureForm', 'Joining...', 'Joined!');
   setupForm('contactForm', 'Sending...', 'Sent!');
 
-  /* =========================
-     2. REVEAL LOGIC (UNCHANGED)
-     ========================= */
+  // 2) Reveal animations
   const observer = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if (e.isIntersecting) e.target.classList.add('reveal-active');
-    });
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('reveal-active'); });
   }, { threshold: 0.05 });
 
-  document
-    .querySelectorAll(
-      '.hero-content, .stat-item, .about-grid, .achievement-card, .platform-item, .video-item'
-    )
+  document.querySelectorAll('.hero-content, .stat-item, .about-grid, .achievement-card, .platform-item, .video-item')
     .forEach(el => observer.observe(el));
 
-  /* =========================
-     3. MENU TOGGLE (UNCHANGED)
-     ========================= */
+  // 3) Mobile menu toggle (portrait only)
   window.toggleMenu = function() {
-    if (window.innerWidth > window.innerHeight) return; // portrait only
+    if (window.innerWidth > window.innerHeight) return;
     const m = document.getElementById('mobile-menu');
     if (!m) return;
-
     const isOpen = (m.style.display === 'flex');
     m.style.setProperty('display', isOpen ? 'none' : 'flex', 'important');
   };
-
 })();
 </script>
+
 
     
 </body>
 </html>
-`
+
