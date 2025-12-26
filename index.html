@@ -1053,6 +1053,39 @@ nav a {
     border: none !important;
     text-decoration: none !important;
 }
+
+
+/* --- LANDSCAPE DESKTOP RESTORE --- */
+@media screen and (max-width: 1024px) and (orientation: landscape) {
+    /* 1. Show the desktop nav links again */
+    .nav-links {
+        display: flex !important;
+        gap: 1.5rem !important;
+    }
+
+    /* 2. Hide the hamburger menu */
+    #hamburger {
+        display: none !important;
+    }
+
+    /* 3. Force sections back into side-by-side grids (Desktop Style) */
+    .about-grid, .stats-grid, .achievements-grid, .video-grid {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        text-align: left !important;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(4, 1fr) !important;
+    }
+
+    /* 4. Kill the mobile menu if it was left open */
+    #mobile-menu {
+        display: none !important;
+    }
+}
+
+        
     </style>
 </head>
 <body>
