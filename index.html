@@ -1055,35 +1055,43 @@ nav a {
 }
 
 
-/* --- LANDSCAPE "FILL SCREEN" RESTORE --- */
+/* --- LANDSCAPE "3-COLUMN" & IMAGE FIX --- */
 @media screen and (orientation: landscape) and (max-width: 1024px) {
-    /* 1. Reset Container to fill the 980px width */
-    .container {
-        width: 100% !important;
-        max-width: 940px !important; /* Slightly less than 980 for breathing room */
-        padding: 0 20px !important;
-        margin: 0 auto !important;
-    }
-
-    /* 2. Force Videos to fill the grid */
-    .video-grid {
+    /* 1. Limit About Image Size */
+    .about-grid {
         display: grid !important;
-        grid-template-columns: 1fr 1fr !important; /* 2 videos per row to fill space */
-        gap: 20px !important;
+        grid-template-columns: 0.8fr 1.2fr !important; /* Makes image column smaller */
+        align-items: center !important;
+        gap: 3rem !important;
     }
 
-    /* 3. Force Stats to 4-column row */
+    .about-image img {
+        max-height: 60vh !important; /* Prevents image from being taller than the screen */
+        width: auto !important;
+        margin: 0 auto;
+    }
+
+    /* 2. FORCE 3 VIDEOS PER ROW (Videos & Music) */
+    .video-grid, .music-grid {
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 1.5rem !important;
+    }
+
+    /* 3. Stats in one row */
     .stats-grid {
-        display: grid !important;
         grid-template-columns: repeat(4, 1fr) !important;
     }
 
-    /* 4. Restore Desktop Nav */
-    .nav-links { display: flex !important; gap: 1.5rem !important; }
+    /* 4. Desktop Nav Restore */
+    .nav-links { display: flex !important; }
     #hamburger, #mobile-menu { display: none !important; }
 
-    /* 5. Adjust Hero height so it doesn't feel endless */
-    .hero { min-height: 100vh !important; padding: 4rem 0 !important; }
+    /* 5. General Container tightening */
+    .container {
+        max-width: 960px !important;
+        padding: 0 20px !important;
+    }
 }
 
         
@@ -2709,15 +2717,14 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
 
 <script>
     (function() {
-        // 1. THE VIEWPORT SCALER (Fixes the "Too Zoomed Out" issue)
+        // 1. THE VIEWPORT SCALER (Fixed for 3-Column Video Grid)
         function handleOrientation() {
             const viewport = document.querySelector('meta[name="viewport"]');
             if (window.innerWidth > window.innerHeight) {
-                // LANDSCAPE: 980px is the "Sweet Spot" for filling the screen
-                // while keeping the desktop 4-column bubble layout.
-                viewport.setAttribute('content', 'width=980');
+                // LANDSCAPE: Set to 1024px so 3 videos per row look big and fill the screen
+                viewport.setAttribute('content', 'width=1024');
             } else {
-                // PORTRAIT: Back to standard mobile logic
+                // PORTRAIT: Standard mobile responsive view
                 viewport.setAttribute('content', 'width=device-width, initial-scale=1.0');
             }
         }
