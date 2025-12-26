@@ -1055,34 +1055,55 @@ nav a {
 }
 
 
-/* --- ADD THIS INSIDE YOUR MEDIA QUERY --- */
+/* --- LANDSCAPE MASTER: ABSOLUTE MAX IMAGE SIZE --- */
+@media screen and (orientation: landscape) and (max-width: 1024px) {
+    /* Slim Nav to save vertical room */
+    nav { padding: 0.2rem 0 !important; }
+    .logo img { height: 22px !important; }
 
-    /* 1. Reduce overall Nav height */
-    nav {
-        padding: 0.4rem 0 !important; /* Forces a very slim bar */
+    /* About: The Big Image Layout */
+    .about-grid {
+        display: grid !important;
+        /* Image column is now nearly double the size of the text column */
+        grid-template-columns: 1.3fr 0.7fr !important; 
+        align-items: center !important;
+        gap: 4rem !important;
+        max-width: 1200px !important;
     }
 
-    /* 2. Tighten the nav container spacing */
-    nav .container {
-        padding-top: 0 !important;
-        padding-bottom: 0 !important;
-        height: auto !important;
+    .about-image {
+        display: flex !important;
+        justify-content: center !important;
     }
 
-    /* 3. Shrink Logo to prevent it from stretching the bar */
-    .logo img {
-        height: 28px !important; /* Adjust this to make the bar even thinner */
+    .about-image img {
+        /* Force the image to be as tall as the screen allows */
+        height: 92vh !important; 
         width: auto !important;
+        aspect-ratio: 3 / 4 !important; 
+        object-fit: cover !important;
+        
+        border-radius: 1.25rem !important;
+        border: 4px solid var(--bright-blue) !important;
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4) !important;
     }
 
-    /* 4. Ensure Nav Links align with the smaller bar */
-    .nav-links {
+    /* Keep the other grids consistent */
+    .video-grid, .music-grid, .press-grid {
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr) !important;
         gap: 1.5rem !important;
     }
 
-    .nav-links a {
-        font-size: 0.9rem !important;
+    .brand-grid, .stats-grid {
+        display: grid !important;
+        grid-template-columns: repeat(4, 1fr) !important;
     }
+
+    .container { max-width: 1200px !important; }
+    .nav-links { display: flex !important; }
+    #hamburger, #mobile-menu { display: none !important; }
+}
 
         
     </style>
@@ -2619,26 +2640,47 @@ nav a {
 
 
 <script>
-// YOUR MASTER DEPLOYMENT URL
-const scriptURL = 'https://script.google.com/macros/s/AKfycbwyD-d5Ka405oHl6FsBTQUJ95OYZVuFxmJsJL6hRSjcy8K_W8hqKyAMBCbUc6k-tcsCYg/exec';
-
-// --- 1. MOBILE MENU TOGGLE ---
+    document.getElementById('contactForm').addEventListener('submit', function(e) {
+        e.preventDefault(); // Stops the "Content Blocked" redirect
+        
+        // Get the values
+        var name = this.querySelector('input[type="text"]').value;
+        var email = this.querySelector('input[type="email"]').value;
+        var message = this.querySelector('textarea').value;
+        
+        // Construct the mailto link manually
+        var subject = encodeURIComponent("Business Inquiry from " + name);
+        var body = encodeURIComponent("Name: " + name + "\nEmail: " + email + "\n\nMessage:\n" + message);
+        
+        // This bypasses the iframe sandbox block
+        window.top.location.href = "mailto:dimuccbusiness@gmail.com?subject=" + subject + "&body=" + body;
+        
+        alert("Opening your mail app...");
+    });
+</script>
+<script>
 function toggleMenu() {
     const menu = document.getElementById('mobile-menu');
+    // Only toggle if we are actually on mobile
     if (window.innerWidth <= 768) {
+        // If it's flex (open), set to none (closed)
         if (menu.style.display === 'flex') {
             menu.style.display = 'none';
         } else {
+            // Force flex with important to override any desktop blocks
             menu.style.setProperty('display', 'flex', 'important');
         }
     }
 }
+</script>
+<script>
+// YOUR MASTER DEPLOYMENT URL
+const scriptURL = 'https://script.google.com/macros/s/AKfycbwyD-d5Ka405oHl6FsBTQUJ95OYZVuFxmJsJL6hRSjcy8K_W8hqKyAMBCbUc6k-tcsCYg/exec';
 
-// --- 2. HANDLE NEWSLETTER SIGNUP (SILENT) ---
+// --- 1. HANDLE NEWSLETTER SIGNUP ---
 document.getElementById('emailCaptureForm').addEventListener('submit', function(e) {
     e.preventDefault();
     const btn = this.querySelector('button');
-    const originalText = btn.innerText;
     btn.innerText = "Joining...";
     btn.disabled = true;
 
@@ -2648,22 +2690,21 @@ document.getElementById('emailCaptureForm').addEventListener('submit', function(
         body: new FormData(this) 
     })
     .then(() => {
+        alert("Thanks! If you're new, you've been added. If you're already here, we've got you!");
         btn.innerText = "Joined!";
         this.reset();
-        // Returns button to normal after 3 seconds
-        setTimeout(() => { btn.innerText = originalText; btn.disabled = false; }, 3000);
     })
-    .catch(() => {
-        btn.innerText = "Error";
+    .catch(error => {
+        console.error('Error!', error.message);
+        btn.innerText = "Try Again";
         btn.disabled = false;
     });
 });
 
-// --- 3. HANDLE CONTACT MESSAGE FORM (SILENT & NO MAIL APP) ---
+// --- 2. HANDLE CONTACT MESSAGE FORM ---
 document.getElementById('contactForm').addEventListener('submit', function(e) {
     e.preventDefault();
     const btn = this.querySelector('button');
-    const originalText = btn.innerText;
     btn.innerText = "Sending...";
     btn.disabled = true;
 
@@ -2673,13 +2714,13 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
         body: new FormData(this) 
     })
     .then(() => {
+        alert("Message sent! I'll get back to you soon at the email provided.");
         btn.innerText = "Sent!";
         this.reset();
-        // Returns button to normal after 3 seconds
-        setTimeout(() => { btn.innerText = originalText; btn.disabled = false; }, 3000);
     })
-    .catch(() => {
-        btn.innerText = "Error";
+    .catch(error => {
+        console.error('Error!', error.message);
+        btn.innerText = "Try Again";
         btn.disabled = false;
     });
 });
@@ -2688,12 +2729,13 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
 <script>
     (function() {
         // 1. THE VIEWPORT SCALER (Fixed for 3-Column Video Grid)
-function handleOrientation() {
+        function handleOrientation() {
             const viewport = document.querySelector('meta[name="viewport"]');
             if (window.innerWidth > window.innerHeight) {
-                // LANDSCAPE: 1280px provides more horizontal room for a large image
-                viewport.setAttribute('content', 'width=1280');
+                // LANDSCAPE: Set to 1024px so 3 videos per row look big and fill the screen
+                viewport.setAttribute('content', 'width=1024');
             } else {
+                // PORTRAIT: Standard mobile responsive view
                 viewport.setAttribute('content', 'width=device-width, initial-scale=1.0');
             }
         }
