@@ -2729,13 +2729,12 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
 <script>
     (function() {
         // 1. THE VIEWPORT SCALER (Fixed for 3-Column Video Grid)
-        function handleOrientation() {
+function handleOrientation() {
             const viewport = document.querySelector('meta[name="viewport"]');
             if (window.innerWidth > window.innerHeight) {
-                // LANDSCAPE: Set to 1024px so 3 videos per row look big and fill the screen
-                viewport.setAttribute('content', 'width=1024');
+                // LANDSCAPE: 1280px provides more horizontal room for a large image
+                viewport.setAttribute('content', 'width=1280');
             } else {
-                // PORTRAIT: Standard mobile responsive view
                 viewport.setAttribute('content', 'width=device-width, initial-scale=1.0');
             }
         }
