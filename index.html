@@ -1586,44 +1586,57 @@
 
 <script>
 (function() {
+    // 1. IOF STATEMENT: Force 100% Zoom
+    function handleOrientation() {
+        const v = document.querySelector('meta[name="viewport"]');
+        if (!v) return;
+        if (window.innerWidth > window.innerHeight) {
+            // Landscape Force: Lock scale at 1.0 to kill zoom glitch
+            v.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
+        } else {
+            // Portrait Reset
+            v.setAttribute('content', 'width=device-width, initial-scale=1.0');
+        }
+    }
+    window.addEventListener('resize', handleOrientation);
+    window.addEventListener('orientationchange', handleOrientation);
+    handleOrientation();
 
-    // 2. SILENT FORM HANDLER (Google Sheets Only)
+    // 2. SILENT FORMS: Google Sheet Only
     const scriptURL = 'https://script.google.com/macros/s/AKfycbwyD-d5Ka405oHl6FsBTQUJ95OYZVuFxmJsJL6hRSjcy8K_W8hqKyAMBCbUc6k-tcsCYg/exec';
-
-    function setupForm(id) {
+    function setupForm(id, loadTxt, succTxt) {
         const f = document.getElementById(id);
         if (!f) return;
         f.addEventListener('submit', function(e) {
-            e.preventDefault(); 
-            const btn = this.querySelector('button');
-            const txt = btn.innerText;
-            btn.innerText = "Sending...";
-            btn.disabled = true;
-
+            e.preventDefault(); // Kill mailto/redirects
+            const b = this.querySelector('button');
+            const orig = b.innerText;
+            b.innerText = loadTxt;
+            b.disabled = true;
             fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: new FormData(this) })
                 .then(() => {
-                    btn.innerText = "Sent!";
+                    b.innerText = succTxt;
                     this.reset();
-                    setTimeout(() => { btn.innerText = txt; btn.disabled = false; }, 3000);
+                    setTimeout(() => { b.innerText = orig; b.disabled = false; }, 3000);
                 });
         });
     }
-    setupForm('emailCaptureForm');
-    setupForm('contactForm');
+    setupForm('emailCaptureForm', 'Joining...', 'Joined!');
+    setupForm('contactForm', 'Sending...', 'Sent!');
 
-    // 3. REVEAL LOGIC (Animations)
+    // 3. REVEAL LOGIC
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('reveal-active'); });
     }, { threshold: 0.05 });
     document.querySelectorAll('.hero-content, .stat-item, .about-grid, .achievement-card, .platform-item, .video-item').forEach(el => observer.observe(el));
 
-    // 4. MOBILE MENU (Portrait Only)
+    // 4. MENU TOGGLE
     window.toggleMenu = function() {
-        if (window.innerWidth > window.innerHeight) return; // Disable in Landscape
+        if (window.innerWidth > window.innerHeight) return;
         const m = document.getElementById('mobile-menu');
         if (m) {
-            const open = (m.style.display === 'flex');
-            m.style.setProperty('display', open ? 'none' : 'flex', 'important');
+            const isOpen = (m.style.display === 'flex');
+            m.style.setProperty('display', isOpen ? 'none' : 'flex', 'important');
         }
     };
 })();
