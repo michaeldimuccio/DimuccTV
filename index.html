@@ -1055,7 +1055,7 @@ nav a {
 }
 
 
-/* --- THE LANDSCAPE ENGINE: CANCEL MOBILE --- */
+/* --- THE "CANCEL MOBILE" LANDSCAPE ENGINE --- */
 @media screen and (orientation: landscape) and (max-height: 600px) {
     /* 1. Force the Desktop Virtual Canvas */
     body.force-landscape {
@@ -1074,7 +1074,7 @@ nav a {
         margin: 0 auto !important;
     }
 
-    /* 3. Restore All Grids to 3 and 4 Columns */
+    /* 3. Force 3 and 4 Columns (Kills Vertical Stacking) */
     body.force-landscape .video-grid, 
     body.force-landscape .music-grid, 
     body.force-landscape .press-grid,
@@ -1093,18 +1093,23 @@ nav a {
 
     /* 4. Restore About & Contact Side-by-Side */
     body.force-landscape .about-grid, 
-    body.force-landscape .contact-grid,
-    body.force-landscape .hero-btn-container {
-        display: flex !important;
-        flex-direction: row !important;
+    body.force-landscape .contact-grid {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
         gap: 4rem !important;
         align-items: center !important;
     }
 
-    body.force-landscape .hero-btn-container { justify-content: center !important; gap: 1.5rem !important; }
+    /* 5. Restore Side-by-Side Buttons */
+    body.force-landscape .hero-btn-container {
+        display: flex !important;
+        flex-direction: row !important;
+        justify-content: center !important;
+        gap: 1.5rem !important;
+    }
     body.force-landscape .btn { width: auto !important; margin: 0 !important; }
 
-    /* 5. Kill Hamburger & Restore PC Nav */
+    /* 6. Kill Hamburger & Restore Desktop Nav */
     body.force-landscape #hamburger, 
     body.force-landscape #mobile-menu { display: none !important; }
     body.force-landscape .nav-links { display: flex !important; gap: 2.5rem !important; }
@@ -2646,13 +2651,13 @@ nav a {
 <script>
 (function() {
     // 1. THE IOF STATEMENT: Force 100% Zoom and Desktop Class
-    function forceDesktopState() {
+    function updateOrientation() {
         const viewport = document.querySelector('meta[name="viewport"]');
         const body = document.body;
         if (!viewport || !body) return;
 
         if (window.innerWidth > window.innerHeight) {
-            // IF LANDSCAPE: Add class and lock scale to 100%
+            // IF LANDSCAPE: Force PC Class and lock scale to 100%
             body.classList.add('force-landscape');
             viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
         } else {
@@ -2662,18 +2667,19 @@ nav a {
         }
     }
 
-    window.addEventListener('resize', forceDesktopState);
-    window.addEventListener('orientationchange', forceDesktopState);
-    forceDesktopState(); 
+    window.addEventListener('resize', updateOrientation);
+    window.addEventListener('orientationchange', updateOrientation);
+    updateOrientation(); 
 
-    // 2. SILENT FORM HANDLER (Newsletter & Contact)
+    // 2. SILENT FORM HANDLER (Google Sheets Only)
     const scriptURL = 'https://script.google.com/macros/s/AKfycbwyD-d5Ka405oHl6FsBTQUJ95OYZVuFxmJsJL6hRSjcy8K_W8hqKyAMBCbUc6k-tcsCYg/exec';
 
     function setupSilentForm(formId, loadingText, successText) {
         const form = document.getElementById(formId);
         if (!form) return;
+
         form.addEventListener('submit', function(e) {
-            e.preventDefault(); // Kills mail app triggers
+            e.preventDefault(); // This is the "Damn Problem" fix: it kills the mailto/redirect
             const btn = this.querySelector('button');
             const originalText = btn.innerText;
             btn.innerText = loadingText;
@@ -2684,13 +2690,17 @@ nav a {
                     btn.innerText = successText;
                     this.reset();
                     setTimeout(() => { btn.innerText = originalText; btn.disabled = false; }, 3000);
+                })
+                .catch(() => {
+                    btn.innerText = "Error";
+                    btn.disabled = false;
                 });
         });
     }
     setupSilentForm('emailCaptureForm', 'Joining...', 'Joined!');
     setupSilentForm('contactForm', 'Sending...', 'Sent!');
 
-    // 3. REVEAL LOGIC & NAVIGATION
+    // 3. REVEAL LOGIC
     const revealObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -2701,8 +2711,9 @@ nav a {
     }, { threshold: 0.05 });
     document.querySelectorAll('.hero-content, .stat-item, .about-grid, .achievement-card, .platform-item, .video-item, .contact-reveal').forEach(el => revealObserver.observe(el));
 
+    // 4. BURGER MENU TOGGLE
     window.toggleMenu = function() {
-        if (window.innerWidth > window.innerHeight) return;
+        if (window.innerWidth > window.innerHeight) return; // Prevent burger in landscape
         const menu = document.getElementById('mobile-menu');
         if (menu) {
             const isOpen = (menu.style.display === 'flex');
