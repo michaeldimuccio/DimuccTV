@@ -3,7 +3,6 @@
 <head>
   <base target="_self">
   <meta charset="UTF-8">
-  <!-- KEEP VIEWPORT SIMPLE. Do NOT rewrite this in JS. -->
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Michael "Dimucc" DiMuccio - Digital Creator</title>
 
@@ -24,42 +23,62 @@
       width: 100%;
       max-width: 100%;
       overflow-x: hidden;
-      background: var(--off-white); /* IMPORTANT: don’t make body black */
+      background: var(--off-white);
       font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
     }
 
     /* =========================
-       1) THE REAL FIX: FULL-BLEED BREAKOUT
-       If ANY wrapper is centering/boxing the page, this forces full width.
-       This is why your nav/hero are still boxed in your screenshots.
+       1) FULL-WIDTH BANDS (no 100vw tricks)
+       This ensures sections/nav/hero can span the viewport.
     ========================== */
-    nav, header, main, section, footer, .hero, .stats {
-      width: 100vw !important;
-      max-width: 100vw !important;
-      margin-left: calc(50% - 50vw) !important;
-      margin-right: calc(50% - 50vw) !important;
+    header, nav, main, section, footer,
+    .hero, .stats, .achievements, .email-capture {
+      width: 100% !important;
+      max-width: none !important;
+      margin-left: 0 !important;
+      margin-right: 0 !important;
     }
 
-    /* Kill any transforms/zooms that can make fixed elements “boxed” */
-    html, body, body * {
-      transform: none !important;
+    /* If you have any outer wrapper boxing the whole page, kill it */
+    #wrapper, #page, #app, #root,
+    .site, .page, .layout, .wrapper, .content, .main, .container-wrap {
+      width: 100% !important;
+      max-width: none !important;
+      margin-left: 0 !important;
+      margin-right: 0 !important;
     }
+
     body { zoom: 1 !important; }
 
     /* =========================
        2) CONTAINER (INNER CONTENT ONLY)
+       This is the main “anti-box” fix.
     ========================== */
     .container {
       width: min(1280px, 100%) !important;
-      margin: 0 auto !important;
-      padding-inline: clamp(12px, 4vw, 60px) !important; /* smaller max padding than 5rem */
+      max-width: 1280px !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+      padding-left: clamp(12px, 4vw, 60px) !important;
+      padding-right: clamp(12px, 4vw, 60px) !important;
+    }
+
+    /* Make nav alignment consistent */
+    nav .container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
     /* =========================
-       3) LANDSCAPE: desktop-ish layout
-       NOTE: use MAX-WIDTH not max-height for phones.
+       3) LANDSCAPE (phone landscape = tighten padding)
     ========================== */
     @media screen and (orientation: landscape) and (max-width: 932px) {
+      .container {
+        padding-left: 16px !important;
+        padding-right: 16px !important;
+      }
+
       #hamburger, #mobile-menu { display: none !important; }
       .nav-links { display: flex !important; gap: 2rem !important; flex-direction: row !important; }
 
@@ -101,6 +120,7 @@
     @media screen and (max-width: 768px) and (orientation: portrait) {
       .nav-links { display: none !important; }
       #hamburger { display: flex !important; }
+
       .video-grid, .music-grid, .about-grid, .contact-grid, .stats-grid, .brand-grid {
         display: flex !important;
         flex-direction: column !important;
@@ -141,7 +161,7 @@
     .btn-primary { background: var(--bright-blue); color: white; border: none; }
     .btn-second { background: #fff; color: var(--bright-blue); border: 2px solid var(--bright-blue); }
 
-    /* Reveal animations */
+    /* Reveal animations (DON’T kill transform globally) */
     .hero-content, .stat-item, .about-grid, .achievement-card, .platform-item, .video-item {
       opacity: 0;
       transform: translateY(20px);
@@ -150,6 +170,7 @@
     .reveal-active { opacity: 1 !important; transform: translateY(0) !important; }
   </style>
 </head>
+
 
 
 <body>
