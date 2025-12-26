@@ -1056,63 +1056,42 @@ nav a {
 }
 
 
-/* --- MASTER LANDSCAPE: 3-COLUMNS + SLIM NAV + BIG IMAGE --- */
-@media screen and (orientation: landscape) and (max-width: 1100px) {
-    /* 1. SLIM NAV (Only on these screen sizes) */
+/* --- SLIM NAV FOR MOBILE LANDSCAPE ONLY --- */
+@media screen and (orientation: landscape) and (max-height: 600px) {
+    /* 1. Reduce overall Nav height */
     nav {
-        padding: 0.3rem 0 !important;
+        padding: 0.4rem 0 !important; 
     }
+
+    /* 2. Tighten the nav container spacing */
     nav .container {
         padding-top: 0 !important;
         padding-bottom: 0 !important;
+        height: auto !important;
     }
+
+    /* 3. Shrink Logo */
     .logo img {
-        height: 26px !important;
-    }
-    .nav-links {
-        display: flex !important; /* Forces desktop-style links */
-        gap: 1.5rem !important;
-    }
-    #hamburger, #mobile-menu {
-        display: none !important;
-    }
-
-    /* 2. ABOUT SECTION (Side-by-Side & Large) */
-    .about-grid {
-        display: grid !important;
-        grid-template-columns: 1.1fr 0.9fr !important; 
-        align-items: center !important;
-        gap: 3rem !important;
-    }
-    .about-image img {
-        height: 82vh !important; 
+        height: 28px !important; 
         width: auto !important;
-        aspect-ratio: 3 / 4 !important;
-        object-fit: cover !important;
-        border: 3px solid var(--bright-blue) !important;
-        border-radius: 1rem !important;
     }
 
-    /* 3. 3-COLUMN GRIDS (The Desktop Look) */
-    .video-grid, .music-grid, .press-grid {
-        display: grid !important;
-        grid-template-columns: repeat(3, 1fr) !important;
+    /* 4. Ensure Nav Links align */
+    .nav-links {
         gap: 1.5rem !important;
+        display: flex !important; /* Forces nav to stay a bar, not a menu */
     }
 
-    /* 4. 4-COLUMN GRIDS (Brands/Stats) */
-    .brand-grid, .stats-grid {
-        display: grid !important;
-        grid-template-columns: repeat(4, 1fr) !important;
+    .nav-links a {
+        font-size: 0.9rem !important;
     }
-
-    /* 5. CONTAINER TWEAK */
-    .container {
-        max-width: 95% !important;
+    
+    /* Hide the burger menu so it doesn't overlap the slim bar */
+    #hamburger {
+        display: none !important;
     }
 }
 
-        
         
     </style>
 </head>
@@ -2716,18 +2695,23 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
 
 <script>
     (function() {
-        // 1. CLEAN VIEWPORT (Standard mobile behavior)
+        // 1. THE VIEWPORT SCALER (Fixed Zoom for Landscape)
         function handleOrientation() {
             const viewport = document.querySelector('meta[name="viewport"]');
-            if (viewport) {
-                viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0');
+            if (window.innerWidth > window.innerHeight) {
+                // LANDSCAPE: Set width but reset scale so it doesn't zoom in
+                viewport.setAttribute('content', 'width=1280, initial-scale=1.0, maximum-scale=1.0, user-scalable=0');
+            } else {
+                // PORTRAIT: Standard mobile view
+                viewport.setAttribute('content', 'width=device-width, initial-scale=1.0');
             }
         }
+        
         window.addEventListener('resize', handleOrientation);
         window.addEventListener('orientationchange', handleOrientation);
         handleOrientation(); 
 
-        // 2. REVEAL LOGIC
+        // 2. REVEAL LOGIC (Animations & Wave)
         const revealObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -2735,29 +2719,42 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
                     revealObserver.unobserve(entry.target);
                 }
             });
-        }, { threshold: 0.05 });
+        }, { 
+            threshold: 0.05,
+            rootMargin: "0px 0px -20px 0px" 
+        });
+
         const items = document.querySelectorAll('.hero-content, .stat-item, .about-grid, .achievement-card, .platform-item, .video-item, .contact-reveal');
         items.forEach(el => revealObserver.observe(el));
 
-        // 3. NAVIGATION SPY
+        // 3. NAVIGATION SPY (Orange Line)
         const sections = document.querySelectorAll("section[id]");
         const navLinks = document.querySelectorAll("nav ul li a");
+        const mobileLinks = document.querySelectorAll("#mobile-menu a");
+
         function updateNav() {
             let current = "";
             const scrollPos = window.pageYOffset;
+            const winHeight = window.innerHeight;
+
             sections.forEach(s => {
-                if (scrollPos >= s.offsetTop - (window.innerHeight / 3)) {
+                if (scrollPos >= s.offsetTop - (winHeight / 3)) {
                     current = s.getAttribute("id");
                 }
             });
-            navLinks.forEach(link => {
+
+            [...navLinks, ...mobileLinks].forEach(link => {
                 link.classList.remove("active");
-                if (link.getAttribute("href") === "#" + current) link.classList.add("active");
+                if (link.getAttribute("href") === "#" + current) {
+                    link.classList.add("active");
+                }
             });
         }
-        window.addEventListener('scroll', updateNav, { passive: true });
 
-        // 4. BURGER MENU
+        window.addEventListener('scroll', updateNav, { passive: true });
+        updateNav();
+
+        // 4. BURGER MENU TOGGLE
         window.toggleMenu = function() {
             const menu = document.getElementById('mobile-menu');
             if (menu) {
