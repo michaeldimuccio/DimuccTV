@@ -1055,50 +1055,65 @@ nav a {
 }
 
 
-/* --- LANDSCAPE MASTER: 3-VIDEOS, 3-ARTICLES, 4-BRANDS --- */
+/* --- LANDSCAPE MASTER: 3-VIDEOS, 3-ARTICLES, 4-BRANDS, FIXED IMAGE & SLIM NAV --- */
 @media screen and (orientation: landscape) and (max-width: 1024px) {
-    /* 1. About: Increase Image Size (Balanced 1:1 ratio) */
+    /* 1. Slim Navigation Bar */
+    nav {
+        padding: 0.3rem 0 !important; /* Extremely slim for landscape */
+    }
+
+    nav .container {
+        padding-top: 2px !important;
+        padding-bottom: 2px !important;
+    }
+
+    .logo img {
+        height: 24px !important; /* Smaller logo to reduce bar height */
+    }
+
+    /* 2. About: Fix Image Cutoff & Size */
     .about-grid {
         display: grid !important;
         grid-template-columns: 1fr 1fr !important; 
         align-items: center !important;
-        gap: 3rem !important;
+        gap: 2.5rem !important;
     }
 
     .about-image img {
-        max-height: 70vh !important; /* Made bigger than previous 55vh */
+        max-height: 75vh !important; /* Height-lock */
         width: 100% !important;
-        object-fit: cover !important;
+        object-fit: contain !important; /* FIX: Prevents cropping top/bottom */
+        border-radius: 0.75rem !important;
+        background: transparent !important;
     }
 
-    /* 2. Video & Music Grids: 3 per row */
-    .video-grid, .music-grid {
+    /* 3. Force Side-by-Side Density */
+    .video-grid, .music-grid, .press-grid {
         display: grid !important;
         grid-template-columns: repeat(3, 1fr) !important;
         gap: 1.25rem !important;
     }
 
-    /* 3. Press: 3 per row */
-    .press-grid {
-        display: grid !important;
-        grid-template-columns: repeat(3, 1fr) !important;
-        gap: 1.25rem !important;
-        margin-bottom: 4rem !important;
-    }
-
-    /* 4. Brands: 4 per row */
     .brand-grid {
         display: grid !important;
         grid-template-columns: repeat(4, 1fr) !important;
         gap: 1rem !important;
     }
 
-    /* 5. Stats: 4 per row */
     .stats-grid {
         grid-template-columns: repeat(4, 1fr) !important;
     }
 
-    /* UI Cleanups */
+    /* 4. Section & Hero Tweaks */
+    section {
+        padding: 4rem 0 !important;
+    }
+
+    .hero {
+        padding-top: 5rem !important;
+        min-height: 100vh !important;
+    }
+    
     .container { max-width: 1000px !important; }
     .nav-links { display: flex !important; }
     #hamburger, #mobile-menu { display: none !important; }
