@@ -1055,35 +1055,41 @@ nav a {
 }
 
 
-/* --- LANDSCAPE "FILL SCREEN" RESTORE --- */
-@media screen and (orientation: landscape) and (max-width: 1024px) {
-    /* 1. Reset Container to fill the 980px width */
+/* --- LANDSCAPE DESKTOP RESTORE & ZOOM FIX --- */
+@media screen and (max-width: 1024px) and (orientation: landscape) {
+    /* 1. Reset the "Zoom" feel by allowing content to spread out */
     .container {
-        width: 100% !important;
-        max-width: 940px !important; /* Slightly less than 980 for breathing room */
-        padding: 0 20px !important;
+        padding: 0 2rem !important;
+        max-width: 1200px !important;
         margin: 0 auto !important;
     }
 
-    /* 2. Force Videos to fill the grid */
-    .video-grid {
-        display: grid !important;
-        grid-template-columns: 1fr 1fr !important; /* 2 videos per row to fill space */
-        gap: 20px !important;
+    /* 2. Show the desktop nav links and hide burger */
+    .nav-links {
+        display: flex !important;
+        gap: 1.5rem !important;
+    }
+    #hamburger, #mobile-menu {
+        display: none !important;
     }
 
-    /* 3. Force Stats to 4-column row */
+    /* 3. Force Side-by-Side (Un-zoom the vertical stack) */
+    .about-grid, .achievements-grid, .video-grid {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        text-align: left !important;
+        align-items: center !important;
+    }
+
+    /* 4. Desktop Stats Row */
     .stats-grid {
         display: grid !important;
         grid-template-columns: repeat(4, 1fr) !important;
     }
 
-    /* 4. Restore Desktop Nav */
-    .nav-links { display: flex !important; gap: 1.5rem !important; }
-    #hamburger, #mobile-menu { display: none !important; }
-
-    /* 5. Adjust Hero height so it doesn't feel endless */
-    .hero { min-height: 100vh !important; padding: 4rem 0 !important; }
+    /* 5. Scale down headers so they don't look 'zoomed' */
+    .hero h1 { font-size: 3.5rem !important; }
+    .section-title { font-size: 2.2rem !important; }
 }
 
         
@@ -2709,27 +2715,13 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
 
 <script>
     (function() {
-        // 1. THE VIEWPORT SCALER (Fixes the "Too Zoomed Out" issue)
-        function handleOrientation() {
-            const viewport = document.querySelector('meta[name="viewport"]');
-            if (window.innerWidth > window.innerHeight) {
-                // LANDSCAPE: 980px is the "Sweet Spot" for filling the screen
-                // while keeping the desktop 4-column bubble layout.
-                viewport.setAttribute('content', 'width=980');
-            } else {
-                // PORTRAIT: Back to standard mobile logic
-                viewport.setAttribute('content', 'width=device-width, initial-scale=1.0');
-            }
-        }
-        window.addEventListener('resize', handleOrientation);
-        window.addEventListener('orientationchange', handleOrientation);
-        handleOrientation(); 
-
-        // 2. REVEAL LOGIC (Animations & Wave)
+        // 1. REVEAL LOGIC
         const revealObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('reveal-active');
+                    // THE FIX: Stop watching once revealed. 
+                    // This creates the permanent state you see when the menu is open.
                     revealObserver.unobserve(entry.target);
                 }
             });
@@ -2738,10 +2730,11 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
             rootMargin: "0px 0px -20px 0px" 
         });
 
+        // Targeted items (Individual cards for the wave effect)
         const items = document.querySelectorAll('.hero-content, .stat-item, .about-grid, .achievement-card, .platform-item, .video-item, .contact-reveal');
         items.forEach(el => revealObserver.observe(el));
 
-        // 3. NAVIGATION SPY (Orange Line)
+        // 2. NAVIGATION SPY (The Orange Line Fix)
         const sections = document.querySelectorAll("section[id]");
         const navLinks = document.querySelectorAll("nav ul li a");
         const mobileLinks = document.querySelectorAll("#mobile-menu a");
@@ -2768,7 +2761,7 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
         window.addEventListener('scroll', updateNav, { passive: true });
         updateNav();
 
-        // 4. BURGER MENU TOGGLE
+        // 3. BURGER MENU TOGGLE
         window.toggleMenu = function() {
             const menu = document.getElementById('mobile-menu');
             if (menu) {
