@@ -1055,76 +1055,60 @@ nav a {
 }
 
 
-<script>
-(function() {
-    // 1. FORCED ORIENTATION HANDLER
-    function updateLayout() {
-        const viewport = document.querySelector('meta[name="viewport"]');
-        const body = document.body;
-        if (!viewport || !body) return;
-
-        if (window.innerWidth > window.innerHeight) {
-            // LANDSCAPE MODE: Force Desktop Class and Viewport
-            body.classList.add('force-landscape');
-            viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
-        } else {
-            // PORTRAIT MODE: Revert to Mobile
-            body.classList.remove('force-landscape');
-            viewport.setAttribute('content', 'width=device-width, initial-scale=1.0');
-        }
+/* --- THE LANDSCAPE ENGINE: CANCEL MOBILE --- */
+@media screen and (orientation: landscape) and (max-height: 600px) {
+    /* 1. Force the Desktop Virtual Canvas */
+    body.force-landscape {
+        zoom: calc(100vw / 1280); 
+        width: 1280px !important;
+        display: block !important;
+        margin: 0 auto !important;
+        overflow-x: hidden !important;
     }
 
-    window.addEventListener('resize', updateLayout);
-    window.addEventListener('orientationchange', updateLayout);
-    updateLayout(); 
-
-    // 2. SILENT FORMS (Alerts Removed)
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbwyD-d5Ka405oHl6FsBTQUJ95OYZVuFxmJsJL6hRSjcy8K_W8hqKyAMBCbUc6k-tcsCYg/exec';
-    function setupSilentForm(formId, loadingText, successText) {
-        const form = document.getElementById(formId);
-        if (!form) return;
-        form.addEventListener('submit', function(e) {
-            e.preventDefault(); 
-            const btn = this.querySelector('button');
-            const originalText = btn.innerText;
-            btn.innerText = loadingText;
-            btn.disabled = true;
-            fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: new FormData(this) })
-                .then(() => {
-                    btn.innerText = successText;
-                    this.reset();
-                    setTimeout(() => { btn.innerText = originalText; btn.disabled = false; }, 3000);
-                })
-                .catch(() => {
-                    btn.innerText = "Error";
-                    btn.disabled = false;
-                });
-        });
+    /* 2. Cancel Mobile Stacking & Container Spacing */
+    body.force-landscape .container {
+        width: 1280px !important;
+        max-width: 1280px !important;
+        padding: 0 5rem !important;
+        margin: 0 auto !important;
     }
-    setupSilentForm('emailCaptureForm', 'Joining...', 'Joined!');
-    setupSilentForm('contactForm', 'Sending...', 'Sent!');
 
-    // 3. REVEAL LOGIC
-    const revealObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('reveal-active');
-                revealObserver.unobserve(entry.target);
-            }
-        });
-    }, { threshold: 0.05 });
-    document.querySelectorAll('.hero-content, .stat-item, .about-grid, .achievement-card, .platform-item, .video-item, .contact-reveal').forEach(el => revealObserver.observe(el));
+    /* 3. Restore All Grids to 3 and 4 Columns */
+    body.force-landscape .video-grid, 
+    body.force-landscape .music-grid, 
+    body.force-landscape .press-grid,
+    body.force-landscape .audience-cards {
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 2rem !important;
+    }
 
-    // 4. BURGER MENU TOGGLE
-    window.toggleMenu = function() {
-        const menu = document.getElementById('mobile-menu');
-        if (menu) {
-            const isOpen = (menu.style.display === 'flex');
-            menu.style.setProperty('display', isOpen ? 'none' : 'flex', 'important');
-        }
-    };
-})();
-</script>
+    body.force-landscape .stats-grid, 
+    body.force-landscape .brand-grid {
+        display: grid !important;
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 2rem !important;
+    }
+
+    /* 4. Restore About & Contact Side-by-Side */
+    body.force-landscape .about-grid, 
+    body.force-landscape .contact-grid,
+    body.force-landscape .hero-btn-container {
+        display: flex !important;
+        flex-direction: row !important;
+        gap: 4rem !important;
+        align-items: center !important;
+    }
+
+    body.force-landscape .hero-btn-container { justify-content: center !important; gap: 1.5rem !important; }
+    body.force-landscape .btn { width: auto !important; margin: 0 !important; }
+
+    /* 5. Kill Hamburger & Restore PC Nav */
+    body.force-landscape #hamburger, 
+    body.force-landscape #mobile-menu { display: none !important; }
+    body.force-landscape .nav-links { display: flex !important; gap: 2.5rem !important; }
+}
  
     </style>
 </head>
@@ -2661,42 +2645,37 @@ nav a {
 
 <script>
 (function() {
-    // 1. MASTER ORIENTATION & VIEWPORT ENGINE
-    function handleLayout() {
+    // 1. THE IOF STATEMENT: Force 100% Zoom and Desktop Class
+    function forceDesktopState() {
         const viewport = document.querySelector('meta[name="viewport"]');
         const body = document.body;
-        const menu = document.getElementById('mobile-menu');
         if (!viewport || !body) return;
 
         if (window.innerWidth > window.innerHeight) {
-            // LANDSCAPE: Force Desktop Class and kill auto-zoom
+            // IF LANDSCAPE: Add class and lock scale to 100%
             body.classList.add('force-landscape');
-            // use natural width + 100% scale to lock the view
             viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
-            if(menu) menu.style.display = 'none';
         } else {
-            // PORTRAIT: Revert to Mobile
+            // IF PORTRAIT: Revert to standard mobile
             body.classList.remove('force-landscape');
             viewport.setAttribute('content', 'width=device-width, initial-scale=1.0');
         }
     }
 
-    window.addEventListener('resize', handleLayout);
-    window.addEventListener('orientationchange', handleLayout);
-    handleLayout(); 
+    window.addEventListener('resize', forceDesktopState);
+    window.addEventListener('orientationchange', forceDesktopState);
+    forceDesktopState(); 
 
-    // 2. SILENT FORM HANDLER (Google Sheets Only - No Mail App)
+    // 2. SILENT FORM HANDLER (Newsletter & Contact)
     const scriptURL = 'https://script.google.com/macros/s/AKfycbwyD-d5Ka405oHl6FsBTQUJ95OYZVuFxmJsJL6hRSjcy8K_W8hqKyAMBCbUc6k-tcsCYg/exec';
 
     function setupSilentForm(formId, loadingText, successText) {
         const form = document.getElementById(formId);
         if (!form) return;
-
         form.addEventListener('submit', function(e) {
-            e.preventDefault(); // Kills redirects and mail app popups
+            e.preventDefault(); // Kills mail app triggers
             const btn = this.querySelector('button');
             const originalText = btn.innerText;
-            
             btn.innerText = loadingText;
             btn.disabled = true;
 
@@ -2704,22 +2683,14 @@ nav a {
                 .then(() => {
                     btn.innerText = successText;
                     this.reset();
-                    setTimeout(() => {
-                        btn.innerText = originalText;
-                        btn.disabled = false;
-                    }, 3000);
-                })
-                .catch(() => {
-                    btn.innerText = "Error";
-                    btn.disabled = false;
+                    setTimeout(() => { btn.innerText = originalText; btn.disabled = false; }, 3000);
                 });
         });
     }
-
     setupSilentForm('emailCaptureForm', 'Joining...', 'Joined!');
     setupSilentForm('contactForm', 'Sending...', 'Sent!');
 
-    // 3. REVEAL LOGIC (Animations)
+    // 3. REVEAL LOGIC & NAVIGATION
     const revealObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -2728,13 +2699,10 @@ nav a {
             }
         });
     }, { threshold: 0.05 });
-    
     document.querySelectorAll('.hero-content, .stat-item, .about-grid, .achievement-card, .platform-item, .video-item, .contact-reveal').forEach(el => revealObserver.observe(el));
 
-    // 4. UNIFIED BURGER MENU (Disabled in Landscape)
     window.toggleMenu = function() {
-        if (window.innerWidth > window.innerHeight) return; // Prevent burger in landscape
-        
+        if (window.innerWidth > window.innerHeight) return;
         const menu = document.getElementById('mobile-menu');
         if (menu) {
             const isOpen = (menu.style.display === 'flex');
