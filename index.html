@@ -866,18 +866,30 @@ nav a {
 
     
 
-    /* 5. VIDEOS: 2 Per Row (3 Rows of 2) */
+/* 5. VIDEOS: 2 Per Row with Title Crop */
 
     .video-grid, .videos-container {
-
         display: grid !important;
-
         grid-template-columns: 1fr 1fr !important; 
-
         gap: 10px !important;
-
         width: 100% !important;
+    }
 
+    .video-item {
+        overflow: hidden !important; /* Acts as a mask to hide the scaled edges */
+        border-radius: 8px !important;
+        background: #000;
+        position: relative;
+    }
+
+    .video-item iframe {
+        /* Zoom in to push the title text and UI icons outside the visible box */
+        transform: scale(1.2) !important; 
+        transform-origin: center !important;
+        width: 100% !important;
+        aspect-ratio: 16/9;
+        display: block;
+        border: none !important;
     }
 
 /* --- AUDIENCE & REACH STATS FIX (Compact Right-Align) --- */
