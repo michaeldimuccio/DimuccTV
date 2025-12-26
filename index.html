@@ -2619,93 +2619,89 @@ nav a {
 
 
 <script>
-    document.getElementById('contactForm').addEventListener('submit', function(e) {
-        e.preventDefault(); // Stops the "Content Blocked" redirect
-        
-        // Get the values
-        var name = this.querySelector('input[type="text"]').value;
-        var email = this.querySelector('input[type="email"]').value;
-        var message = this.querySelector('textarea').value;
-        
-        // Construct the mailto link manually
-        var subject = encodeURIComponent("Business Inquiry from " + name);
-        var body = encodeURIComponent("Name: " + name + "\nEmail: " + email + "\n\nMessage:\n" + message);
-        
-        // This bypasses the iframe sandbox block
-        window.top.location.href = "mailto:dimuccbusiness@gmail.com?subject=" + subject + "&body=" + body;
-        
-        alert("Opening your mail app...");
-    });
-</script>
-<script>
+// YOUR MASTER DEPLOYMENT URL
+const scriptURL = 'https://script.google.com/macros/s/AKfycbwyD-d5Ka405oHl6FsBTQUJ95OYZVuFxmJsJL6hRSjcy8K_W8hqKyAMBCbUc6k-tcsCYg/exec';
+
+// --- 1. MOBILE MENU TOGGLE ---
 function toggleMenu() {
     const menu = document.getElementById('mobile-menu');
-    // Only toggle if we are actually on mobile
     if (window.innerWidth <= 768) {
-        // If it's flex (open), set to none (closed)
         if (menu.style.display === 'flex') {
             menu.style.display = 'none';
         } else {
-            // Force flex with important to override any desktop blocks
             menu.style.setProperty('display', 'flex', 'important');
         }
     }
 }
+
+// --- 2. HANDLE NEWSLETTER SIGNUP (SILENT) ---
+document.getElementById('emailCaptureForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const btn = this.querySelector('button');
+    const originalText = btn.innerText;
+    btn.innerText = "Joining...";
+    btn.disabled = true;
+
+    fetch(scriptURL, { 
+        method: 'POST', 
+        mode: 'no-cors', 
+        body: new FormData(this) 
+    })
+    .then(() => {
+        btn.innerText = "Joined!";
+        this.reset();
+        // Returns button to normal after 3 seconds
+        setTimeout(() => { btn.innerText = originalText; btn.disabled = false; }, 3000);
+    })
+    .catch(() => {
+        btn.innerText = "Error";
+        btn.disabled = false;
+    });
+});
+
+// --- 3. HANDLE CONTACT MESSAGE FORM (SILENT & NO MAIL APP) ---
+document.getElementById('contactForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const btn = this.querySelector('button');
+    const originalText = btn.innerText;
+    btn.innerText = "Sending...";
+    btn.disabled = true;
+
+    fetch(scriptURL, { 
+        method: 'POST', 
+        mode: 'no-cors', 
+        body: new FormData(this) 
+    })
+    .then(() => {
+        btn.innerText = "Sent!";
+        this.reset();
+        // Returns button to normal after 3 seconds
+        setTimeout(() => { btn.innerText = originalText; btn.disabled = false; }, 3000);
+    })
+    .catch(() => {
+        btn.innerText = "Error";
+        btn.disabled = false;
+    });
+});
 </script>
+
 <script>
     (function() {
-        // 1. THE VIEWPORT SCALER (Fixed: Removed conflicting scale commands)
-        function handleOrientation() {
+        // 1. THE VIEWPORT SCALER (Fixed for 3-Column Video Grid)
+function handleOrientation() {
             const viewport = document.querySelector('meta[name="viewport"]');
-            if (viewport) {
-                if (window.innerWidth > window.innerHeight) {
-                    // LANDSCAPE: Only set width. Removing scale commands stops the "Auto-Zoom" glitch.
-                    viewport.setAttribute('content', 'width=1280');
-                } else {
-                    // PORTRAIT: Reset to standard mobile width
-                    viewport.setAttribute('content', 'width=device-width, initial-scale=1.0');
-                }
+            if (window.innerWidth > window.innerHeight) {
+                // LANDSCAPE: 1280px provides more horizontal room for a large image
+                viewport.setAttribute('content', 'width=1280');
+            } else {
+                viewport.setAttribute('content', 'width=device-width, initial-scale=1.0');
             }
         }
         window.addEventListener('resize', handleOrientation);
         window.addEventListener('orientationchange', handleOrientation);
         handleOrientation(); 
 
-        // 2. SILENT FORMS LOGIC (No Popups)
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbwyD-d5Ka405oHl6FsBTQUJ95OYZVuFxmJsJL6hRSjcy8K_W8hqKyAMBCbUc6k-tcsCYg/exec';
-
-        function setupSilentForm(formId, loadingText, successText) {
-            const form = document.getElementById(formId);
-            if (!form) return;
-
-            form.addEventListener('submit', function(e) {
-                e.preventDefault();
-                const btn = this.querySelector('button');
-                const originalText = btn.innerText;
-                
-                btn.innerText = loadingText;
-                btn.disabled = true;
-
-                fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: new FormData(this) })
-                    .then(() => {
-                        btn.innerText = successText;
-                        this.reset();
-                        setTimeout(() => {
-                            btn.innerText = originalText;
-                            btn.disabled = false;
-                        }, 3000);
-                    })
-                    .catch(() => {
-                        btn.innerText = "Error";
-                        btn.disabled = false;
-                    });
-            });
-        }
-
-        setupSilentForm('emailCaptureForm', 'Joining...', 'Joined!');
-        setupSilentForm('contactForm', 'Sending...', 'Sent!');
-
-        // 3. REVEAL LOGIC (Animations)
+        // 2. REVEAL LOGIC (Animations & Wave)
         const revealObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -2713,12 +2709,15 @@ function toggleMenu() {
                     revealObserver.unobserve(entry.target);
                 }
             });
-        }, { threshold: 0.05, rootMargin: "0px 0px -20px 0px" });
+        }, { 
+            threshold: 0.05,
+            rootMargin: "0px 0px -20px 0px" 
+        });
 
         const items = document.querySelectorAll('.hero-content, .stat-item, .about-grid, .achievement-card, .platform-item, .video-item, .contact-reveal');
         items.forEach(el => revealObserver.observe(el));
 
-        // 4. NAVIGATION SPY & BURGER MENU
+        // 3. NAVIGATION SPY (Orange Line)
         const sections = document.querySelectorAll("section[id]");
         const navLinks = document.querySelectorAll("nav ul li a");
         const mobileLinks = document.querySelectorAll("#mobile-menu a");
@@ -2726,16 +2725,26 @@ function toggleMenu() {
         function updateNav() {
             let current = "";
             const scrollPos = window.pageYOffset;
+            const winHeight = window.innerHeight;
+
             sections.forEach(s => {
-                if (scrollPos >= s.offsetTop - (window.innerHeight / 3)) current = s.getAttribute("id");
+                if (scrollPos >= s.offsetTop - (winHeight / 3)) {
+                    current = s.getAttribute("id");
+                }
             });
+
             [...navLinks, ...mobileLinks].forEach(link => {
                 link.classList.remove("active");
-                if (link.getAttribute("href") === "#" + current) link.classList.add("active");
+                if (link.getAttribute("href") === "#" + current) {
+                    link.classList.add("active");
+                }
             });
         }
-        window.addEventListener('scroll', updateNav, { passive: true });
 
+        window.addEventListener('scroll', updateNav, { passive: true });
+        updateNav();
+
+        // 4. BURGER MENU TOGGLE
         window.toggleMenu = function() {
             const menu = document.getElementById('mobile-menu');
             if (menu) {
