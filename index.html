@@ -1055,33 +1055,51 @@ nav a {
 }
 
 
-/* 1. UNIVERSAL FLUID CONTAINER (same intent, safer + force wins) */
-.container {
-  width: 100% !important;
-  max-width: 1280px !important;
-  margin-inline: auto !important;
-  padding-inline: clamp(1.25rem, 5vw, 5rem) !important;
+/* 0. STOP “BOXED IN” PARENTS (this is the missing fix) */
+html, body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
-/* 2. THE CLEAN LANDSCAPE RESTORATION (No Zoom/Scale, no gutters) */
+/* If you have any page wrapper that was set to a fixed width, kill it */
+#wrapper, #page, .wrapper, .page, main {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+}
+
+/* Make sure sections/background bands are allowed to go full width */
+header, nav, section, footer {
+  width: 100%;
+  max-width: none;
+}
+
+/* 1. UNIVERSAL FLUID CONTAINER (inner content only) */
+.container {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  /* Fluid padding: 20px on small screens, scaling up to 80px on PC */
+  padding-inline: clamp(1.25rem, 5vw, 5rem);
+}
+
+/* 2. THE CLEAN LANDSCAPE RESTORATION (No Zoom Hacks) */
 @media screen and (orientation: landscape) and (max-width: 932px) {
 
-  /* HARD RESET: kill the “boxed desktop canvas” sources */
-  html, body {
+  /* Reset body to natural behavior */
+  body {
+    zoom: 1 !important;
     width: 100% !important;
     max-width: 100% !important;
-    margin: 0 !important;
-    padding: 0 !important;
     overflow-x: hidden !important;
-    transform: none !important;
   }
 
-  /* If any wrapper is forcing a page width, neutralize common culprits */
-  body, #app, #root, .page, .wrapper, .site, .layout {
+  /* Kill any 100vw offenders that create “fake” side gutters */
+  header, nav, section, footer, .hero {
     width: 100% !important;
     max-width: 100% !important;
-    margin: 0 !important;
-    transform: none !important;
   }
 
   /* Force Desktop Navigation & Kill Burger */
@@ -1102,16 +1120,17 @@ nav a {
     align-items: center !important;
   }
 
-  /* LANDSCAPE PHONE: keep it “desktop-ish” but not cramped */
+  /* Force 3-Column Video/Press Grids */
   .video-grid, .music-grid, .press-grid {
     display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important; /* was 3 */
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
     gap: 1.5rem !important;
   }
 
+  /* Force 4-Column Stats/Brands */
   .stats-grid, .brand-grid {
     display: grid !important;
-    grid-template-columns: repeat(2, 1fr) !important; /* was 4 */
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
     gap: 1rem !important;
   }
 
@@ -1122,13 +1141,14 @@ nav a {
     flex-direction: row !important;
     justify-content: center !important;
     gap: 1rem !important;
-    flex-wrap: wrap !important; /* prevents overflow */
+    flex-wrap: wrap !important;
   }
   .btn { width: auto !important; margin: 0 !important; padding: 0.8rem 1.5rem !important; }
 
   /* Fix About Image Size */
-  .about-image img { height: 75vh !important; width: auto !important; max-width: 100% !important; }
+  .about-image img { height: 75vh !important; width: auto !important; }
 }
+
 
     </style>
 </head>
