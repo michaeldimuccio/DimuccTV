@@ -2653,90 +2653,59 @@ function toggleMenu() {
 }
 </script>
 <script>
-// YOUR MASTER DEPLOYMENT URL
-const scriptURL = 'https://script.google.com/macros/s/AKfycbwyD-d5Ka405oHl6FsBTQUJ95OYZVuFxmJsJL6hRSjcy8K_W8hqKyAMBCbUc6k-tcsCYg/exec';
-
-// --- 1. HANDLE NEWSLETTER SIGNUP (SILENT VERSION) ---
-document.getElementById('emailCaptureForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const btn = this.querySelector('button');
-    const originalText = btn.innerText; // Saves "Join" or "Subscribe"
-    
-    btn.innerText = "Joining...";
-    btn.disabled = true;
-
-    fetch(scriptURL, { 
-        method: 'POST', 
-        mode: 'no-cors', 
-        body: new FormData(this) 
-    })
-    .then(() => {
-        // SUCCESS: No popup, just change button state
-        btn.innerText = "Joined!";
-        this.reset();
-        
-        // Revert the button back to normal after 3 seconds
-        setTimeout(() => {
-            btn.innerText = originalText;
-            btn.disabled = false;
-        }, 3000);
-    })
-    .catch(error => {
-        console.error('Error!', error.message);
-        btn.innerText = "Try Again";
-        btn.disabled = false;
-    });
-});
-
-// --- 2. HANDLE CONTACT MESSAGE FORM (SILENT VERSION) ---
-document.getElementById('contactForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const btn = this.querySelector('button');
-    const originalText = btn.innerText; // Saves "Send Message"
-    
-    btn.innerText = "Sending...";
-    btn.disabled = true;
-
-    fetch(scriptURL, { 
-        method: 'POST', 
-        mode: 'no-cors', 
-        body: new FormData(this) 
-    })
-    .then(() => {
-        // SUCCESS: No popup, just change button state
-        btn.innerText = "Sent!";
-        this.reset();
-        
-        // Revert the button back to normal after 3 seconds
-        setTimeout(() => {
-            btn.innerText = originalText;
-            btn.disabled = false;
-        }, 3000);
-    })
-    .catch(error => {
-        console.error('Error!', error.message);
-        btn.innerText = "Error";
-        btn.disabled = false;
-    });
-});
-
-<script>
     (function() {
-        // 1. THE VIEWPORT SCALER (Fixed for 3-Column Video Grid)
-function handleOrientation() {
+        // 1. THE VIEWPORT SCALER (Fixes Landscape Zoom/Width)
+        function handleOrientation() {
             const viewport = document.querySelector('meta[name="viewport"]');
-            if (window.innerWidth > window.innerHeight) {
-                // LANDSCAPE: 1280px provides more horizontal room for a large image
-                viewport.setAttribute('content', 'width=1280');
-            } else {
-                viewport.setAttribute('content', 'width=device-width, initial-scale=1.0');
+            if (viewport) {
+                if (window.innerWidth > window.innerHeight) {
+                    // LANDSCAPE: Force 1280px width for the "Desktop" look
+                    viewport.setAttribute('content', 'width=1280, initial-scale=1.0, shrink-to-fit=no');
+                } else {
+                    // PORTRAIT: Reset to standard mobile width
+                    viewport.setAttribute('content', 'width=device-width, initial-scale=1.0');
+                }
             }
         }
         window.addEventListener('resize', handleOrientation);
         window.addEventListener('orientationchange', handleOrientation);
         handleOrientation(); 
 
-        // 2. REVEAL LOGIC (Animations & Wave)
+        // 2. SILENT FORMS LOGIC (No Popups)
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbwyD-d5Ka405oHl6FsBTQUJ95OYZVuFxmJsJL6hRSjcy8K_W8hqKyAMBCbUc6k-tcsCYg/exec';
+
+        function setupSilentForm(formId, loadingText, successText) {
+            const form = document.getElementById(formId);
+            if (!form) return;
+
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const btn = this.querySelector('button');
+                const originalText = btn.innerText;
+                
+                btn.innerText = loadingText;
+                btn.disabled = true;
+
+                fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: new FormData(this) })
+                    .then(() => {
+                        btn.innerText = successText;
+                        this.reset();
+                        setTimeout(() => {
+                            btn.innerText = originalText;
+                            btn.disabled = false;
+                        }, 3000);
+                    })
+                    .catch(() => {
+                        btn.innerText = "Error";
+                        btn.disabled = false;
+                    });
+            });
+        }
+
+        setupSilentForm('emailCaptureForm', 'Joining...', 'Joined!');
+        setupSilentForm('contactForm', 'Sending...', 'Sent!');
+
+        // 3. REVEAL LOGIC (Animations)
         const revealObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -2744,15 +2713,12 @@ function handleOrientation() {
                     revealObserver.unobserve(entry.target);
                 }
             });
-        }, { 
-            threshold: 0.05,
-            rootMargin: "0px 0px -20px 0px" 
-        });
+        }, { threshold: 0.05, rootMargin: "0px 0px -20px 0px" });
 
         const items = document.querySelectorAll('.hero-content, .stat-item, .about-grid, .achievement-card, .platform-item, .video-item, .contact-reveal');
         items.forEach(el => revealObserver.observe(el));
 
-        // 3. NAVIGATION SPY (Orange Line)
+        // 4. NAVIGATION SPY & BURGER MENU
         const sections = document.querySelectorAll("section[id]");
         const navLinks = document.querySelectorAll("nav ul li a");
         const mobileLinks = document.querySelectorAll("#mobile-menu a");
@@ -2760,26 +2726,16 @@ function handleOrientation() {
         function updateNav() {
             let current = "";
             const scrollPos = window.pageYOffset;
-            const winHeight = window.innerHeight;
-
             sections.forEach(s => {
-                if (scrollPos >= s.offsetTop - (winHeight / 3)) {
-                    current = s.getAttribute("id");
-                }
+                if (scrollPos >= s.offsetTop - (window.innerHeight / 3)) current = s.getAttribute("id");
             });
-
             [...navLinks, ...mobileLinks].forEach(link => {
                 link.classList.remove("active");
-                if (link.getAttribute("href") === "#" + current) {
-                    link.classList.add("active");
-                }
+                if (link.getAttribute("href") === "#" + current) link.classList.add("active");
             });
         }
-
         window.addEventListener('scroll', updateNav, { passive: true });
-        updateNav();
 
-        // 4. BURGER MENU TOGGLE
         window.toggleMenu = function() {
             const menu = document.getElementById('mobile-menu');
             if (menu) {
