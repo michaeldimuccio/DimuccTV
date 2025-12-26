@@ -1055,50 +1055,39 @@ nav a {
 }
 
 
-/* --- LANDSCAPE: NUCLEAR SIZE RESET --- */
+/* --- LANDSCAPE MASTER: BALANCED IMAGE SIZE --- */
 @media screen and (orientation: landscape) and (max-width: 1024px) {
-    /* 1. Force the container to stop stretching everything */
-    .about-grid {
-        display: flex !important; /* Switch from Grid to Flex for better control */
-        flex-direction: row !important;
-        align-items: center !important;
-        justify-content: center !important;
-        gap: 50px !important;
-        width: 100% !important;
+    /* 1. Reset container to standard desktop margins for balance */
+    #about .container {
+        max-width: 1200px !important;
+        padding-left: 5rem !important; 
+        padding-right: 5rem !important;
     }
 
-    /* 2. SHRINK THE IMAGE: Forced Pixel Width */
+    .about-grid {
+        display: grid !important;
+        /* Balanced split: 1.1fr for image, 0.9fr for text */
+        grid-template-columns: 1.1fr 0.9fr !important; 
+        align-items: center !important;
+        gap: 4rem !important; 
+    }
+
     .about-image {
-        flex: 0 0 auto !important; /* Prevents column from growing */
-        width: 280px !important;    /* Hard pixel width - adjust this number to go smaller/larger */
-        display: block !important;
+        display: flex !important;
+        justify-content: center !important; /* Centers the bubble in its space */
+        width: 100% !important;
     }
 
     .about-image img {
-        width: 100% !important;
-        height: auto !important;
+        /* Reducing height slightly from 94vh to 82vh for that "touch smaller" feel */
+        height: 82vh !important; 
+        width: auto !important;
         aspect-ratio: 3 / 4 !important;
         object-fit: cover !important;
-        border-radius: 12px !important;
+        
+        border-radius: 1rem !important;
         border: 3px solid var(--bright-blue) !important;
-    }
-
-    /* 3. ENLARGE THE TEXT: Let it take the remaining space */
-    .about-content {
-        flex: 1 !important; /* Tells text to take all remaining room */
-        max-width: 600px !important;
-        text-align: left !important;
-    }
-
-    .about-content h2 {
-        font-size: 32px !important; /* Forced pixel size for the heading */
-        margin-bottom: 20px !important;
-        color: var(--rich-black);
-    }
-
-    .about-content p {
-        font-size: 18px !important; /* Forced pixel size for the body */
-        line-height: 1.6 !important;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25) !important;
     }
 }
 
