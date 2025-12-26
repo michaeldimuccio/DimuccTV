@@ -2557,68 +2557,60 @@ nav a {
         </div>
     </div>
 </footer>
-
 <script>
     (function() {
-        const els = document.querySelectorAll('.contact-reveal');
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('reveal-active');
-                }
-            });
-        }, { threshold: 0.1 });
-        els.forEach(el => observer.observe(el));
-        window.addEventListener('scroll', () => {
-            els.forEach(el => {
-                const rect = el.getBoundingClientRect();
-                if (rect.top > window.innerHeight) { el.classList.remove('reveal-active'); }
-            });
-        }, { passive: true });
-    })();
-</script>
-
-
-<script>
-    (function() {
-        // 1. Existing Reveal Logic
-        const revealEls = document.querySelectorAll('.contact-reveal');
+        // --- 1. THE STICKY REVEALER ---
         const revealObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
+                const rect = entry.target.getBoundingClientRect();
+                
                 if (entry.isIntersecting) {
+                    // Item enters from bottom: Reveal it
                     entry.target.classList.add('reveal-active');
+                } else {
+                    // THE FIX: Only remove if item is BELOW the screen
+                    // This ignores Safari's "culling" at the top search bar
+                    if (rect.top > (window.innerHeight || document.documentElement.clientHeight)) {
+                        entry.target.classList.remove('reveal-active');
+                    }
                 }
             });
-        }, { threshold: 0.1 });
-        revealEls.forEach(el => revealObserver.observe(el));
+        }, { 
+            threshold: 0.01, 
+            rootMargin: "0px 0px -20px 0px" 
+        });
 
-        // 2. Navigation Spy Logic (Fixed for Framer)
+        // Targeting individual items restores the staggered "Wave" effect
+        const itemsToAnimate = document.querySelectorAll(
+            '.hero-content, .stat-item, .about-grid, .achievement-card, .platform-item, .video-item, .contact-reveal'
+        );
+        itemsToAnimate.forEach(el => revealObserver.observe(el));
+
+        // --- 2. NAVIGATION SPY ---
         const sections = document.querySelectorAll("section[id]");
         const navLinks = document.querySelectorAll("nav ul li a");
 
         function updateNav() {
-            let currentSectionId = "";
-            
-            sections.forEach((section) => {
-                const sectionTop = section.offsetTop;
-                // Highlight switches when the section is 30% down the screen
-                if (window.pageYOffset >= sectionTop - (window.innerHeight / 3)) {
-                    currentSectionId = section.getAttribute("id");
+            let current = "";
+            const scrollPos = window.pageYOffset;
+            const winHeight = window.innerHeight;
+
+            sections.forEach((s) => {
+                if (scrollPos >= s.offsetTop - (winHeight / 3)) {
+                    current = s.getAttribute("id");
                 }
             });
 
             navLinks.forEach((link) => {
                 link.classList.remove("active");
-                const href = link.getAttribute("href");
-                // FIX: Used standard quotes instead of backticks to avoid Framer errors
-                if (href === "#" + currentSectionId) {
+                if (link.getAttribute("href") === "#" + current) {
                     link.classList.add("active");
                 }
             });
         }
 
         window.addEventListener('scroll', updateNav, { passive: true });
-        updateNav(); // Run once on load
+        updateNav(); 
     })();
 </script>
 
