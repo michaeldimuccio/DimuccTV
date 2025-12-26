@@ -1055,54 +1055,35 @@ nav a {
 }
 
 
-/* --- LANDSCAPE MASTER: ABSOLUTE MAX IMAGE SIZE --- */
+/* --- LANDSCAPE "FILL SCREEN" RESTORE --- */
 @media screen and (orientation: landscape) and (max-width: 1024px) {
-    /* Slim Nav to save vertical room */
-    nav { padding: 0.2rem 0 !important; }
-    .logo img { height: 22px !important; }
+    /* 1. Reset Container to fill the 980px width */
+    .container {
+        width: 100% !important;
+        max-width: 940px !important; /* Slightly less than 980 for breathing room */
+        padding: 0 20px !important;
+        margin: 0 auto !important;
+    }
 
-    /* About: The Big Image Layout */
-    .about-grid {
+    /* 2. Force Videos to fill the grid */
+    .video-grid {
         display: grid !important;
-        /* Image column is now nearly double the size of the text column */
-        grid-template-columns: 1.3fr 0.7fr !important; 
-        align-items: center !important;
-        gap: 4rem !important;
-        max-width: 1200px !important;
+        grid-template-columns: 1fr 1fr !important; /* 2 videos per row to fill space */
+        gap: 20px !important;
     }
 
-    .about-image {
-        display: flex !important;
-        justify-content: center !important;
-    }
-
-    .about-image img {
-        /* Force the image to be as tall as the screen allows */
-        height: 92vh !important; 
-        width: auto !important;
-        aspect-ratio: 3 / 4 !important; 
-        object-fit: cover !important;
-        
-        border-radius: 1.25rem !important;
-        border: 4px solid var(--bright-blue) !important;
-        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4) !important;
-    }
-
-    /* Keep the other grids consistent */
-    .video-grid, .music-grid, .press-grid {
-        display: grid !important;
-        grid-template-columns: repeat(3, 1fr) !important;
-        gap: 1.5rem !important;
-    }
-
-    .brand-grid, .stats-grid {
+    /* 3. Force Stats to 4-column row */
+    .stats-grid {
         display: grid !important;
         grid-template-columns: repeat(4, 1fr) !important;
     }
 
-    .container { max-width: 1200px !important; }
-    .nav-links { display: flex !important; }
+    /* 4. Restore Desktop Nav */
+    .nav-links { display: flex !important; gap: 1.5rem !important; }
     #hamburger, #mobile-menu { display: none !important; }
+
+    /* 5. Adjust Hero height so it doesn't feel endless */
+    .hero { min-height: 100vh !important; padding: 4rem 0 !important; }
 }
 
         
@@ -2728,14 +2709,15 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
 
 <script>
     (function() {
-        // 1. THE VIEWPORT SCALER (Fixed for 3-Column Video Grid)
+        // 1. THE VIEWPORT SCALER (Fixes the "Too Zoomed Out" issue)
         function handleOrientation() {
             const viewport = document.querySelector('meta[name="viewport"]');
             if (window.innerWidth > window.innerHeight) {
-                // LANDSCAPE: Set to 1024px so 3 videos per row look big and fill the screen
-                viewport.setAttribute('content', 'width=1024');
+                // LANDSCAPE: 980px is the "Sweet Spot" for filling the screen
+                // while keeping the desktop 4-column bubble layout.
+                viewport.setAttribute('content', 'width=980');
             } else {
-                // PORTRAIT: Standard mobile responsive view
+                // PORTRAIT: Back to standard mobile logic
                 viewport.setAttribute('content', 'width=device-width, initial-scale=1.0');
             }
         }
