@@ -948,18 +948,26 @@ nav a {
 
 
 
-    /* 9. Navigation: Hamburger Logic */
+/* 9. Navigation: Hamburger Logic (Slimmed Down) */
 
     .nav-links { display: none !important; } 
 
     #hamburger { display: flex !important; }
 
+    nav {
+        padding: 0.5rem 0 !important; /* Reduced from 1rem to make it thinner */
+    }
+
     nav .container {
-
         flex-direction: row !important; 
-
         justify-content: space-between !important;
+        padding-top: 5px !important;    /* Tightens top space */
+        padding-bottom: 5px !important; /* Tightens bottom space */
+    }
 
+    .logo img {
+        height: 28px !important; /* Slightly smaller logo to help slim the bar */
+        width: auto !important;
     }
 
 }
