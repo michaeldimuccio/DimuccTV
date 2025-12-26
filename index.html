@@ -815,58 +815,31 @@ nav a {
         visibility: visible !important;
     }
 
-/* 3. Section Reset: FIXED to allow internal Grids to show */
-    .container, section {
+    /* 3. Section Reset: Removes Massive Borders */
+    .container, section, .hero {
         width: 100% !important;
         max-width: 100% !important;
         padding-left: 15px !important;
         padding-right: 15px !important;
         margin: 0 auto !important;
-        display: block !important; /* Changed from flex to block so grids don't collapse */
-        text-align: center !important;
-    }
-
-    /* NEW: FORCE GRIDS VISIBLE & STACKED */
-    .stats-grid, .about-grid, .achievements-grid, .brand-grid, .contact-grid {
         display: flex !important;
         flex-direction: column !important;
         align-items: center !important;
-        width: 100% !important;
-        gap: 2.5rem !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-    }
-
-    .about-image img {
-        width: 100% !important;
-        height: auto !important;
-        max-width: 350px !important;
-        margin: 0 auto 1.5rem !important;
-        display: block !important;
+        text-align: center !important;
     }
 
     /* 4. Home (Hero) & Buttons Fix */
-    .hero { 
-        display: flex !important; /* Hero stays flex to center content */
-        flex-direction: column !important;
-        align-items: center !important;
-        padding-top: 8rem !important; 
-        width: 100% !important;
-    }
-
+    .hero { padding-top: 8rem !important; }
     .hero-btn-container {
         display: flex !important;
         flex-direction: column !important;
         gap: 12px !important;
         width: 100% !important;
-        align-items: center !important;
     }
-
     .btn {
         width: 260px !important;
         border-radius: 50px !important;
         margin: 0 auto !important;
-        display: inline-block !important;
     }
 
     /* 5. VIDEOS: 2 Per Row (3 Rows of 2) */
@@ -932,45 +905,30 @@ nav a {
         color: #6b7280 !important;
     }
 
-/* --- 6. NEW: MUSIC & ACHIEVEMENTS ONE PER ROW --- */
-    /* Forces music items and cards to stack vertically and stay visible */
-    .music-grid, .music-container, .achievements-grid {
+    /* --- 6. NEW: MUSIC ONE PER ROW --- */
+
+    /* Forces music items to stack vertically */
+
+    .music-grid, .music-container {
         display: flex !important;
         flex-direction: column !important;
         align-items: center !important;
         width: 100% !important;
-        gap: 25px !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-    }
-
-    .video-item, .achievement-card {
-        width: 100% !important;
-        max-width: 100% !important;
+        gap: 20px !important;
     }
 
     /* 7. Contact & Socials: FIXING THE CUT-OFF */
     #contact .container, .contact-grid, .connect-grid {
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: center !important;
         width: 100% !important;
         padding: 0 !important;
-        gap: 2rem !important;
     }
 
     .social-links, .social-grid {
         display: flex !important;
         flex-wrap: wrap !important;
         justify-content: center !important;
-        gap: 12px !important;
+        gap: 10px !important;
         width: 100% !important;
-    }
-
-    /* Prevents the contact info card from being too wide on small phones */
-    .contact-info-card, .contact-form {
-        width: 100% !important;
-        max-width: 450px !important;
     }
 
     /* 8. Footer Fix: Aligned Left */
@@ -1066,6 +1024,33 @@ nav a {
             footer { padding: 1rem 0 !important; }
             .footer-bottom { flex-direction: row !important; font-size: 0.7rem !important; }
         }
+
+
+
+/* 1. INITIAL STATE: Hidden and shifted down */
+.hero-content, .stat-item, .about-grid, .achievement-card, 
+.platform-item, .video-item, .contact-reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease, transform 0.8s ease !important;
+}
+
+/* 2. ACTIVE STATE: Fully visible and centered */
+.reveal-active {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+    /* Keeps it solid while the user is looking at it */
+    transition: opacity 0.8s ease, transform 0.8s ease !important;
+}
+
+/* 3. RESET STATE: Fades out only once it's in the 100px safety buffer */
+.reveal-reset {
+    opacity: 0 !important;
+    transform: translateY(30px) !important;
+    /* This makes the "reset" happen as a smooth 1.2s fade out */
+    transition: opacity 1.2s ease-in !important; 
+}
+        
         
     </style>
 </head>
@@ -2648,15 +2633,25 @@ nav a {
         setupSilentForm('emailCaptureForm', 'Joining...', 'Joined!');
         setupSilentForm('contactForm', 'Sending...', 'Sent!');
 
-        // 3. REVEAL LOGIC: Intersection Observer for smooth animations
+// 3. STICKY REVEAL: Stays solid until 100px past the screen edge
         const revealObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
+                    // Element is on screen: Show it and keep it solid
                     entry.target.classList.add('reveal-active');
-                    revealObserver.unobserve(entry.target);
+                    entry.target.classList.remove('reveal-reset');
+                } else {
+                    // Element is 100px OFF-SCREEN: Reset it quietly
+                    if (entry.target.classList.contains('reveal-active')) {
+                        entry.target.classList.remove('reveal-active');
+                        entry.target.classList.add('reveal-reset');
+                    }
                 }
             });
-        }, { threshold: 0.05, rootMargin: "0px 0px -20px 0px" });
+        }, { 
+            threshold: 0, 
+            rootMargin: "100px 0px 100px 0px" // The 100px "Safety Buffer"
+        });
 
         const items = document.querySelectorAll('.hero-content, .stat-item, .about-grid, .achievement-card, .platform-item, .video-item, .contact-reveal');
         items.forEach(el => revealObserver.observe(el));
@@ -2700,4 +2695,4 @@ nav a {
     
 </body>
 </html>
-`update 7
+`update 8
