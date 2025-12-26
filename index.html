@@ -973,7 +973,8 @@ nav a {
                 max-width: 100% !important;
             }
             
-            .video-grid, .music-grid {
+            /* UPDATED: Added .press-grid for 3 per row news articles */
+            .video-grid, .music-grid, .press-grid {
                 display: grid !important;
                 grid-template-columns: repeat(3, 1fr) !important;
                 gap: 1.2rem !important;
@@ -986,7 +987,14 @@ nav a {
             }
 
             /* 2. SIZING & PADDING */
-            .about-image img { height: 70vh !important; width: auto !important; margin: 0 auto !important; }
+            /* UPDATED: Increased height to 85vh for a larger About image */
+            .about-image img { 
+                height: 85vh !important; 
+                width: auto !important; 
+                margin: 0 auto !important; 
+                max-height: 500px; /* Safety cap so it doesn't overflow small screens */
+            }
+            
             .platform-card { padding: 1.5rem !important; }
             .platform-list { gap: 0.8rem !important; }
             .platform-item { padding: 0.6rem !important; }
@@ -2649,4 +2657,4 @@ nav a {
     
 </body>
 </html>
-`update 3
+`update 4
