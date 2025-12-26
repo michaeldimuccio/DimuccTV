@@ -1027,43 +1027,44 @@ nav a {
 
 }
         
-/* --- ADAPTIVE LANDSCAPE: 3-COLUMNS WITHOUT ZOOM --- */
-@media screen and (orientation: landscape) and (max-width: 1024px) {
-    /* 1. Reset container for mobile-friendly landscape margins */
-    .container {
-        max-width: 95% !important;
-        padding-left: 1rem !important;
-        padding-right: 1rem !important;
+/* --- MASTER LANDSCAPE RESTORATION --- */
+@media screen and (orientation: landscape) and (max-width: 1100px) {
+    /* 1. FORCE DESKTOP NAV (Kill the Burger) */
+    #hamburger, #mobile-menu {
+        display: none !important;
     }
+    .nav-links {
+        display: flex !important; /* Forces the text links back */
+        gap: 1.5rem !important;
+    }
+    nav { padding: 0.3rem 0 !important; }
+    .logo img { height: 26px !important; }
 
-    /* 2. Force 3-Column Layouts on actual device width */
+    /* 2. RESTORE 3-COLUMN GRIDS */
     .video-grid, .music-grid, .press-grid {
         display: grid !important;
         grid-template-columns: repeat(3, 1fr) !important;
-        gap: 1rem !important;
+        gap: 1.2rem !important;
     }
 
-    /* 3. About Section Side-by-Side */
+    /* 3. RESTORE ABOUT SECTION SIDE-BY-SIDE */
     .about-grid {
         display: grid !important;
-        grid-template-columns: 1fr 1.2fr !important;
+        grid-template-columns: 1.1fr 0.9fr !important;
         align-items: center !important;
-        gap: 2rem !important;
+        gap: 3rem !important;
     }
-
     .about-image img {
-        height: 75vh !important; /* Scaled for shorter landscape screens */
+        height: 80vh !important;
         width: auto !important;
         aspect-ratio: 3 / 4 !important;
-        object-fit: cover !important;
-        border-radius: 1rem !important;
-        border: 3px solid var(--bright-blue) !important;
     }
 
-    /* 4. Slim Navigation for Landscape */
-    nav { padding: 0.3rem 0 !important; }
-    .logo img { height: 24px !important; }
-    .nav-links { gap: 1rem !important; }
+    /* 4. LAYOUT SPACING */
+    .container {
+        max-width: 95% !important;
+        padding: 0 2rem !important;
+    }
 }
 
         
@@ -2602,11 +2603,11 @@ nav a {
 
 <script>
     (function() {
-        // 1. CLEAN VIEWPORT: Stops the 200% zoom by using natural device width
+        // 1. CLEAN VIEWPORT: Natural width, NO forced 1280px to stop zoom glitch
         function handleOrientation() {
             const viewport = document.querySelector('meta[name="viewport"]');
             if (viewport) {
-                // width=device-width ensures the browser doesn't "blow up" the page
+                // width=device-width prevents the 200% magnification glitch
                 viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0');
             }
         }
@@ -2614,7 +2615,7 @@ nav a {
         window.addEventListener('orientationchange', handleOrientation);
         handleOrientation(); 
 
-        // 2. SILENT FORMS: No alerts, no pop-ups, no mail app triggers
+        // 2. SILENT FORMS: No alerts, no mail app pop-ups
         const scriptURL = 'https://script.google.com/macros/s/AKfycbwyD-d5Ka405oHl6FsBTQUJ95OYZVuFxmJsJL6hRSjcy8K_W8hqKyAMBCbUc6k-tcsCYg/exec';
 
         function setupSilentForm(formId, loadingText, successText) {
@@ -2622,10 +2623,9 @@ nav a {
             if (!form) return;
 
             form.addEventListener('submit', function(e) {
-                e.preventDefault(); // Prevents the browser from opening the mail app
+                e.preventDefault(); // Kills the mail app trigger
                 const btn = this.querySelector('button');
                 const originalText = btn.innerText;
-                
                 btn.innerText = loadingText;
                 btn.disabled = true;
 
@@ -2633,10 +2633,7 @@ nav a {
                     .then(() => {
                         btn.innerText = successText;
                         this.reset();
-                        setTimeout(() => {
-                            btn.innerText = originalText;
-                            btn.disabled = false;
-                        }, 3000);
+                        setTimeout(() => { btn.innerText = originalText; btn.disabled = false; }, 3000);
                     })
                     .catch(() => {
                         btn.innerText = "Error";
@@ -2644,11 +2641,10 @@ nav a {
                     });
             });
         }
-
         setupSilentForm('emailCaptureForm', 'Joining...', 'Joined!');
         setupSilentForm('contactForm', 'Sending...', 'Sent!');
 
-        // 3. REVEAL LOGIC: Animations
+        // 3. REVEAL LOGIC
         const revealObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -2656,29 +2652,27 @@ nav a {
                     revealObserver.unobserve(entry.target);
                 }
             });
-        }, { threshold: 0.05, rootMargin: "0px 0px -20px 0px" });
-
+        }, { threshold: 0.05 });
         const items = document.querySelectorAll('.hero-content, .stat-item, .about-grid, .achievement-card, .platform-item, .video-item, .contact-reveal');
         items.forEach(el => revealObserver.observe(el));
 
-        // 4. NAVIGATION SPY & BURGER MENU
+        // 4. NAVIGATION SPY
         const sections = document.querySelectorAll("section[id]");
         const navLinks = document.querySelectorAll("nav ul li a");
-        const mobileLinks = document.querySelectorAll("#mobile-menu a");
-
         function updateNav() {
             let current = "";
             const scrollPos = window.pageYOffset;
             sections.forEach(s => {
                 if (scrollPos >= s.offsetTop - (window.innerHeight / 3)) current = s.getAttribute("id");
             });
-            [...navLinks, ...mobileLinks].forEach(link => {
+            navLinks.forEach(link => {
                 link.classList.remove("active");
                 if (link.getAttribute("href") === "#" + current) link.classList.add("active");
             });
         }
         window.addEventListener('scroll', updateNav, { passive: true });
 
+        // 5. BURGER MENU (Only active in Portrait)
         window.toggleMenu = function() {
             const menu = document.getElementById('mobile-menu');
             if (menu) {
