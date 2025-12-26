@@ -3,7 +3,7 @@
 <head>
 <base target="_self">
     <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>Michael "Dimucc" DiMuccio - Digital Creator</title>
     <style>
 /* 1. THE DESKTOP & WIDE TABLET "BLACK SCREEN" KILLER */
@@ -2685,12 +2685,6 @@ header, nav, section, footer {
 
 <script>
 (function() {
-    // 1. SIMPLE VIEWPORT LOCK (Standard Device Width)
-    // This allows CSS Media Queries to work naturally without "auto-zooming"
-    const viewport = document.querySelector('meta[name="viewport"]');
-    if (viewport) {
-        viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
-    }
 
     // 2. SILENT FORM HANDLER (Google Sheets Only)
     const scriptURL = 'https://script.google.com/macros/s/AKfycbwyD-d5Ka405oHl6FsBTQUJ95OYZVuFxmJsJL6hRSjcy8K_W8hqKyAMBCbUc6k-tcsCYg/exec';
