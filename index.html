@@ -1055,61 +1055,68 @@ nav a {
 }
 
 
-/* --- MASTER LANDSCAPE: FORCED HORIZONTAL LAYOUT --- */
+/* --- MASTER LANDSCAPE: TOTAL DESKTOP OVERRIDE --- */
 @media screen and (orientation: landscape) and (max-height: 600px) {
-    /* 1. THE ZOOM ENGINE: Shrinks the desktop world to fit mobile */
+    /* 1. THE ZOOM ENGINE */
     body {
         zoom: calc(100vw / 1280); 
         width: 1280px !important;
-        min-height: 100vh;
         margin: 0 auto !important;
         overflow-x: hidden !important;
-        display: block !important; /* Prevents body-level flex stacking */
+        display: block !important;
     }
 
-    /* 2. FORCE 3-COLUMNS (Kills the Vertical Stack) */
-    .video-grid, .music-grid, .press-grid {
-        display: grid !important;
-        grid-template-columns: 1fr 1fr 1fr !important; /* Forces 3 items per row */
-        gap: 2rem !important;
-        width: 100% !important;
-    }
-
-    /* 3. FORCE SIDE-BY-SIDE ABOUT */
-    .about-grid {
-        display: grid !important;
-        grid-template-columns: 1.1fr 0.9fr !important; /* Image left, Text right */
-        flex-direction: row !important; /* Explicitly stops column stacking */
-        gap: 4rem !important;
-        align-items: center !important;
-        width: 100% !important;
-    }
-
-    .about-image, .about-content {
-        width: auto !important; /* Stops mobile "width: 100%" rules */
-    }
-
-    /* 4. LOCK CONTAINER TO DESKTOP WIDTH */
+    /* 2. UNIVERSAL CONTAINER RESET */
     .container {
         width: 1280px !important;
         max-width: 1280px !important;
         padding: 0 5rem !important;
         margin: 0 auto !important;
+        display: block !important; 
     }
 
-    /* 5. KILL BURGER & RESTORE NAV */
-    #hamburger, #mobile-menu {
-        display: none !important;
-    }
-    .nav-links {
-        display: flex !important;
-        flex-direction: row !important;
+    /* 3. FORCE HORIZONTAL ON ALL GRIDS (The "Half-Section" Fix) */
+    .video-grid, 
+    .music-grid, 
+    .press-grid, 
+    .achievements-grid, 
+    .stats-grid, 
+    .brand-grid,
+    .audience-cards {
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr) !important; /* Forces 3 items across */
         gap: 2rem !important;
+        width: 100% !important;
     }
-    nav { 
-        width: 1280px !important;
-        padding: 0.8rem 0 !important;
+    
+    /* Special Case for 4-column sections (Stats/Brands) if you prefer */
+    .stats-grid, .brand-grid {
+        grid-template-columns: repeat(4, 1fr) !important;
     }
+
+    /* 4. ABOUT & CONTACT SIDE-BY-SIDE */
+    .about-grid, .contact-grid {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 4rem !important;
+        width: 100% !important;
+    }
+
+    /* Kill mobile-only stacking for images/content */
+    .about-image, .about-content, .about-image img {
+        width: auto !important;
+        max-width: 100% !important;
+    }
+
+    .about-image img {
+        height: 82vh !important;
+        aspect-ratio: 3/4 !important;
+    }
+
+    /* 5. NAVIGATION RESTORATION */
+    #hamburger, #mobile-menu { display: none !important; }
+    .nav-links { display: flex !important; flex-direction: row !important; gap: 2rem !important; }
+    nav { width: 1280px !important; }
 }
  
     </style>
