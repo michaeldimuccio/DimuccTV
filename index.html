@@ -1026,6 +1026,21 @@ nav a {
     }
 
 }
+        /* Add this to your CSS */
+#about, #stats, #achievements, #videos, #contact {
+    /* Forces the phone's GPU to keep these sections rendered at all times */
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    will-change: transform, opacity;
+    /* Prevents layout shifts from hiding the content */
+    contain: content;
+}
+
+/* Ensure the active nav link is visible even on mobile */
+nav ul li a.active {
+    color: var(--bright-blue) !important;
+    border-bottom: 2px solid var(--accent-orange) !important;
+}
     </style>
 </head>
 <body>
@@ -2648,27 +2663,25 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
 
 <script>
     (function() {
-        // 1. THE STICKY REVEALER (Fixes ALL disappearing issues)
+        // 1. STICKY REVEAL (Fixes About, Stats, Achievements, Contact disappearing)
         const revealObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('reveal-active');
-                    // THE LOCK: Once it appears, stop watching. 
-                    // This prevents disappearing on scroll-up.
+                    // Stop watching once revealed to prevent Safari from flickering it off
                     revealObserver.unobserve(entry.target);
                 }
             });
         }, { threshold: 0.05 });
 
-        // Target every element that needs to "Wave" or "Stay"
-        const animatedItems = document.querySelectorAll(
-            '.hero-content, .stat-item, .about-grid, .achievement-card, .platform-item, .video-item, .contact-reveal'
-        );
-        animatedItems.forEach(el => revealObserver.observe(el));
+        // Target individual items for the "Wave" effect
+        const items = document.querySelectorAll('.hero-content, .stat-item, .about-grid, .achievement-card, .platform-item, .video-item, .contact-reveal');
+        items.forEach(el => revealObserver.observe(el));
 
-        // 2. NAVIGATION SPY (Restores the Orange Underline)
+        // 2. NAVIGATION SPY (Fixes the Orange Line/Blue Text highlighting)
         const sections = document.querySelectorAll("section[id]");
         const navLinks = document.querySelectorAll("nav ul li a");
+        const mobileLinks = document.querySelectorAll("#mobile-menu a");
 
         function updateNav() {
             let current = "";
@@ -2677,16 +2690,16 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
 
             sections.forEach(s => {
                 const sectionTop = s.offsetTop;
-                // If we've scrolled 30% into a section, mark it active
+                // If the section is in the top 3rd of the screen, it's "active"
                 if (scrollPos >= sectionTop - (winHeight / 3)) {
                     current = s.getAttribute("id");
                 }
             });
 
-            navLinks.forEach(link => {
+            // Update both desktop and mobile menu links
+            [...navLinks, ...mobileLinks].forEach(link => {
                 link.classList.remove("active");
-                const href = link.getAttribute("href");
-                if (href === "#" + current) {
+                if (link.getAttribute("href") === "#" + current) {
                     link.classList.add("active");
                 }
             });
@@ -2694,17 +2707,15 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
 
         // 3. EVENT LISTENERS
         window.addEventListener('scroll', updateNav, { passive: true });
-        updateNav(); // Run once to set initial state
+        window.addEventListener('resize', updateNav); // Fixes height changes
+        updateNav();
 
-        // 4. MOBILE MENU TOGGLE (Ensures your burger menu works)
+        // 4. MOBILE MENU TOGGLE
         window.toggleMenu = function() {
             const menu = document.getElementById('mobile-menu');
             if (menu) {
-                if (menu.style.display === 'flex') {
-                    menu.style.display = 'none';
-                } else {
-                    menu.style.setProperty('display', 'flex', 'important');
-                }
+                const isOpen = menu.style.display === 'flex';
+                menu.style.setProperty('display', isOpen ? 'none' : 'flex', 'important');
             }
         };
     })();
