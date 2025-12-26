@@ -2560,57 +2560,50 @@ nav a {
 
 <script>
     (function() {
-        // --- 1. STICKY REVEAL LOGIC ---
-        const revealObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                // If it hits the screen even 1%, lock it to ACTIVE
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('reveal-active');
-                } 
-                
-                // We REMOVED the 'else' reset here. 
-                // This prevents the "vanishing" act entirely while scrolling down.
-            });
-        }, { threshold: 0.01 });
-
-        const elements = document.querySelectorAll(
+        // 1. SELECT EVERYTHING THAT ANIMATES
+        const allAnimatedElements = document.querySelectorAll(
             '.stat-item, .about-grid, .achievement-card, .platform-item, .video-item, .contact-reveal'
         );
-        elements.forEach(el => revealObserver.observe(el));
 
-        // --- 2. GLOBAL RESET (Only when returning to Top) ---
+        // 2. THE REVEALER (One-way only)
+        const revealer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('reveal-active');
+                    // Stop watching once it's revealed to prevent ANY flickering
+                    revealer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.05, rootMargin: "0px 0px -50px 0px" });
+
+        allAnimatedElements.forEach(el => revealer.observe(el));
+
+        // 3. THE RESET (Only at the very top)
         window.addEventListener('scroll', () => {
-            // If you scroll back to the very top (Hero section), reset the animations
-            if (window.pageYOffset < 100) {
-                elements.forEach(el => el.classList.remove('reveal-active'));
+            if (window.scrollY < 50) {
+                allAnimatedElements.forEach(el => {
+                    el.classList.remove('reveal-active');
+                    revealer.observe(el); // Re-arm the observer
+                });
             }
-            
-            // Run Nav Spy
             updateNav();
         }, { passive: true });
 
-        // --- 3. NAVIGATION SPY ---
+        // 4. NAVIGATION SPY
         const sections = document.querySelectorAll("section[id]");
         const navLinks = document.querySelectorAll("nav ul li a");
-
         function updateNav() {
-            let currentSectionId = "";
-            sections.forEach((section) => {
-                const sectionTop = section.offsetTop;
-                if (window.pageYOffset >= sectionTop - (window.innerHeight / 3)) {
-                    currentSectionId = section.getAttribute("id");
+            let currentId = "";
+            sections.forEach(s => {
+                if (window.pageYOffset >= s.offsetTop - (window.innerHeight / 3)) {
+                    currentId = s.getAttribute("id");
                 }
             });
-
-            navLinks.forEach((link) => {
-                link.classList.remove("active");
-                const href = link.getAttribute("href");
-                if (href === "#" + currentSectionId) {
-                    link.classList.add("active");
-                }
+            navLinks.forEach(l => {
+                l.classList.remove("active");
+                if (l.getAttribute("href") === "#" + currentId) l.classList.add("active");
             });
         }
-        updateNav();
     })();
 </script>
 
