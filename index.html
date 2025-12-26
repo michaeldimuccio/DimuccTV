@@ -1,58 +1,146 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <base target="_self">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Michael "Dimucc" DiMuccio - Digital Creator</title>
-    <style>
-        /* 1. RESET & CORE */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root { --bright-blue: #1DA1FF; --vivid-orange: #FF7A00; --rich-black: #0B0B0E; --slate-gray: #20232A; --off-white: #F6F7FB; }
-        html, body { width: 100% !important; max-width: 100% !important; overflow-x: hidden !important; background: var(--rich-black); font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif; }
+  <base target="_self">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Michael "Dimucc" DiMuccio - Digital Creator</title>
 
-        /* 2. FLUID CONTAINER: Kills the "Boxed" look */
-        .container { width: 100% !important; max-width: 1280px !important; margin: 0 auto !important; padding-inline: clamp(1.25rem, 5vw, 5rem) !important; }
+  <style>
+    /* 1. RESET & CORE */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bright-blue: #1DA1FF;
+      --vivid-orange: #FF7A00;
+      --rich-black: #0B0B0E;
+      --slate-gray: #20232A;
+      --off-white: #F6F7FB;
+    }
 
-        /* 3. MASTER LANDSCAPE: CANCEL MOBILE */
-        @media screen and (orientation: landscape) and (max-height: 600px) {
-            body { zoom: 1 !important; } /* Stop browser from 'helping' with zoom */
-            #hamburger, #mobile-menu { display: none !important; }
-            .nav-links { display: flex !important; gap: 2rem !important; }
-            
-            /* Force side-by-side on all major grids */
-            .video-grid, .music-grid, .press-grid { display: grid !important; grid-template-columns: repeat(3, 1fr) !important; gap: 1.5rem !important; }
-            .stats-grid, .brand-grid { display: grid !important; grid-template-columns: repeat(4, 1fr) !important; gap: 1rem !important; }
-            .about-grid, .contact-grid, .audience-cards { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 4rem !important; text-align: left !important; align-items: center !important; }
-            
-            /* Home/Hero Fixes */
-            .hero { padding-top: 6rem !important; min-height: 100vh !important; }
-            .hero-btn-container { display: flex !important; flex-direction: row !important; gap: 1.5rem !important; justify-content: center !important; }
-            .btn { width: auto !important; margin: 0 !important; }
-            .about-image img { height: 80vh !important; width: auto !important; }
-        }
+    html, body {
+      width: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
+      background: var(--rich-black);
+      font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
+    }
 
-        /* 4. PORTRAIT MOBILE ONLY */
-        @media screen and (max-width: 768px) and (orientation: portrait) {
-            .nav-links { display: none !important; }
-            #hamburger { display: flex !important; }
-            .video-grid, .music-grid, .about-grid, .contact-grid, .stats-grid, .brand-grid { display: flex !important; flex-direction: column !important; align-items: center !important; }
-        }
+    /* 2. FLUID CONTAINER (inner content only) */
+    .container {
+      width: 100%;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding-inline: clamp(1.25rem, 5vw, 5rem);
+    }
 
-        /* 5. SHARED ELEMENTS (Nav, Buttons, Animations) */
-        nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; background: var(--slate-gray); padding: 1rem 0; }
-        .logo img { height: 32px; border: none !important; }
-        .nav-links { list-style: none; }
-        .nav-links a { color: white; text-decoration: none; font-weight: 600; letter-spacing: 0.1em; }
-        .btn { padding: 1rem 2.5rem; border-radius: 9999px; font-weight: 700; cursor: pointer; display: inline-block; transition: 0.3s; text-decoration: none; }
-        .btn-primary { background: var(--bright-blue); color: white; border: none; }
-        .btn-second { background: #FFFFFF; color: var(--bright-blue); border: 2px solid var(--bright-blue); }
-        
-        /* Animation Reveal State */
-        .hero-content, .stat-item, .about-grid, .achievement-card, .platform-item, .video-item { opacity: 0; transform: translateY(20px); transition: all 0.8s ease-out; }
-        .reveal-active { opacity: 1 !important; transform: translateY(0) !important; }
-    </style>
+    /* 3. LANDSCAPE PHONE/TABLET: FORCE DESKTOP (NO ZOOM/NO "BOX") */
+    @media screen and (orientation: landscape) and (max-width: 932px) {
+
+      html, body {
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+      }
+
+      /* IMPORTANT: prevent any nested container padding/width overrides */
+      nav .container,
+      section .container,
+      footer .container {
+        width: 100% !important;
+        max-width: 1280px !important;
+        margin-inline: auto !important;
+        padding-inline: clamp(1.25rem, 5vw, 5rem) !important;
+      }
+
+      #hamburger, #mobile-menu { display: none !important; }
+      .nav-links { display: flex !important; gap: 2rem !important; flex-direction: row !important; }
+
+      .video-grid, .music-grid, .press-grid {
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 1.5rem !important;
+      }
+
+      .stats-grid, .brand-grid {
+        display: grid !important;
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 1rem !important;
+      }
+
+      .about-grid, .contact-grid, .audience-cards {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 4rem !important;
+        text-align: left !important;
+        align-items: center !important;
+      }
+
+      .hero { padding-top: 6rem !important; min-height: 100vh !important; }
+      .hero-btn-container {
+        display: flex !important;
+        flex-direction: row !important;
+        gap: 1.5rem !important;
+        justify-content: center !important;
+      }
+      .btn { width: auto !important; margin: 0 !important; }
+
+      .about-image img { height: 80vh !important; width: auto !important; }
+    }
+
+    /* 4. PORTRAIT MOBILE ONLY */
+    @media screen and (max-width: 768px) and (orientation: portrait) {
+      .nav-links { display: none !important; }
+      #hamburger { display: flex !important; }
+      .video-grid, .music-grid, .about-grid, .contact-grid, .stats-grid, .brand-grid {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+      }
+    }
+
+    /* 5. SHARED ELEMENTS (Nav, Buttons, Animations) */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      background: var(--slate-gray);
+      padding: 1rem 0;
+    }
+
+    .logo img { height: 32px; border: none !important; }
+    .nav-links { list-style: none; }
+
+    .nav-links a {
+      color: white;
+      text-decoration: none;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+    }
+
+    .btn {
+      padding: 1rem 2.5rem;
+      border-radius: 9999px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-block;
+      transition: 0.3s;
+      text-decoration: none;
+    }
+
+    .btn-primary { background: var(--bright-blue); color: white; border: none; }
+    .btn-second { background: #FFFFFF; color: var(--bright-blue); border: 2px solid var(--bright-blue); }
+
+    /* Animation Reveal State */
+    .hero-content, .stat-item, .about-grid, .achievement-card, .platform-item, .video-item {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.8s ease-out;
+    }
+    .reveal-active { opacity: 1 !important; transform: translateY(0) !important; }
+
+  </style>
 </head>
+
 <body>
     <!-- Navigation -->
 <nav style="width: 100%; position: fixed; top: 0; left: 0; background: #0b0f19; z-index: 9999; border-bottom: 1px solid rgba(255,255,255,0.1);">
@@ -1586,61 +1674,71 @@
 
 <script>
 (function() {
-    // 1. IOF STATEMENT: Force 100% Zoom
-    function handleOrientation() {
-        const v = document.querySelector('meta[name="viewport"]');
-        if (!v) return;
-        if (window.innerWidth > window.innerHeight) {
-            // Landscape Force: Lock scale at 1.0 to kill zoom glitch
-            v.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
-        } else {
-            // Portrait Reset
-            v.setAttribute('content', 'width=device-width, initial-scale=1.0');
-        }
-    }
-    window.addEventListener('resize', handleOrientation);
-    window.addEventListener('orientationchange', handleOrientation);
-    handleOrientation();
 
-    // 2. SILENT FORMS: Google Sheet Only
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbwyD-d5Ka405oHl6FsBTQUJ95OYZVuFxmJsJL6hRSjcy8K_W8hqKyAMBCbUc6k-tcsCYg/exec';
-    function setupForm(id, loadTxt, succTxt) {
-        const f = document.getElementById(id);
-        if (!f) return;
-        f.addEventListener('submit', function(e) {
-            e.preventDefault(); // Kill mailto/redirects
-            const b = this.querySelector('button');
-            const orig = b.innerText;
-            b.innerText = loadTxt;
-            b.disabled = true;
-            fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: new FormData(this) })
-                .then(() => {
-                    b.innerText = succTxt;
-                    this.reset();
-                    setTimeout(() => { b.innerText = orig; b.disabled = false; }, 3000);
-                });
+  /* =========================
+     1. SILENT FORMS (UNCHANGED)
+     ========================= */
+  const scriptURL = 'https://script.google.com/macros/s/AKfycbwyD-d5Ka405oHl6FsBTQUJ95OYZVuFxmJsJL6hRSjcy8K_W8hqKyAMBCbUc6k-tcsCYg/exec';
+
+  function setupForm(id, loadTxt, succTxt) {
+    const f = document.getElementById(id);
+    if (!f) return;
+
+    f.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const b = this.querySelector('button');
+      if (!b) return;
+
+      const orig = b.innerText;
+      b.innerText = loadTxt;
+      b.disabled = true;
+
+      fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: new FormData(this) })
+        .then(() => {
+          b.innerText = succTxt;
+          this.reset();
+          setTimeout(() => {
+            b.innerText = orig;
+            b.disabled = false;
+          }, 3000);
         });
-    }
-    setupForm('emailCaptureForm', 'Joining...', 'Joined!');
-    setupForm('contactForm', 'Sending...', 'Sent!');
+    });
+  }
 
-    // 3. REVEAL LOGIC
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('reveal-active'); });
-    }, { threshold: 0.05 });
-    document.querySelectorAll('.hero-content, .stat-item, .about-grid, .achievement-card, .platform-item, .video-item').forEach(el => observer.observe(el));
+  setupForm('emailCaptureForm', 'Joining...', 'Joined!');
+  setupForm('contactForm', 'Sending...', 'Sent!');
 
-    // 4. MENU TOGGLE
-    window.toggleMenu = function() {
-        if (window.innerWidth > window.innerHeight) return;
-        const m = document.getElementById('mobile-menu');
-        if (m) {
-            const isOpen = (m.style.display === 'flex');
-            m.style.setProperty('display', isOpen ? 'none' : 'flex', 'important');
-        }
-    };
+  /* =========================
+     2. REVEAL LOGIC (UNCHANGED)
+     ========================= */
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) e.target.classList.add('reveal-active');
+    });
+  }, { threshold: 0.05 });
+
+  document
+    .querySelectorAll(
+      '.hero-content, .stat-item, .about-grid, .achievement-card, .platform-item, .video-item'
+    )
+    .forEach(el => observer.observe(el));
+
+  /* =========================
+     3. MENU TOGGLE (UNCHANGED)
+     ========================= */
+  window.toggleMenu = function() {
+    if (window.innerWidth > window.innerHeight) return; // portrait only
+    const m = document.getElementById('mobile-menu');
+    if (!m) return;
+
+    const isOpen = (m.style.display === 'flex');
+    m.style.setProperty('display', isOpen ? 'none' : 'flex', 'important');
+  };
+
 })();
 </script>
+
     
 </body>
 </html>
