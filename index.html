@@ -2560,42 +2560,20 @@ nav a {
 
 <script>
     (function() {
-        // 1. SELECT EVERYTHING THAT ANIMATES
-        const allAnimatedElements = document.querySelectorAll(
-            '.stat-item, .about-grid, .achievement-card, .platform-item, .video-item, .contact-reveal'
-        );
-
-        // 2. THE REVEALER (One-way only)
-        const revealer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('reveal-active');
-                    // Stop watching once it's revealed to prevent ANY flickering
-                    revealer.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.05, rootMargin: "0px 0px -50px 0px" });
-
-        allAnimatedElements.forEach(el => revealer.observe(el));
-
-        // 3. THE RESET (Only at the very top)
-        window.addEventListener('scroll', () => {
-            if (window.scrollY < 50) {
-                allAnimatedElements.forEach(el => {
-                    el.classList.remove('reveal-active');
-                    revealer.observe(el); // Re-arm the observer
-                });
-            }
-            updateNav();
-        }, { passive: true });
-
-        // 4. NAVIGATION SPY
         const sections = document.querySelectorAll("section[id]");
         const navLinks = document.querySelectorAll("nav ul li a");
-        function updateNav() {
+        
+        // Items that need to stay "locked" once seen
+        const tallElements = document.querySelectorAll('.about-grid, .achievement-card, .stat-item');
+
+        function handleScroll() {
+            const scrollPos = window.pageYOffset;
+            const winHeight = window.innerHeight;
+
+            // 1. NAVIGATION SPY LOGIC
             let currentId = "";
             sections.forEach(s => {
-                if (window.pageYOffset >= s.offsetTop - (window.innerHeight / 3)) {
+                if (scrollPos >= s.offsetTop - (winHeight / 3)) {
                     currentId = s.getAttribute("id");
                 }
             });
@@ -2603,7 +2581,44 @@ nav a {
                 l.classList.remove("active");
                 if (l.getAttribute("href") === "#" + currentId) l.classList.add("active");
             });
+
+            // 2. THE "LOCKED" REVEAL LOGIC
+            // Once these hit the screen, they stay active until you go back to the top
+            tallElements.forEach(el => {
+                const rect = el.getBoundingClientRect();
+                const triggerPoint = winHeight * 0.9; // Triggers when 10% on screen
+
+                if (rect.top < triggerPoint) {
+                    el.classList.add('reveal-active');
+                }
+                
+                // RESET: Only if you scroll all the way back to the Hero
+                if (scrollPos < 100) {
+                    el.classList.remove('reveal-active');
+                }
+            });
         }
+
+        // 3. OBSERVER FOR SMALLER ITEMS (Videos & Audience)
+        const smallItemObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('reveal-active');
+                } else {
+                    // Only reset if it's below the screen
+                    if (entry.boundingClientRect.top > winHeight) {
+                        entry.target.classList.remove('reveal-active');
+                    }
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.platform-item, .video-item, .contact-reveal').forEach(el => {
+            smallItemObserver.observe(el);
+        });
+
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        handleScroll(); // Run on load
     })();
 </script>
 
