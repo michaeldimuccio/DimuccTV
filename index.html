@@ -880,46 +880,60 @@ nav a {
 
     }
 
-/* --- AUDIENCE & REACH STATS FIX (Aligned Right) --- */
+/* --- AUDIENCE & REACH STATS FIX (Compact Right-Align) --- */
     
     #audience .platform-item {
         display: flex !important;
-        flex-direction: row !important; /* Logo on left, Stats on right */
-        justify-content: space-between !important; /* Pushes them to opposite ends */
+        flex-direction: row !important;
+        justify-content: space-between !important;
         align-items: center !important;
-        padding: 1.2rem !important;
-        min-height: 90px !important;
+        padding: 0.8rem 1rem !important; /* Tighter padding to save space */
+        min-height: 80px !important;
+        gap: 10px !important;
     }
 
-    #audience .view-stats {
-        position: static !important; /* Removes desktop pinning */
+    /* Left Side: Logo and Title/Subs */
+    #audience .platform-info {
         display: flex !important;
-        flex-direction: column !important; /* Stack: 3.7B+ over Views */
-        align-items: flex-end !important; /* Align text to the right */
+        align-items: center !important;
+        gap: 10px !important;
+        flex: 1 1 auto !important; /* Allows this side to grow */
+        min-width: 0 !important; /* Critical: allows children to not overflow */
+    }
+
+    #audience .platform-info div {
+        white-space: nowrap !important; /* Forces Subscribers to stay on one line */
+    }
+
+    #audience .platform-name {
+        font-size: 1rem !important;
+    }
+
+    #audience .platform-info div div:last-child {
+        font-size: 0.75rem !important; /* Slightly smaller sub-text to fit one line */
+    }
+
+    /* Right Side: 3.7B+ and Views */
+    #audience .view-stats {
+        position: static !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: flex-end !important;
         text-align: right !important;
-        margin-left: auto !important;
+        flex: 0 0 auto !important; /* Keeps this side from squishing the left */
     }
 
     #audience .view-stats div:first-child {
-        font-size: 1.4rem !important; /* Size of 3.7B+ */
-        line-height: 1.1 !important;
+        font-size: 1.1rem !important; /* Made smaller to give left side room */
+        line-height: 1 !important;
         font-weight: 800 !important;
         color: var(--bright-blue) !important;
     }
 
     #audience .view-stats div:last-child {
-        font-size: 0.7rem !important; /* Size of 'views' */
+        font-size: 0.6rem !important; /* Scaled down views label */
         text-transform: uppercase !important;
-        letter-spacing: 0.05em !important;
         color: #6b7280 !important;
-        margin-top: 2px !important;
-    }
-
-    /* Keep the Logo and Text together on the left */
-    #audience .platform-info {
-        display: flex !important;
-        align-items: center !important;
-        gap: 12px !important;
     }
 
     /* --- 6. NEW: MUSIC ONE PER ROW --- */
