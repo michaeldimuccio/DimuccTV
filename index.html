@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
+
+  
 <head>
   <base target="_self">
   <meta charset="UTF-8">
@@ -8,9 +10,14 @@
 
   <style>
     /* =========================
-       0) RESET
+       RESET
     ========================== */
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     :root {
       --bright-blue: #1DA1FF;
       --vivid-orange: #FF7A00;
@@ -23,124 +30,65 @@
       width: 100%;
       max-width: 100%;
       overflow-x: hidden;
-      background: var(--off-white);
       font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
+      background: var(--off-white);
     }
 
     /* =========================
-       1) FULL-WIDTH BANDS (no 100vw tricks)
-       This ensures sections/nav/hero can span the viewport.
+       FULL-WIDTH BANDS
+       (nav / hero / sections / footer)
     ========================== */
-    header, nav, main, section, footer,
-    .hero, .stats, .achievements, .email-capture {
-      width: 100% !important;
-      max-width: none !important;
-      margin-left: 0 !important;
-      margin-right: 0 !important;
+    header,
+    nav,
+    main,
+    section,
+    footer {
+      width: 100%;
+      max-width: none;
+      margin: 0;
     }
-
-    /* If you have any outer wrapper boxing the whole page, kill it */
-    #wrapper, #page, #app, #root,
-    .site, .page, .layout, .wrapper, .content, .main, .container-wrap {
-      width: 100% !important;
-      max-width: none !important;
-      margin-left: 0 !important;
-      margin-right: 0 !important;
-    }
-
-    body { zoom: 1 !important; }
 
     /* =========================
-       2) CONTAINER (INNER CONTENT ONLY)
-       This is the main “anti-box” fix.
+       CONTAINER (INNER CONTENT ONLY)
     ========================== */
     .container {
-      width: min(1280px, 100%) !important;
-      max-width: 1280px !important;
-      margin-left: auto !important;
-      margin-right: auto !important;
-      padding-left: clamp(12px, 4vw, 60px) !important;
-      padding-right: clamp(12px, 4vw, 60px) !important;
+      width: 100%;
+      max-width: 1280px;
+      margin-left: auto;
+      margin-right: auto;
+      padding-left: clamp(16px, 4vw, 56px);
+      padding-right: clamp(16px, 4vw, 56px);
     }
 
-    /* Make nav alignment consistent */
+    /* =========================
+       NAV
+    ========================== */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background: var(--slate-gray);
+      padding: 1rem 0;
+    }
+
     nav .container {
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
 
-    /* =========================
-       3) LANDSCAPE (phone landscape = tighten padding)
-    ========================== */
-    @media screen and (orientation: landscape) and (max-width: 932px) {
-      .container {
-        padding-left: 16px !important;
-        padding-right: 16px !important;
-      }
-
-      #hamburger, #mobile-menu { display: none !important; }
-      .nav-links { display: flex !important; gap: 2rem !important; flex-direction: row !important; }
-
-      .about-grid, .contact-grid, .audience-cards {
-        display: grid !important;
-        grid-template-columns: 1fr 1fr !important;
-        gap: 2rem !important;
-        align-items: center !important;
-        text-align: left !important;
-      }
-
-      .video-grid, .music-grid, .press-grid {
-        display: grid !important;
-        grid-template-columns: repeat(3, 1fr) !important;
-        gap: 1.25rem !important;
-      }
-
-      .stats-grid, .brand-grid {
-        display: grid !important;
-        grid-template-columns: repeat(4, 1fr) !important;
-        gap: 1rem !important;
-      }
-
-      .hero { padding-top: 6rem !important; min-height: 100vh !important; }
-      .hero-btn-container {
-        display: flex !important;
-        flex-direction: row !important;
-        justify-content: center !important;
-        gap: 1rem !important;
-      }
-      .btn { width: auto !important; margin: 0 !important; }
-
-      .about-image img { height: 75vh !important; width: auto !important; }
+    .logo img {
+      height: 32px;
+      border: none;
     }
 
-    /* =========================
-       4) PORTRAIT MOBILE ONLY
-    ========================== */
-    @media screen and (max-width: 768px) and (orientation: portrait) {
-      .nav-links { display: none !important; }
-      #hamburger { display: flex !important; }
-
-      .video-grid, .music-grid, .about-grid, .contact-grid, .stats-grid, .brand-grid {
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: center !important;
-      }
+    .nav-links {
+      list-style: none;
+      display: flex;
+      gap: 2rem;
     }
-
-    /* =========================
-       5) SHARED (keep your basics)
-    ========================== */
-    nav {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 1000;
-      background: var(--slate-gray);
-      padding: 1rem 0;
-    }
-
-    .logo img { height: 32px; border: none !important; }
-    .nav-links { list-style: none; }
 
     .nav-links a {
       color: white;
@@ -149,6 +97,9 @@
       letter-spacing: 0.1em;
     }
 
+    /* =========================
+       BUTTONS
+    ========================== */
     .btn {
       padding: 1rem 2.5rem;
       border-radius: 9999px;
@@ -158,18 +109,119 @@
       transition: 0.3s;
       text-decoration: none;
     }
-    .btn-primary { background: var(--bright-blue); color: white; border: none; }
-    .btn-second { background: #fff; color: var(--bright-blue); border: 2px solid var(--bright-blue); }
 
-    /* Reveal animations (DON’T kill transform globally) */
-    .hero-content, .stat-item, .about-grid, .achievement-card, .platform-item, .video-item {
+    .btn-primary {
+      background: var(--bright-blue);
+      color: white;
+      border: none;
+    }
+
+    .btn-second {
+      background: #fff;
+      color: var(--bright-blue);
+      border: 2px solid var(--bright-blue);
+    }
+
+    /* =========================
+       LANDSCAPE PHONE = DESKTOP LAYOUT
+    ========================== */
+    @media (orientation: landscape) and (max-width: 932px) {
+      #hamburger,
+      #mobile-menu {
+        display: none !important;
+      }
+
+      .nav-links {
+        display: flex !important;
+      }
+
+      .about-grid,
+      .contact-grid,
+      .audience-cards {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        align-items: center;
+        text-align: left;
+      }
+
+      .video-grid,
+      .music-grid,
+      .press-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.25rem;
+      }
+
+      .stats-grid,
+      .brand-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+      }
+
+      .hero {
+        padding-top: 6rem;
+        min-height: 100vh;
+      }
+
+      .hero-btn-container {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+      }
+
+      .btn {
+        width: auto;
+        margin: 0;
+      }
+    }
+
+    /* =========================
+       PORTRAIT MOBILE ONLY
+    ========================== */
+    @media (max-width: 768px) and (orientation: portrait) {
+      .nav-links {
+        display: none;
+      }
+
+      #hamburger {
+        display: flex;
+      }
+
+      .video-grid,
+      .music-grid,
+      .about-grid,
+      .contact-grid,
+      .stats-grid,
+      .brand-grid {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+
+    /* =========================
+       REVEAL ANIMATIONS
+    ========================== */
+    .hero-content,
+    .stat-item,
+    .about-grid,
+    .achievement-card,
+    .platform-item,
+    .video-item {
       opacity: 0;
       transform: translateY(20px);
       transition: all 0.8s ease-out;
     }
-    .reveal-active { opacity: 1 !important; transform: translateY(0) !important; }
+
+    .reveal-active {
+      opacity: 1;
+      transform: translateY(0);
+    }
   </style>
 </head>
+
 
 
 
