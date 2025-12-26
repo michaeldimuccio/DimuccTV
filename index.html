@@ -1042,24 +1042,32 @@ nav ul li a.active {
     border-bottom: 2px solid var(--accent-orange) !important;
 }
 
-/* --- MOBILE PERSISTENCE CLAUSE --- */
-@media screen and (max-width: 1024px) {
-    /* Forces the browser to treat these as active "video-like" layers */
-    #about, #stats-section, #achievements-section {
-        -webkit-transform: translate3d(0,0,0) !important;
-        transform: translate3d(0,0,0) !important;
-        will-change: transform, opacity !important;
-        /* Invisible "heartbeat" prevents Safari hibernation */
-        perspective: 1000px;
-        backface-visibility: hidden;
-        -webkit-backface-visibility: hidden;
-    }
+/* --- TARGETED GPU REWAKE (Problem Sections Only) --- */
+@keyframes safari-stay-awake {
+    0% { opacity: 1; }
+    50% { opacity: 0.999; }
+    100% { opacity: 1; }
+}
 
-    /* Ensure children don't flicker when parent stays awake */
-    .about-grid, .stat-item, .achievement-card {
-        -webkit-transform-style: preserve-3d;
-        transform-style: preserve-3d;
-    }
+/* Strictly targeting the sections that were disappearing */
+#about, #stats-section, #achievements-section {
+    /* Forces permanent 3D rendering to stop the "Click to wake" bug */
+    transform: translate3d(0,0,0) !important;
+    -webkit-transform: translate3d(0,0,0) !important;
+    
+    /* The Heartbeat keeps these specific layers active */
+    animation: safari-stay-awake 1s infinite !important;
+    
+    /* Tells Safari: "Do not hide this layer for any reason" */
+    will-change: transform, opacity !important;
+    contain: none !important; 
+}
+
+/* Keeps the internal animations working for these sections */
+.reveal-active {
+    opacity: 1 !important;
+    transform: translate3d(0,0,0) !important;
+    visibility: visible !important;
 }
     </style>
 </head>
@@ -2683,26 +2691,21 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
 
 <script>
     (function() {
-        // --- 1. STICKY REVEAL (Fixes About, Stats, Achievements, Contact disappearing) ---
-        // This observer only runs ONCE per element. Once the class is added, the observer
-        // stops watching, making it physically impossible for the section to vanish.
+        // 1. ATOMIC REVEAL
         const revealObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('reveal-active');
-                    // THE KEY: Stop watching once revealed so Safari can't flicker it off
+                    // Lock it forever
                     revealObserver.unobserve(entry.target);
                 }
             });
-        }, { threshold: 0.05 });
+        }, { threshold: 0.01 }); // Trigger at the very first pixel
 
-        // Target individual items for the "Wave" effect and parent containers for stability
-        const items = document.querySelectorAll(
-            '.hero-content, .stat-item, .about-grid, .achievement-card, .platform-item, .video-item, .contact-reveal, #stats-section, #about, #achievements-section'
-        );
+        const items = document.querySelectorAll('.hero-content, .stat-item, .about-grid, .achievement-card, .platform-item, .video-item, .contact-reveal, #stats-section, #about, #achievements-section');
         items.forEach(el => revealObserver.observe(el));
 
-        // --- 2. NAVIGATION SPY (Fixes Blue Highlighting/Orange Line) ---
+        // 2. NAVIGATION SPY
         const sections = document.querySelectorAll("section[id]");
         const navLinks = document.querySelectorAll("nav ul li a");
         const mobileLinks = document.querySelectorAll("#mobile-menu a");
@@ -2710,17 +2713,11 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
         function updateNav() {
             let current = "";
             const scrollPos = window.pageYOffset;
-            const winHeight = window.innerHeight;
-
             sections.forEach(s => {
-                const sectionTop = s.offsetTop;
-                // If the section is in the top 3rd of the screen, mark it as "active"
-                if (scrollPos >= sectionTop - (winHeight / 3)) {
+                if (scrollPos >= s.offsetTop - (window.innerHeight / 3)) {
                     current = s.getAttribute("id");
                 }
             });
-
-            // Update both desktop and mobile menu links simultaneously
             [...navLinks, ...mobileLinks].forEach(link => {
                 link.classList.remove("active");
                 if (link.getAttribute("href") === "#" + current) {
@@ -2729,17 +2726,14 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
             });
         }
 
-        // --- 3. EVENT LISTENERS ---
         window.addEventListener('scroll', updateNav, { passive: true });
-        window.addEventListener('resize', updateNav);
         updateNav();
 
-        // --- 4. MOBILE MENU TOGGLE ---
+        // 3. BURGER MENU
         window.toggleMenu = function() {
             const menu = document.getElementById('mobile-menu');
             if (menu) {
                 const isOpen = menu.style.display === 'flex';
-                // Force display with important to override browser optimizations
                 menu.style.setProperty('display', isOpen ? 'none' : 'flex', 'important');
             }
         };
