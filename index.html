@@ -866,30 +866,41 @@ nav a {
 
     
 
-/* 5. VIDEOS: 2 Per Row with Title Crop */
+/* 5. VIDEOS: Clean Player with Border & Title Restore */
 
     .video-grid, .videos-container {
         display: grid !important;
         grid-template-columns: 1fr 1fr !important; 
-        gap: 10px !important;
+        gap: 15px !important;
         width: 100% !important;
     }
 
+    /* This targets only the box the video sits in, not the text below it */
     .video-item {
-        overflow: hidden !important; /* Acts as a mask to hide the scaled edges */
-        border-radius: 8px !important;
+        border-radius: 12px !important;
+        border: 2px solid var(--bright-blue) !important;
+        overflow: hidden !important; /* Acts as the mask to hide the player text */
         background: #000;
         position: relative;
+        width: 100% !important;
+        aspect-ratio: 16/9 !important;
     }
 
     .video-item iframe {
-        /* Zoom in to push the title text and UI icons outside the visible box */
-        transform: scale(1.2) !important; 
+        /* Zoom in to push the title text OUTSIDE the blue border */
+        transform: scale(1.15) !important; 
         transform-origin: center !important;
         width: 100% !important;
-        aspect-ratio: 16/9;
+        height: 100% !important;
         display: block;
         border: none !important;
+    }
+
+    /* This ensures your titles (Optimal Gamer, etc) and subtitles stay visible */
+    .video-grid h3, .video-grid p {
+        display: block !important;
+        visibility: visible !important;
+        text-align: center !important;
     }
 
 /* --- AUDIENCE & REACH STATS FIX (Compact Right-Align) --- */
