@@ -2619,44 +2619,22 @@ nav a {
 
 
 <script>
-    document.getElementById('contactForm').addEventListener('submit', function(e) {
-        e.preventDefault(); // Stops the "Content Blocked" redirect
-        
-        // Get the values
-        var name = this.querySelector('input[type="text"]').value;
-        var email = this.querySelector('input[type="email"]').value;
-        var message = this.querySelector('textarea').value;
-        
-        // Construct the mailto link manually
-        var subject = encodeURIComponent("Business Inquiry from " + name);
-        var body = encodeURIComponent("Name: " + name + "\nEmail: " + email + "\n\nMessage:\n" + message);
-        
-        // This bypasses the iframe sandbox block
-        window.top.location.href = "mailto:dimuccbusiness@gmail.com?subject=" + subject + "&body=" + body;
-        
-        alert("Opening your mail app...");
-    });
-</script>
-<script>
+// YOUR MASTER DEPLOYMENT URL
+const scriptURL = 'https://script.google.com/macros/s/AKfycbwyD-d5Ka405oHl6FsBTQUJ95OYZVuFxmJsJL6hRSjcy8K_W8hqKyAMBCbUc6k-tcsCYg/exec';
+
+// --- 1. MOBILE MENU TOGGLE ---
 function toggleMenu() {
     const menu = document.getElementById('mobile-menu');
-    // Only toggle if we are actually on mobile
     if (window.innerWidth <= 768) {
-        // If it's flex (open), set to none (closed)
         if (menu.style.display === 'flex') {
             menu.style.display = 'none';
         } else {
-            // Force flex with important to override any desktop blocks
             menu.style.setProperty('display', 'flex', 'important');
         }
     }
 }
-</script>
-<script>
-// YOUR MASTER DEPLOYMENT URL
-const scriptURL = 'https://script.google.com/macros/s/AKfycbwyD-d5Ka405oHl6FsBTQUJ95OYZVuFxmJsJL6hRSjcy8K_W8hqKyAMBCbUc6k-tcsCYg/exec';
 
-// --- 1. HANDLE NEWSLETTER SIGNUP ---
+// --- 2. HANDLE NEWSLETTER SIGNUP ---
 document.getElementById('emailCaptureForm').addEventListener('submit', function(e) {
     e.preventDefault();
     const btn = this.querySelector('button');
@@ -2680,9 +2658,9 @@ document.getElementById('emailCaptureForm').addEventListener('submit', function(
     });
 });
 
-// --- 2. HANDLE CONTACT MESSAGE FORM ---
+// --- 3. HANDLE CONTACT MESSAGE FORM (MAIL APP TRIGGER REMOVED) ---
 document.getElementById('contactForm').addEventListener('submit', function(e) {
-    e.preventDefault();
+    e.preventDefault(); // This is the line that stops the pop-up/refresh
     const btn = this.querySelector('button');
     btn.innerText = "Sending...";
     btn.disabled = true;
@@ -2696,6 +2674,7 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
         alert("Message sent! I'll get back to you soon at the email provided.");
         btn.innerText = "Sent!";
         this.reset();
+        btn.disabled = false; // Re-enables button after success
     })
     .catch(error => {
         console.error('Error!', error.message);
