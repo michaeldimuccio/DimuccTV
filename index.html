@@ -1026,6 +1026,7 @@ nav a {
     }
 
 }
+        
 /* 1. Force the sections to stay in their own high-priority layer */
 #about, #stats, #achievements, #videos, #contact {
     isolation: isolate !important;
@@ -1055,11 +1056,11 @@ nav a {
 }
 
 
-/* --- ADD THIS INSIDE YOUR MEDIA QUERY --- */
-
+/* --- SLIM NAV FOR MOBILE LANDSCAPE ONLY --- */
+@media screen and (orientation: landscape) and (max-height: 600px) {
     /* 1. Reduce overall Nav height */
     nav {
-        padding: 0.4rem 0 !important; /* Forces a very slim bar */
+        padding: 0.4rem 0 !important; 
     }
 
     /* 2. Tighten the nav container spacing */
@@ -1069,20 +1070,27 @@ nav a {
         height: auto !important;
     }
 
-    /* 3. Shrink Logo to prevent it from stretching the bar */
+    /* 3. Shrink Logo */
     .logo img {
-        height: 28px !important; /* Adjust this to make the bar even thinner */
+        height: 28px !important; 
         width: auto !important;
     }
 
-    /* 4. Ensure Nav Links align with the smaller bar */
+    /* 4. Ensure Nav Links align */
     .nav-links {
         gap: 1.5rem !important;
+        display: flex !important; /* Forces nav to stay a bar, not a menu */
     }
 
     .nav-links a {
         font-size: 0.9rem !important;
     }
+    
+    /* Hide the burger menu so it doesn't overlap the slim bar */
+    #hamburger {
+        display: none !important;
+    }
+}
 
         
     </style>
