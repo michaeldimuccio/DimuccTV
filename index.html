@@ -1064,11 +1064,58 @@ nav a {
     nav { padding: 0.3rem 0 !important; }
     .logo img { height: 24px !important; }
     .nav-links { gap: 1rem !important; }
+}   
+
+        /* --- LANDSCAPE PHONES: MAKE IT MATCH DESKTOP --- */
+@media screen and (orientation: landscape) and (max-width: 1024px) and (min-width: 740px) {
+
+  /* Undo the "mobile centering + flex" resets */
+  .container, section, .hero {
+    display: block !important;
+    text-align: left !important;
+    align-items: unset !important;
+  }
+
+  /* Restore desktop container spacing */
+  .container {
+    max-width: 1280px !important;
+    width: 100% !important;
+    padding: 0 3rem !important;
+    margin: 0 auto !important;
+  }
+
+  /* Restore desktop nav links (and hide hamburger/menu if you have one) */
+  nav ul, .nav-links {
+    display: flex !important;
+  }
+  #hamburger, #mobile-menu {
+    display: none !important;
+  }
+
+  /* Restore desktop About layout */
+  .about-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)) !important;
+    gap: 4rem !important;
+    align-items: center !important;
+  }
+
+  /* Restore desktop-ish cards */
+  .audience-cards,
+  .contact-grid {
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)) !important;
+  }
+
+  /* Restore video grid behavior like desktop */
+  .video-grid {
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)) !important;
+    gap: 2rem !important;
+  }
 }
 
-        
     </style>
 </head>
+    
 <body>
     <!-- Navigation -->
 <nav style="width: 100%; position: fixed; top: 0; left: 0; background: #0b0f19; z-index: 9999; border-bottom: 1px solid rgba(255,255,255,0.1);">
@@ -2691,4 +2738,4 @@ nav a {
     
 </body>
 </html>
-`update 1
+`update 2
