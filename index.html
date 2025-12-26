@@ -2573,29 +2573,31 @@ section {
 
 <script>
     (function() {
-        // --- 1. STICKY REVEAL LOGIC ---
+        // 1. REVEAL LOGIC
+        // This is the only part that handles the disappearing sections
         const revealObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    // Trigger the animation
+                    // Add the class to show the section
                     entry.target.classList.add('reveal-active');
-                    // THE FIX: Stop watching immediately so it never resets or disappears
+                    // THE LOCK: This prevents the script from ever hiding it again
                     revealObserver.unobserve(entry.target);
                 }
             });
         }, { 
-            threshold: 0.05,
+            threshold: 0.01, // Trigger as soon as 1% is visible
             rootMargin: "0px 0px -50px 0px" 
         });
 
-        // Select all elements that should animate
-        const animatedElements = document.querySelectorAll(
+        // Apply to your specific sections
+        const elementsToAnimate = document.querySelectorAll(
             '.hero-content, .stat-item, .about-grid, .achievement-card, .platform-item, .video-item, .contact-reveal'
         );
-        animatedElements.forEach(el => revealObserver.observe(el));
+        elementsToAnimate.forEach(el => revealObserver.observe(el));
 
 
-        // --- 2. NAVIGATION SPY LOGIC ---
+        // 2. NAVIGATION SPY
+        // This keeps your orange menu lines working without touching the menu itself
         const sections = document.querySelectorAll("section[id]");
         const navLinks = document.querySelectorAll("nav ul li a");
 
@@ -2605,31 +2607,21 @@ section {
             const winHeight = window.innerHeight;
 
             sections.forEach((section) => {
-                const sectionTop = section.offsetTop;
-                // Switch highlight when section is 30% down the viewport
-                if (scrollPos >= sectionTop - (winHeight / 3)) {
+                if (scrollPos >= section.offsetTop - (winHeight / 3)) {
                     currentSectionId = section.getAttribute("id");
                 }
             });
 
             navLinks.forEach((link) => {
                 link.classList.remove("active");
-                const href = link.getAttribute("href");
-                if (href === "#" + currentSectionId) {
+                if (link.getAttribute("href") === "#" + currentSectionId) {
                     link.classList.add("active");
                 }
             });
         }
 
-        // --- 3. EVENT LISTENERS ---
         window.addEventListener('scroll', updateNav, { passive: true });
-        updateNav(); // Run once on load
-        
-        // --- 4. MOBILE MENU TOGGLE ---
-        window.toggleMenu = function() {
-            const nav = document.querySelector('.nav-links');
-            nav.classList.toggle('active');
-        };
+        updateNav();
     })();
 </script>
 
