@@ -1026,20 +1026,19 @@ nav a {
     }
 
 }
-        /* Add this to your CSS */
-#about, #stats, #achievements, #videos, #contact {
-    /* Forces the phone's GPU to keep these sections rendered at all times */
-    transform: translateZ(0);
-    -webkit-transform: translateZ(0);
-    will-change: transform, opacity;
-    /* Prevents layout shifts from hiding the content */
-    contain: content;
+/* 1. The 'Heartbeat' that keeps the sections awake */
+@keyframes stay-awake {
+    from { opacity: 0.999; }
+    to { opacity: 1; }
 }
 
-/* Ensure the active nav link is visible even on mobile */
-nav ul li a.active {
-    color: var(--bright-blue) !important;
-    border-bottom: 2px solid var(--accent-orange) !important;
+/* 2. Apply to all sections giving you trouble */
+#about, #stats, #achievements, #videos, #contact {
+    animation: stay-awake 1s infinite !important;
+    will-change: transform, opacity !important;
+    /* Keeps the section from being 'culled' by Safari */
+    transform: translateZ(0); 
+    -webkit-transform: translateZ(0);
 }
     </style>
 </head>
@@ -2663,40 +2662,42 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
 
 <script>
     (function() {
-        // 1. STICKY REVEAL (Fixes About, Stats, Achievements, Contact disappearing)
+        // 1. REVEAL LOGIC (With Unobserve to prevent disappearing)
         const revealObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('reveal-active');
-                    // THE KEY: Stop watching once revealed so Safari can't flicker it off
+                    // Stop watching immediately so it can never be hidden again
                     revealObserver.unobserve(entry.target);
                 }
             });
         }, { threshold: 0.05 });
 
-        // Target individual items for the "Wave" effect
         const items = document.querySelectorAll('.hero-content, .stat-item, .about-grid, .achievement-card, .platform-item, .video-item, .contact-reveal');
         items.forEach(el => revealObserver.observe(el));
 
-        // 2. NAVIGATION SPY (Fixes the Blue Highlighting/Orange Line)
+        // 2. NAVIGATION SPY & FORCED RE-RENDER
         const sections = document.querySelectorAll("section[id]");
         const navLinks = document.querySelectorAll("nav ul li a");
         const mobileLinks = document.querySelectorAll("#mobile-menu a");
 
-        function updateNav() {
+        function updateEverything() {
             let current = "";
             const scrollPos = window.pageYOffset;
-            const winHeight = window.innerHeight;
 
+            // Update Nav Spy
             sections.forEach(s => {
-                const sectionTop = s.offsetTop;
-                // If the section is in the top 3rd of the screen, it's "active"
-                if (scrollPos >= sectionTop - (winHeight / 3)) {
+                if (scrollPos >= s.offsetTop - (window.innerHeight / 3)) {
                     current = s.getAttribute("id");
+                }
+                
+                // FORCED RE-RENDER: This imitates the 'Burger Menu' effect
+                // It slightly nudges the section to keep Safari from hiding it
+                if (scrollPos > s.offsetTop - window.innerHeight && scrollPos < s.offsetTop + s.offsetHeight) {
+                     s.style.zIndex = (s.style.zIndex === "1") ? "1.0001" : "1";
                 }
             });
 
-            // Update both desktop and mobile menu links simultaneously
             [...navLinks, ...mobileLinks].forEach(link => {
                 link.classList.remove("active");
                 if (link.getAttribute("href") === "#" + current) {
@@ -2705,12 +2706,10 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
             });
         }
 
-        // 3. EVENT LISTENERS
-        window.addEventListener('scroll', updateNav, { passive: true });
-        window.addEventListener('resize', updateNav);
-        updateNav();
+        window.addEventListener('scroll', updateEverything, { passive: true });
+        updateEverything();
 
-        // 4. MOBILE MENU TOGGLE
+        // 3. BURGER MENU TOGGLE
         window.toggleMenu = function() {
             const menu = document.getElementById('mobile-menu');
             if (menu) {
