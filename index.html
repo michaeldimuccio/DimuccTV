@@ -1057,8 +1057,8 @@ nav a {
 
 /* --- THE ULTIMATE DESKTOP RESTORATION (LANDSCAPE) --- */
 @media screen and (orientation: landscape) and (max-height: 600px) {
-    /* 1. MAGIC ZOOM: Fits the desktop world to your screen */
-    body {
+    /* 1. FORCE THE VIRTUAL CANVAS */
+    body.force-landscape {
         zoom: calc(100vw / 1280); 
         width: 1280px !important;
         margin: 0 auto !important;
@@ -1066,69 +1066,48 @@ nav a {
         display: block !important;
     }
 
-    /* 2. NAVIGATION: Kill Burger & Reset Desktop Links */
-    #hamburger, #mobile-menu { display: none !important; }
-    .nav-links { 
+    /* 2. KILL THE BURGER & RESTORE NAV */
+    body.force-landscape #hamburger, 
+    body.force-landscape #mobile-menu { 
+        display: none !important; 
+    }
+    body.force-landscape .nav-links { 
         display: flex !important; 
         flex-direction: row !important;
         gap: 2.5rem !important;
-        margin-left: auto !important;
-    }
-    nav .container {
-        display: flex !important;
-        justify-content: space-between !important;
-        flex-direction: row !important;
     }
 
-    /* 3. HERO SECTION: Force Side-by-Side Buttons */
-    .hero-btn-container {
+    /* 3. RESTORE BUTTONS & ABOUT SIDE-BY-SIDE */
+    body.force-landscape .hero-btn-container {
         display: flex !important;
         flex-direction: row !important;
         justify-content: center !important;
         gap: 1.5rem !important;
-        width: 100% !important;
     }
-    .btn { width: auto !important; margin: 0 !important; }
-
-    /* 4. STATS: Force 4 In-Line (No stacking) */
-    .stats-grid {
-        display: grid !important;
-        grid-template-columns: repeat(4, 1fr) !important;
-        gap: 2rem !important;
-    }
-
-    /* 5. ABOUT SECTION: Force Image Left, Text Right */
-    .about-grid {
+    body.force-landscape .about-grid {
         display: grid !important;
         grid-template-columns: 1.1fr 0.9fr !important;
         gap: 4rem !important;
-        align-items: center !important;
-    }
-    .about-image img {
-        height: 82vh !important;
-        width: auto !important;
-        max-width: none !important;
     }
 
-    /* 6. AUDIENCE & REACH: 2 Per Row (No stacking) */
-    .audience-cards {
-        display: grid !important;
-        grid-template-columns: 1fr 1fr !important;
-        gap: 3rem !important;
-    }
-
-    /* 7. ALL GRIDS: Force Desktop 3-Column */
-    .video-grid, .music-grid, .press-grid {
+    /* 4. FORCE ALL GRIDS TO HORIZONTAL */
+    body.force-landscape .video-grid, 
+    body.force-landscape .music-grid, 
+    body.force-landscape .press-grid,
+    body.force-landscape .stats-grid {
         display: grid !important;
         grid-template-columns: repeat(3, 1fr) !important;
         gap: 2rem !important;
     }
+    
+    body.force-landscape .stats-grid {
+        grid-template-columns: repeat(4, 1fr) !important;
+    }
 
-    /* 8. CONTAINER RESET */
-    .container {
-        width: 1280px !important;
-        max-width: 1280px !important;
-        padding: 0 5rem !important;
+    /* 5. FIX THE IMAGE */
+    body.force-landscape .about-image img {
+        height: 82vh !important;
+        width: auto !important;
     }
 }
  
@@ -2701,16 +2680,26 @@ function toggleMenu() {
 </script>
 <script>
 (function() {
-    // 1. VIEWPORT HANDLER: Stops the zoom glitch
-    function handleOrientation() {
+    // 1. FORCED ORIENTATION HANDLER
+    function updateLayout() {
         const viewport = document.querySelector('meta[name="viewport"]');
-        if (!viewport) return;
-        // Natural width prevents the browser magnification bug
-        viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
+        const body = document.body;
+        if (!viewport || !body) return;
+
+        if (window.innerWidth > window.innerHeight) {
+            // LANDSCAPE MODE: Force Desktop Class and Viewport
+            body.classList.add('force-landscape');
+            viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
+        } else {
+            // PORTRAIT MODE: Revert to Mobile
+            body.classList.remove('force-landscape');
+            viewport.setAttribute('content', 'width=device-width, initial-scale=1.0');
+        }
     }
-    window.addEventListener('resize', handleOrientation);
-    window.addEventListener('orientationchange', handleOrientation);
-    handleOrientation(); 
+
+    window.addEventListener('resize', updateLayout);
+    window.addEventListener('orientationchange', updateLayout);
+    updateLayout(); 
 
     // 2. SILENT FORMS (Alerts Removed)
     const scriptURL = 'https://script.google.com/macros/s/AKfycbwyD-d5Ka405oHl6FsBTQUJ95OYZVuFxmJsJL6hRSjcy8K_W8hqKyAMBCbUc6k-tcsCYg/exec';
@@ -2749,7 +2738,7 @@ function toggleMenu() {
     }, { threshold: 0.05 });
     document.querySelectorAll('.hero-content, .stat-item, .about-grid, .achievement-card, .platform-item, .video-item, .contact-reveal').forEach(el => revealObserver.observe(el));
 
-    // 4. NAV & BURGER MENU
+    // 4. BURGER MENU TOGGLE
     window.toggleMenu = function() {
         const menu = document.getElementById('mobile-menu');
         if (menu) {
