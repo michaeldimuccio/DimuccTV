@@ -963,69 +963,66 @@ nav a {
 
 /* --- LANDSCAPE FORCE: RESTORES DESKTOP LOOK --- */
         @media screen and (orientation: landscape) and (max-height: 600px) {
-            section { padding: 2.5rem 0 !important; } /* Slightly tighter section spacing */
+            section { padding: 2rem 0 !important; } /* Crushes section gaps */
             
-            /* 1. GRIDS: Force Desktop Columns */
-            .about-grid, .contact-grid, .audience-cards, .achievements-grid { 
+            /* 1. ULTRA-THIN NAV */
+            nav { 
+                padding: 0 !important; /* Removes all vertical padding */
+                height: 40px !important; /* Forces a specific thin height */
+                display: flex !important;
+                align-items: center !important;
+            }
+            nav .container { height: 100% !important; }
+            nav img { height: 18px !important; } /* Shrinks logo to fit thin bar */
+            nav a { font-size: 0.7rem !important; letter-spacing: 0.1em !important; }
+
+            /* 2. MAX IMAGE SIZE */
+            .about-grid { 
                 display: grid !important;
                 grid-template-columns: 1fr 1fr !important; 
-                gap: 2rem !important; 
-                max-width: 100% !important;
+                align-items: center !important;
+                gap: 1rem !important; 
             }
-            
+            .about-image { 
+                width: 100% !important; 
+                height: 95vh !important; /* Uses full screen height */
+                display: flex !important;
+                justify-content: center !important;
+            }
+            .about-image img { 
+                height: 95vh !important; /* Forces image to be huge */
+                width: auto !important; 
+                max-width: none !important; /* Removes any width restrictions */
+                object-fit: cover !important; /* Fills the box completely */
+                margin: 0 !important;
+            }
+
+            /* 3. NEWS & VIDEOS (3 PER ROW) */
             .video-grid, .music-grid, .press-grid {
                 display: grid !important;
                 grid-template-columns: repeat(3, 1fr) !important;
-                gap: 1.2rem !important;
-            }
-
-            .brand-grid {
-                display: grid !important;
-                grid-template-columns: repeat(4, 1fr) !important;
                 gap: 1rem !important;
             }
 
-            /* 2. SIZING & PADDING */
-            /* UPDATED: Image at 95% of screen height for maximum size */
-            .about-image img { 
-                height: 95vh !important; 
-                width: auto !important; 
-                margin: 0 auto !important;
-                object-fit: contain !important; /* Ensures the whole face stays visible */
+            /* 4. GRIDS & FORMS */
+            .contact-grid, .audience-cards, .achievements-grid { 
+                display: grid !important;
+                grid-template-columns: 1fr 1fr !important; 
+                gap: 1.5rem !important;
             }
+            .brand-grid { grid-template-columns: repeat(4, 1fr) !important; }
             
-            /* UPDATED: Thinner Navigation for Landscape */
-            nav { padding: 0.2rem 0 !important; } /* Minimum padding */
-            nav img { height: 20px !important; } /* Smaller logo to save vertical pixels */
-            nav a { font-size: 0.75rem !important; padding-bottom: 2px !important; }
-            
-            .platform-card { padding: 1.5rem !important; }
-            .platform-list { gap: 0.8rem !important; }
-            .platform-item { padding: 0.6rem !important; }
-            .contact-form { padding: 1.5rem !important; }
-            .form-group { margin-bottom: 0.8rem !important; }
-            .form-group textarea { min-height: 80px !important; }
+            .contact-form { padding: 1rem !important; }
+            .form-group { margin-bottom: 0.5rem !important; }
+            .form-group textarea { min-height: 60px !important; }
 
-            /* 3. FORMS: Horizontal Layout */
-            .email-capture { padding: 2.5rem 0 !important; }
-            .email-form { 
-                display: flex !important;
-                flex-direction: row !important; 
-                max-width: 500px !important; 
-                margin: 1rem auto 0 !important; 
-            }
-            .email-form input { padding: 0.6rem 1rem !important; }
-            .email-form button { padding: 0.6rem 1.2rem !important; }
+            .email-form { flex-direction: row !important; max-width: 450px !important; margin: 0 auto !important; }
+            .email-form input, .email-form button { padding: 0.5rem 1rem !important; }
 
-            /* 4. FOOTER: Restore Layout */
-            .footer-grid { grid-template-columns: repeat(3, 1fr) !important; gap: 1.5rem !important; margin-bottom: 1.5rem !important; }
-            footer { padding: 1.5rem 0 1rem !important; }
-            .footer-bottom { 
-                display: flex !important;
-                flex-direction: row !important; 
-                justify-content: space-between !important; 
-                padding-top: 1rem !important; 
-            }
+            /* 5. FOOTER */
+            .footer-grid { grid-template-columns: repeat(3, 1fr) !important; gap: 1rem !important; }
+            footer { padding: 1rem 0 !important; }
+            .footer-bottom { flex-direction: row !important; font-size: 0.7rem !important; }
         }
         
     </style>
@@ -2661,4 +2658,4 @@ nav a {
     
 </body>
 </html>
-`update 5
+`update 6
