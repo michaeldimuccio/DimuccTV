@@ -1055,39 +1055,40 @@ nav a {
 }
 
 
-/* --- LANDSCAPE MASTER: BALANCED IMAGE SIZE --- */
+/* --- LANDSCAPE: SMALLER IMAGE / LARGER TEXT --- */
 @media screen and (orientation: landscape) and (max-width: 1024px) {
-    /* 1. Reset container to standard desktop margins for balance */
-    #about .container {
-        max-width: 1200px !important;
-        padding-left: 5rem !important; 
-        padding-right: 5rem !important;
-    }
-
     .about-grid {
         display: grid !important;
-        /* Balanced split: 1.1fr for image, 0.9fr for text */
-        grid-template-columns: 1.1fr 0.9fr !important; 
+        /* Image column is now 40%, Text column is 60% */
+        grid-template-columns: 0.8fr 1.2fr !important; 
         align-items: center !important;
-        gap: 4rem !important; 
+        gap: 4rem !important;
     }
 
     .about-image {
         display: flex !important;
-        justify-content: center !important; /* Centers the bubble in its space */
-        width: 100% !important;
+        justify-content: center !important;
     }
 
     .about-image img {
-        /* Reducing height slightly from 94vh to 82vh for that "touch smaller" feel */
-        height: 82vh !important; 
+        /* SHRINKING: Lock height at 70% of screen to make it 'smaller' */
+        height: 70vh !important; 
         width: auto !important;
         aspect-ratio: 3 / 4 !important;
         object-fit: cover !important;
         
         border-radius: 1rem !important;
         border: 3px solid var(--bright-blue) !important;
-        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25) !important;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2) !important;
+    }
+
+    .about-content h2 {
+        font-size: 2.5rem !important; /* Larger Section Title */
+    }
+
+    .about-content p {
+        font-size: 1.1rem !important; /* Larger Body Text */
+        line-height: 1.6 !important;
     }
 }
 
