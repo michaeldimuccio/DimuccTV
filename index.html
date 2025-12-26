@@ -1055,43 +1055,53 @@ nav a {
 }
 
 
-/* --- LANDSCAPE "3-COLUMN" & IMAGE FIX --- */
+/* --- LANDSCAPE MASTER: 3-VIDEOS, 3-ARTICLES, 4-BRANDS --- */
 @media screen and (orientation: landscape) and (max-width: 1024px) {
-    /* 1. Limit About Image Size */
+    /* 1. About: Increase Image Size (Balanced 1:1 ratio) */
     .about-grid {
         display: grid !important;
-        grid-template-columns: 0.8fr 1.2fr !important; /* Makes image column smaller */
+        grid-template-columns: 1fr 1fr !important; 
         align-items: center !important;
         gap: 3rem !important;
     }
 
     .about-image img {
-        max-height: 60vh !important; /* Prevents image from being taller than the screen */
-        width: auto !important;
-        margin: 0 auto;
+        max-height: 70vh !important; /* Made bigger than previous 55vh */
+        width: 100% !important;
+        object-fit: cover !important;
     }
 
-    /* 2. FORCE 3 VIDEOS PER ROW (Videos & Music) */
+    /* 2. Video & Music Grids: 3 per row */
     .video-grid, .music-grid {
         display: grid !important;
         grid-template-columns: repeat(3, 1fr) !important;
-        gap: 1.5rem !important;
+        gap: 1.25rem !important;
     }
 
-    /* 3. Stats in one row */
+    /* 3. Press: 3 per row */
+    .press-grid {
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 1.25rem !important;
+        margin-bottom: 4rem !important;
+    }
+
+    /* 4. Brands: 4 per row */
+    .brand-grid {
+        display: grid !important;
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 1rem !important;
+    }
+
+    /* 5. Stats: 4 per row */
     .stats-grid {
         grid-template-columns: repeat(4, 1fr) !important;
     }
 
-    /* 4. Desktop Nav Restore */
+    /* UI Cleanups */
+    .container { max-width: 1000px !important; }
     .nav-links { display: flex !important; }
     #hamburger, #mobile-menu { display: none !important; }
-
-    /* 5. General Container tightening */
-    .container {
-        max-width: 960px !important;
-        padding: 0 20px !important;
-    }
 }
 
         
