@@ -2561,7 +2561,6 @@ nav a {
 <script>
     (function() {
         // --- 1. UNIVERSAL REVEAL LOGIC ---
-        // This handles About, Achievements, Stats, Videos, and Contact
         const revealOptions = {
             threshold: 0.01,
             rootMargin: "0px 0px -50px 0px"
@@ -2570,28 +2569,31 @@ nav a {
         const revealObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 const rect = entry.target.getBoundingClientRect();
+                const isBelowScreen = rect.top > (window.innerHeight || document.documentElement.clientHeight);
                 
                 if (entry.isIntersecting) {
+                    // Activate animation
                     entry.target.classList.add('reveal-active');
                 } else {
-                    // Only reset if the element is BELOW the screen (scrolling back up)
-                    // This keeps sections visible while you are reading them
-                    if (rect.top > (window.innerHeight || document.documentElement.clientHeight)) {
+                    // ONLY reset if scrolling back UP (element is below the screen)
+                    // If isBelowScreen is false, it means the element is ABOVE the screen
+                    // so we keep 'reveal-active' attached.
+                    if (isBelowScreen) {
                         entry.target.classList.remove('reveal-active');
                     }
                 }
             });
         }, revealOptions);
 
-        // Target all animated elements
-        const animatedElements = document.querySelectorAll(
-            '.hero-content, .stat-item, .about-grid, .achievement-card, .platform-item, .video-item, .contact-reveal'
+        // This list covers every section you mentioned
+        const elementsToWatch = document.querySelectorAll(
+            '.stat-item, .about-grid, .achievement-card, .platform-item, .video-item, .contact-reveal, #about, #achievements, .stats-grid'
         );
-        animatedElements.forEach(el => revealObserver.observe(el));
+        
+        elementsToWatch.forEach(el => revealObserver.observe(el));
 
 
         // --- 2. NAVIGATION SPY LOGIC ---
-        // Handles the active orange line in the menu
         const sections = document.querySelectorAll("section[id]");
         const navLinks = document.querySelectorAll("nav ul li a");
 
@@ -2599,7 +2601,6 @@ nav a {
             let currentSectionId = "";
             sections.forEach((section) => {
                 const sectionTop = section.offsetTop;
-                // Switch active link when section is 30% down the viewport
                 if (window.pageYOffset >= sectionTop - (window.innerHeight / 3)) {
                     currentSectionId = section.getAttribute("id");
                 }
@@ -2614,13 +2615,8 @@ nav a {
             });
         }
 
-
-        // --- 3. EVENT LISTENERS ---
-        window.addEventListener('scroll', () => {
-            updateNav();
-        }, { passive: true });
-
-        updateNav(); // Initial run on load
+        window.addEventListener('scroll', updateNav, { passive: true });
+        updateNav(); 
     })();
 </script>
 
