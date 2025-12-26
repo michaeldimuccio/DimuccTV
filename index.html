@@ -1055,64 +1055,67 @@ nav a {
 }
 
 
-/* --- THE "CANCEL MOBILE" LANDSCAPE ENGINE --- */
-@media screen and (orientation: landscape) and (max-height: 600px) {
-    /* 1. Force the Desktop Virtual Canvas */
-    body.force-landscape {
-        zoom: calc(100vw / 1280); 
-        width: 1280px !important;
-        display: block !important;
-        margin: 0 auto !important;
-        overflow-x: hidden !important;
+/* 1. UNIVERSAL FLUID CONTAINER */
+.container {
+    width: min(1280px, 100%);
+    margin: 0 auto;
+    /* Fluid padding: 20px on small screens, scaling up to 80px (5rem) on PC */
+    padding-inline: clamp(1.25rem, 5vw, 5rem);
+}
+
+/* 2. THE CLEAN LANDSCAPE RESTORATION (No Zoom Hacks) */
+@media screen and (orientation: landscape) and (max-width: 932px) {
+    /* Reset body to natural behavior */
+    body { 
+        zoom: 1 !important; 
+        width: 100% !important; 
+        overflow-x: hidden !important; 
     }
 
-    /* 2. Cancel Mobile Stacking & Container Spacing */
-    body.force-landscape .container {
-        width: 1280px !important;
-        max-width: 1280px !important;
-        padding: 0 5rem !important;
-        margin: 0 auto !important;
+    /* Force Desktop Navigation & Kill Burger */
+    #hamburger, #mobile-menu { display: none !important; }
+    .nav-links { 
+        display: flex !important; 
+        gap: 2rem !important; 
+        flex-direction: row !important;
     }
+    nav .container { justify-content: space-between !important; }
 
-    /* 3. Force 3 and 4 Columns (Kills Vertical Stacking) */
-    body.force-landscape .video-grid, 
-    body.force-landscape .music-grid, 
-    body.force-landscape .press-grid,
-    body.force-landscape .audience-cards {
-        display: grid !important;
-        grid-template-columns: repeat(3, 1fr) !important;
-        gap: 2rem !important;
-    }
-
-    body.force-landscape .stats-grid, 
-    body.force-landscape .brand-grid {
-        display: grid !important;
-        grid-template-columns: repeat(4, 1fr) !important;
-        gap: 2rem !important;
-    }
-
-    /* 4. Restore About & Contact Side-by-Side */
-    body.force-landscape .about-grid, 
-    body.force-landscape .contact-grid {
+    /* Force Desktop Grids (Side-by-Side) */
+    .about-grid, .contact-grid, .audience-cards {
         display: grid !important;
         grid-template-columns: 1fr 1fr !important;
-        gap: 4rem !important;
+        gap: 2rem !important;
+        text-align: left !important;
         align-items: center !important;
     }
 
-    /* 5. Restore Side-by-Side Buttons */
-    body.force-landscape .hero-btn-container {
-        display: flex !important;
-        flex-direction: row !important;
-        justify-content: center !important;
+    /* Force 3-Column Video/Press Grids */
+    .video-grid, .music-grid, .press-grid {
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr) !important;
         gap: 1.5rem !important;
     }
-    body.force-landscape .btn { width: auto !important; margin: 0 !important; }
 
-    /* 6. Kill Hamburger & Restore Desktop Nav */
-    body.force-landscape #hamburger, 
-    body.force-landscape #mobile-menu { display: none !important; }
-    body.force-landscape .nav-links { display: flex !important; gap: 2.5rem !important; }
+    /* Force 4-Column Stats/Brands */
+    .stats-grid, .brand-grid {
+        display: grid !important;
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 1rem !important;
+    }
+
+    /* Fix Hero Overlap & Buttons */
+    .hero { padding-top: 6rem !important; min-height: 100vh !important; }
+    .hero-btn-container { 
+        display: flex !important; 
+        flex-direction: row !important; 
+        justify-content: center !important;
+        gap: 1rem !important;
+    }
+    .btn { width: auto !important; margin: 0 !important; padding: 0.8rem 1.5rem !important; }
+
+    /* Fix About Image Size */
+    .about-image img { height: 75vh !important; width: auto !important; }
 }
  
     </style>
@@ -2650,74 +2653,50 @@ nav a {
 
 <script>
 (function() {
-    // 1. THE IOF STATEMENT: Force 100% Zoom and Desktop Class
-    function updateOrientation() {
-        const viewport = document.querySelector('meta[name="viewport"]');
-        const body = document.body;
-        if (!viewport || !body) return;
-
-        if (window.innerWidth > window.innerHeight) {
-            // IF LANDSCAPE: Force PC Class and lock scale to 100%
-            body.classList.add('force-landscape');
-            viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
-        } else {
-            // IF PORTRAIT: Revert to standard mobile
-            body.classList.remove('force-landscape');
-            viewport.setAttribute('content', 'width=device-width, initial-scale=1.0');
-        }
+    // 1. SIMPLE VIEWPORT LOCK (Standard Device Width)
+    // This allows CSS Media Queries to work naturally without "auto-zooming"
+    const viewport = document.querySelector('meta[name="viewport"]');
+    if (viewport) {
+        viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
     }
-
-    window.addEventListener('resize', updateOrientation);
-    window.addEventListener('orientationchange', updateOrientation);
-    updateOrientation(); 
 
     // 2. SILENT FORM HANDLER (Google Sheets Only)
     const scriptURL = 'https://script.google.com/macros/s/AKfycbwyD-d5Ka405oHl6FsBTQUJ95OYZVuFxmJsJL6hRSjcy8K_W8hqKyAMBCbUc6k-tcsCYg/exec';
 
-    function setupSilentForm(formId, loadingText, successText) {
-        const form = document.getElementById(formId);
-        if (!form) return;
-
-        form.addEventListener('submit', function(e) {
-            e.preventDefault(); // This is the "Damn Problem" fix: it kills the mailto/redirect
+    function setupForm(id) {
+        const f = document.getElementById(id);
+        if (!f) return;
+        f.addEventListener('submit', function(e) {
+            e.preventDefault(); 
             const btn = this.querySelector('button');
-            const originalText = btn.innerText;
-            btn.innerText = loadingText;
+            const txt = btn.innerText;
+            btn.innerText = "Sending...";
             btn.disabled = true;
 
             fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: new FormData(this) })
                 .then(() => {
-                    btn.innerText = successText;
+                    btn.innerText = "Sent!";
                     this.reset();
-                    setTimeout(() => { btn.innerText = originalText; btn.disabled = false; }, 3000);
-                })
-                .catch(() => {
-                    btn.innerText = "Error";
-                    btn.disabled = false;
+                    setTimeout(() => { btn.innerText = txt; btn.disabled = false; }, 3000);
                 });
         });
     }
-    setupSilentForm('emailCaptureForm', 'Joining...', 'Joined!');
-    setupSilentForm('contactForm', 'Sending...', 'Sent!');
+    setupForm('emailCaptureForm');
+    setupForm('contactForm');
 
-    // 3. REVEAL LOGIC
-    const revealObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('reveal-active');
-                revealObserver.unobserve(entry.target);
-            }
-        });
+    // 3. REVEAL LOGIC (Animations)
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('reveal-active'); });
     }, { threshold: 0.05 });
-    document.querySelectorAll('.hero-content, .stat-item, .about-grid, .achievement-card, .platform-item, .video-item, .contact-reveal').forEach(el => revealObserver.observe(el));
+    document.querySelectorAll('.hero-content, .stat-item, .about-grid, .achievement-card, .platform-item, .video-item').forEach(el => observer.observe(el));
 
-    // 4. BURGER MENU TOGGLE
+    // 4. MOBILE MENU (Portrait Only)
     window.toggleMenu = function() {
-        if (window.innerWidth > window.innerHeight) return; // Prevent burger in landscape
-        const menu = document.getElementById('mobile-menu');
-        if (menu) {
-            const isOpen = (menu.style.display === 'flex');
-            menu.style.setProperty('display', isOpen ? 'none' : 'flex', 'important');
+        if (window.innerWidth > window.innerHeight) return; // Disable in Landscape
+        const m = document.getElementById('mobile-menu');
+        if (m) {
+            const open = (m.style.display === 'flex');
+            m.style.setProperty('display', open ? 'none' : 'flex', 'important');
         }
     };
 })();
