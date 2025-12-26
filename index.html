@@ -1026,6 +1026,19 @@ nav a {
     }
 
 }
+        body {
+    background-color: #000 !important; /* Forces the black background logic */
+    overflow-x: hidden;
+    /* This next line is the magic - it fixes the Safari bar flicker */
+    perspective: 1000px; 
+}
+
+section {
+    /* This tells the browser to keep these sections 'alive' even when scrolling */
+    backface-visibility: hidden;
+    transform: translateZ(0);
+    -webkit-font-smoothing: antialiased;
+}
     </style>
 </head>
 <body>
@@ -2560,30 +2573,22 @@ nav a {
 
 <script>
     (function() {
-        // --- 1. UNIVERSAL REVEAL LOGIC ---
-        // This handles About, Achievements, Stats, Videos, and Contact
-        const revealOptions = {
-            threshold: 0.01,
-            rootMargin: "0px 0px -50px 0px"
-        };
-
+        // --- 1. STICKY REVEAL LOGIC ---
         const revealObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
-                const rect = entry.target.getBoundingClientRect();
-                
                 if (entry.isIntersecting) {
+                    // Trigger the animation
                     entry.target.classList.add('reveal-active');
-                } else {
-                    // Only reset if the element is BELOW the screen (scrolling back up)
-                    // This keeps sections visible while you are reading them
-                    if (rect.top > (window.innerHeight || document.documentElement.clientHeight)) {
-                        entry.target.classList.remove('reveal-active');
-                    }
+                    // THE FIX: Stop watching immediately so it never resets or disappears
+                    revealObserver.unobserve(entry.target);
                 }
             });
-        }, revealOptions);
+        }, { 
+            threshold: 0.05,
+            rootMargin: "0px 0px -50px 0px" 
+        });
 
-        // Target all animated elements
+        // Select all elements that should animate
         const animatedElements = document.querySelectorAll(
             '.hero-content, .stat-item, .about-grid, .achievement-card, .platform-item, .video-item, .contact-reveal'
         );
@@ -2591,16 +2596,18 @@ nav a {
 
 
         // --- 2. NAVIGATION SPY LOGIC ---
-        // Handles the active orange line in the menu
         const sections = document.querySelectorAll("section[id]");
         const navLinks = document.querySelectorAll("nav ul li a");
 
         function updateNav() {
             let currentSectionId = "";
+            const scrollPos = window.pageYOffset;
+            const winHeight = window.innerHeight;
+
             sections.forEach((section) => {
                 const sectionTop = section.offsetTop;
-                // Switch active link when section is 30% down the viewport
-                if (window.pageYOffset >= sectionTop - (window.innerHeight / 3)) {
+                // Switch highlight when section is 30% down the viewport
+                if (scrollPos >= sectionTop - (winHeight / 3)) {
                     currentSectionId = section.getAttribute("id");
                 }
             });
@@ -2614,13 +2621,15 @@ nav a {
             });
         }
 
-
         // --- 3. EVENT LISTENERS ---
-        window.addEventListener('scroll', () => {
-            updateNav();
-        }, { passive: true });
-
-        updateNav(); // Initial run on load
+        window.addEventListener('scroll', updateNav, { passive: true });
+        updateNav(); // Run once on load
+        
+        // --- 4. MOBILE MENU TOGGLE ---
+        window.toggleMenu = function() {
+            const nav = document.querySelector('.nav-links');
+            nav.classList.toggle('active');
+        };
     })();
 </script>
 
