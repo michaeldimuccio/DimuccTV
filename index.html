@@ -1026,19 +1026,20 @@ nav a {
     }
 
 }
-/* 1. Force the sections to stay in their own high-priority layer */
+        /* Add this to your CSS */
 #about, #stats, #achievements, #videos, #contact {
-    isolation: isolate !important;
-    backface-visibility: hidden !important;
-    -webkit-backface-visibility: hidden !important;
-    /* This imitates the 'Menu' effect by keeping the layer active */
+    /* Forces the phone's GPU to keep these sections rendered at all times */
     transform: translateZ(0);
     -webkit-transform: translateZ(0);
+    will-change: transform, opacity;
+    /* Prevents layout shifts from hiding the content */
+    contain: content;
 }
 
-/* 2. Ensure the stats and achievements start hidden so they can animate */
-.stat-item, .about-grid, .achievement-card {
-    will-change: transform, opacity;
+/* Ensure the active nav link is visible even on mobile */
+nav ul li a.active {
+    color: var(--bright-blue) !important;
+    border-bottom: 2px solid var(--accent-orange) !important;
 }
     </style>
 </head>
@@ -2662,26 +2663,22 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
 
 <script>
     (function() {
-        // 1. REVEAL LOGIC
+        // 1. STICKY REVEAL (Fixes About, Stats, Achievements, Contact disappearing)
         const revealObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('reveal-active');
-                    // THE FIX: Stop watching once revealed. 
-                    // This creates the permanent state you see when the menu is open.
+                    // THE KEY: Stop watching once revealed so Safari can't flicker it off
                     revealObserver.unobserve(entry.target);
                 }
             });
-        }, { 
-            threshold: 0.05,
-            rootMargin: "0px 0px -20px 0px" 
-        });
+        }, { threshold: 0.05 });
 
-        // Targeted items (Individual cards for the wave effect)
+        // Target individual items for the "Wave" effect
         const items = document.querySelectorAll('.hero-content, .stat-item, .about-grid, .achievement-card, .platform-item, .video-item, .contact-reveal');
         items.forEach(el => revealObserver.observe(el));
 
-        // 2. NAVIGATION SPY (The Orange Line Fix)
+        // 2. NAVIGATION SPY (Fixes the Blue Highlighting/Orange Line)
         const sections = document.querySelectorAll("section[id]");
         const navLinks = document.querySelectorAll("nav ul li a");
         const mobileLinks = document.querySelectorAll("#mobile-menu a");
@@ -2692,11 +2689,14 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
             const winHeight = window.innerHeight;
 
             sections.forEach(s => {
-                if (scrollPos >= s.offsetTop - (winHeight / 3)) {
+                const sectionTop = s.offsetTop;
+                // If the section is in the top 3rd of the screen, it's "active"
+                if (scrollPos >= sectionTop - (winHeight / 3)) {
                     current = s.getAttribute("id");
                 }
             });
 
+            // Update both desktop and mobile menu links simultaneously
             [...navLinks, ...mobileLinks].forEach(link => {
                 link.classList.remove("active");
                 if (link.getAttribute("href") === "#" + current) {
@@ -2705,10 +2705,12 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
             });
         }
 
+        // 3. EVENT LISTENERS
         window.addEventListener('scroll', updateNav, { passive: true });
+        window.addEventListener('resize', updateNav);
         updateNav();
 
-        // 3. BURGER MENU TOGGLE
+        // 4. MOBILE MENU TOGGLE
         window.toggleMenu = function() {
             const menu = document.getElementById('mobile-menu');
             if (menu) {
