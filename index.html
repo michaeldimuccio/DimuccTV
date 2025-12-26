@@ -1699,9 +1699,14 @@ nav a {
             isProcessing = false;
         }
 
-        const observerOptions = { threshold: 0, rootMargin: "0px 0px -400px 0px" };
+        // Changed rootMargin from -400px to -50px for mobile stability
+        const observerOptions = { threshold: 0.01, rootMargin: "0px 0px -50px 0px" };
+        
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
+                const rect = entry.boundingClientRect;
+                const windowHeight = window.innerHeight;
+
                 if (entry.isIntersecting) {
                     if (entry.target.classList.contains('platform-item')) {
                         if (!entry.target.classList.contains('reveal-active') && !animationQueue.includes(entry.target)) {
@@ -1711,9 +1716,13 @@ nav a {
                     } else {
                         entry.target.classList.add('reveal-active');
                     }
-                } else if (entry.boundingClientRect.top > 0 && entry.intersectionRatio <= 0) {
-                    entry.target.classList.remove('reveal-active');
-                    animationQueue = animationQueue.filter(el => el !== entry.target);
+                } else {
+                    // Only reset if the element is ENTIRELY below the screen (scrolling back up)
+                    // If you scroll down and it leaves the top, it stays visible
+                    if (rect.top > windowHeight) {
+                        entry.target.classList.remove('reveal-active');
+                        animationQueue = animationQueue.filter(el => el !== entry.target);
+                    }
                 }
             });
         }, observerOptions);
