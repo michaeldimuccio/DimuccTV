@@ -1027,28 +1027,24 @@ nav a {
 
 
 
-/* 1. INITIAL STATE: Hidden and shifted down */
+/* 1. Base State - Everything is visible by default to prevent "Black Holes" */
 .hero-content, .stat-item, .about-grid, .achievement-card, 
 .platform-item, .video-item, .contact-reveal {
-    opacity: 0;
-    transform: translateY(30px);
-    transition: opacity 0.8s ease, transform 0.8s ease !important;
+    opacity: 1; /* Start at 1 so nothing is invisible on load */
+    transform: translateY(0);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out !important;
 }
 
-/* 2. ACTIVE STATE: Fully visible and centered */
-.reveal-active {
-    opacity: 1 !important;
-    transform: translateY(0) !important;
-    /* Keeps it solid while the user is looking at it */
-    transition: opacity 0.8s ease, transform 0.8s ease !important;
-}
-
-/* 3. RESET STATE: Fades out only once it's in the 100px safety buffer */
+/* 2. Reset State - Only hide it when the script EXPLICITLY says it's off-screen */
 .reveal-reset {
     opacity: 0 !important;
     transform: translateY(30px) !important;
-    /* This makes the "reset" happen as a smooth 1.2s fade out */
-    transition: opacity 1.2s ease-in !important; 
+}
+
+/* 3. Active State - Bring it back when on screen */
+.reveal-active {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
 }
         
         
@@ -2633,24 +2629,22 @@ nav a {
         setupSilentForm('emailCaptureForm', 'Joining...', 'Joined!');
         setupSilentForm('contactForm', 'Sending...', 'Sent!');
 
-// 3. STICKY REVEAL: Stays solid until 100px past the screen edge
+// 3. REVEAL LOGIC: Clean Fade-In / Reset on Scroll
         const revealObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    // Element is on screen: Show it and keep it solid
+                    // Element is coming into view: Show it
                     entry.target.classList.add('reveal-active');
                     entry.target.classList.remove('reveal-reset');
                 } else {
-                    // Element is 100px OFF-SCREEN: Reset it quietly
-                    if (entry.target.classList.contains('reveal-active')) {
-                        entry.target.classList.remove('reveal-active');
-                        entry.target.classList.add('reveal-reset');
-                    }
+                    // Element is fully off-screen: Reset it quietly
+                    entry.target.classList.remove('reveal-active');
+                    entry.target.classList.add('reveal-reset');
                 }
             });
         }, { 
-            threshold: 0, 
-            rootMargin: "100px 0px 100px 0px" // The 100px "Safety Buffer"
+            threshold: 0.1, // Triggers when 10% is visible
+            rootMargin: "0px" // Triggers exactly at the screen edge
         });
 
         const items = document.querySelectorAll('.hero-content, .stat-item, .about-grid, .achievement-card, .platform-item, .video-item, .contact-reveal');
@@ -2695,4 +2689,4 @@ nav a {
     
 </body>
 </html>
-`update 8
+`update 9
