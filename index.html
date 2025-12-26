@@ -1685,6 +1685,7 @@ nav a {
     (function() {
         let animationQueue = [];
         let isProcessing = false;
+        let lastScrollTop = window.pageYOffset || document.documentElement.scrollTop;
 
         async function processQueue() {
             if (isProcessing || animationQueue.length === 0) return;
@@ -1699,15 +1700,17 @@ nav a {
             isProcessing = false;
         }
 
-        // Changed rootMargin from -400px to -50px for mobile stability
-        const observerOptions = { threshold: 0.01, rootMargin: "0px 0px -50px 0px" };
+        // rootMargin bottom -100px ensures it doesn't trigger/reset at the very edge
+        const observerOptions = { threshold: 0, rootMargin: "0px 0px -100px 0px" };
         
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
+                const st = window.pageYOffset || document.documentElement.scrollTop;
+                const scrollingUp = st < lastScrollTop;
                 const rect = entry.boundingClientRect;
-                const windowHeight = window.innerHeight;
 
                 if (entry.isIntersecting) {
+                    // Always trigger if coming onto screen
                     if (entry.target.classList.contains('platform-item')) {
                         if (!entry.target.classList.contains('reveal-active') && !animationQueue.includes(entry.target)) {
                             animationQueue.push(entry.target);
@@ -1717,13 +1720,15 @@ nav a {
                         entry.target.classList.add('reveal-active');
                     }
                 } else {
-                    // Only reset if the element is ENTIRELY below the screen (scrolling back up)
-                    // If you scroll down and it leaves the top, it stays visible
-                    if (rect.top > windowHeight) {
+                    // RESET LOGIC: 
+                    // 1. If the element is below the viewport (scrolling UP back to top)
+                    // 2. We use a 100px buffer to make sure it's actually gone
+                    if (rect.top > (window.innerHeight || document.documentElement.clientHeight)) {
                         entry.target.classList.remove('reveal-active');
                         animationQueue = animationQueue.filter(el => el !== entry.target);
                     }
                 }
+                lastScrollTop = st <= 0 ? 0 : st; 
             });
         }, observerOptions);
 
