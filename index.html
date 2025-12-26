@@ -3,7 +3,7 @@
 <head>
 <base target="_self">
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
     <title>Michael "Dimucc" DiMuccio - Digital Creator</title>
     <style>
 /* 1. THE DESKTOP & WIDE TABLET "BLACK SCREEN" KILLER */
@@ -1055,34 +1055,41 @@ nav a {
 }
 
 
-/* --- LANDSCAPE DESKTOP RESTORE --- */
+/* --- LANDSCAPE DESKTOP RESTORE & ZOOM FIX --- */
 @media screen and (max-width: 1024px) and (orientation: landscape) {
-    /* 1. Show the desktop nav links again */
+    /* 1. Reset the "Zoom" feel by allowing content to spread out */
+    .container {
+        padding: 0 2rem !important;
+        max-width: 1200px !important;
+        margin: 0 auto !important;
+    }
+
+    /* 2. Show the desktop nav links and hide burger */
     .nav-links {
         display: flex !important;
         gap: 1.5rem !important;
     }
-
-    /* 2. Hide the hamburger menu */
-    #hamburger {
+    #hamburger, #mobile-menu {
         display: none !important;
     }
 
-    /* 3. Force sections back into side-by-side grids (Desktop Style) */
-    .about-grid, .stats-grid, .achievements-grid, .video-grid {
+    /* 3. Force Side-by-Side (Un-zoom the vertical stack) */
+    .about-grid, .achievements-grid, .video-grid {
         display: grid !important;
-        grid-template-columns: repeat(2, 1fr) !important;
+        grid-template-columns: 1fr 1fr !important;
         text-align: left !important;
+        align-items: center !important;
     }
-    
+
+    /* 4. Desktop Stats Row */
     .stats-grid {
+        display: grid !important;
         grid-template-columns: repeat(4, 1fr) !important;
     }
 
-    /* 4. Kill the mobile menu if it was left open */
-    #mobile-menu {
-        display: none !important;
-    }
+    /* 5. Scale down headers so they don't look 'zoomed' */
+    .hero h1 { font-size: 3.5rem !important; }
+    .section-title { font-size: 2.2rem !important; }
 }
 
         
