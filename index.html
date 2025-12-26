@@ -1026,48 +1026,19 @@ nav a {
     }
 
 }
-        /* Add this to your CSS */
+/* 1. Force the sections to stay in their own high-priority layer */
 #about, #stats, #achievements, #videos, #contact {
-    /* Forces the phone's GPU to keep these sections rendered at all times */
+    isolation: isolate !important;
+    backface-visibility: hidden !important;
+    -webkit-backface-visibility: hidden !important;
+    /* This imitates the 'Menu' effect by keeping the layer active */
     transform: translateZ(0);
     -webkit-transform: translateZ(0);
+}
+
+/* 2. Ensure the stats and achievements start hidden so they can animate */
+.stat-item, .about-grid, .achievement-card {
     will-change: transform, opacity;
-    /* Prevents layout shifts from hiding the content */
-    contain: content;
-}
-
-/* Ensure the active nav link is visible even on mobile */
-nav ul li a.active {
-    color: var(--bright-blue) !important;
-    border-bottom: 2px solid var(--accent-orange) !important;
-}
-
-/* --- TARGETED GPU REWAKE (Problem Sections Only) --- */
-@keyframes safari-stay-awake {
-    0% { opacity: 1; }
-    50% { opacity: 0.999; }
-    100% { opacity: 1; }
-}
-
-/* Strictly targeting the sections that were disappearing */
-#about, #stats-section, #achievements-section {
-    /* Forces permanent 3D rendering to stop the "Click to wake" bug */
-    transform: translate3d(0,0,0) !important;
-    -webkit-transform: translate3d(0,0,0) !important;
-    
-    /* The Heartbeat keeps these specific layers active */
-    animation: safari-stay-awake 1s infinite !important;
-    
-    /* Tells Safari: "Do not hide this layer for any reason" */
-    will-change: transform, opacity !important;
-    contain: none !important; 
-}
-
-/* Keeps the internal animations working for these sections */
-.reveal-active {
-    opacity: 1 !important;
-    transform: translate3d(0,0,0) !important;
-    visibility: visible !important;
 }
     </style>
 </head>
@@ -2691,21 +2662,26 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
 
 <script>
     (function() {
-        // 1. ATOMIC REVEAL
+        // 1. REVEAL LOGIC
         const revealObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('reveal-active');
-                    // Lock it forever
+                    // THE FIX: Stop watching once revealed. 
+                    // This creates the permanent state you see when the menu is open.
                     revealObserver.unobserve(entry.target);
                 }
             });
-        }, { threshold: 0.01 }); // Trigger at the very first pixel
+        }, { 
+            threshold: 0.05,
+            rootMargin: "0px 0px -20px 0px" 
+        });
 
-        const items = document.querySelectorAll('.hero-content, .stat-item, .about-grid, .achievement-card, .platform-item, .video-item, .contact-reveal, #stats-section, #about, #achievements-section');
+        // Targeted items (Individual cards for the wave effect)
+        const items = document.querySelectorAll('.hero-content, .stat-item, .about-grid, .achievement-card, .platform-item, .video-item, .contact-reveal');
         items.forEach(el => revealObserver.observe(el));
 
-        // 2. NAVIGATION SPY
+        // 2. NAVIGATION SPY (The Orange Line Fix)
         const sections = document.querySelectorAll("section[id]");
         const navLinks = document.querySelectorAll("nav ul li a");
         const mobileLinks = document.querySelectorAll("#mobile-menu a");
@@ -2713,11 +2689,14 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
         function updateNav() {
             let current = "";
             const scrollPos = window.pageYOffset;
+            const winHeight = window.innerHeight;
+
             sections.forEach(s => {
-                if (scrollPos >= s.offsetTop - (window.innerHeight / 3)) {
+                if (scrollPos >= s.offsetTop - (winHeight / 3)) {
                     current = s.getAttribute("id");
                 }
             });
+
             [...navLinks, ...mobileLinks].forEach(link => {
                 link.classList.remove("active");
                 if (link.getAttribute("href") === "#" + current) {
@@ -2729,7 +2708,7 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
         window.addEventListener('scroll', updateNav, { passive: true });
         updateNav();
 
-        // 3. BURGER MENU
+        // 3. BURGER MENU TOGGLE
         window.toggleMenu = function() {
             const menu = document.getElementById('mobile-menu');
             if (menu) {
