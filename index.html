@@ -3,7 +3,7 @@
 <head>
 <base target="_self">
     <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Michael "Dimucc" DiMuccio - Digital Creator</title>
     <style>
 /* 1. THE DESKTOP & WIDE TABLET "BLACK SCREEN" KILLER */
@@ -1055,69 +1055,81 @@ nav a {
 }
 
 
-/* 1. UNIVERSAL FLUID CONTAINER */
+/* 1. UNIVERSAL FLUID CONTAINER (same intent, safer + force wins) */
 .container {
-    width: min(1280px, 100%);
-    margin: 0 auto;
-    /* Fluid padding: 20px on small screens, scaling up to 80px (5rem) on PC */
-    padding-inline: clamp(1.25rem, 5vw, 5rem);
+  width: 100% !important;
+  max-width: 1280px !important;
+  margin-inline: auto !important;
+  padding-inline: clamp(1.25rem, 5vw, 5rem) !important;
 }
 
-/* 2. THE CLEAN LANDSCAPE RESTORATION (No Zoom Hacks) */
+/* 2. THE CLEAN LANDSCAPE RESTORATION (No Zoom/Scale, no gutters) */
 @media screen and (orientation: landscape) and (max-width: 932px) {
-    /* Reset body to natural behavior */
-    body { 
-        zoom: 1 !important; 
-        width: 100% !important; 
-        overflow-x: hidden !important; 
-    }
 
-    /* Force Desktop Navigation & Kill Burger */
-    #hamburger, #mobile-menu { display: none !important; }
-    .nav-links { 
-        display: flex !important; 
-        gap: 2rem !important; 
-        flex-direction: row !important;
-    }
-    nav .container { justify-content: space-between !important; }
+  /* HARD RESET: kill the “boxed desktop canvas” sources */
+  html, body {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow-x: hidden !important;
+    transform: none !important;
+  }
 
-    /* Force Desktop Grids (Side-by-Side) */
-    .about-grid, .contact-grid, .audience-cards {
-        display: grid !important;
-        grid-template-columns: 1fr 1fr !important;
-        gap: 2rem !important;
-        text-align: left !important;
-        align-items: center !important;
-    }
+  /* If any wrapper is forcing a page width, neutralize common culprits */
+  body, #app, #root, .page, .wrapper, .site, .layout {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    transform: none !important;
+  }
 
-    /* Force 3-Column Video/Press Grids */
-    .video-grid, .music-grid, .press-grid {
-        display: grid !important;
-        grid-template-columns: repeat(3, 1fr) !important;
-        gap: 1.5rem !important;
-    }
+  /* Force Desktop Navigation & Kill Burger */
+  #hamburger, #mobile-menu { display: none !important; }
+  .nav-links {
+    display: flex !important;
+    gap: 2rem !important;
+    flex-direction: row !important;
+  }
+  nav .container { justify-content: space-between !important; }
 
-    /* Force 4-Column Stats/Brands */
-    .stats-grid, .brand-grid {
-        display: grid !important;
-        grid-template-columns: repeat(4, 1fr) !important;
-        gap: 1rem !important;
-    }
+  /* Force Desktop Grids (Side-by-Side) */
+  .about-grid, .contact-grid, .audience-cards {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 2rem !important;
+    text-align: left !important;
+    align-items: center !important;
+  }
 
-    /* Fix Hero Overlap & Buttons */
-    .hero { padding-top: 6rem !important; min-height: 100vh !important; }
-    .hero-btn-container { 
-        display: flex !important; 
-        flex-direction: row !important; 
-        justify-content: center !important;
-        gap: 1rem !important;
-    }
-    .btn { width: auto !important; margin: 0 !important; padding: 0.8rem 1.5rem !important; }
+  /* LANDSCAPE PHONE: keep it “desktop-ish” but not cramped */
+  .video-grid, .music-grid, .press-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important; /* was 3 */
+    gap: 1.5rem !important;
+  }
 
-    /* Fix About Image Size */
-    .about-image img { height: 75vh !important; width: auto !important; }
+  .stats-grid, .brand-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important; /* was 4 */
+    gap: 1rem !important;
+  }
+
+  /* Fix Hero Overlap & Buttons */
+  .hero { padding-top: 6rem !important; min-height: 100vh !important; }
+  .hero-btn-container {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: center !important;
+    gap: 1rem !important;
+    flex-wrap: wrap !important; /* prevents overflow */
+  }
+  .btn { width: auto !important; margin: 0 !important; padding: 0.8rem 1.5rem !important; }
+
+  /* Fix About Image Size */
+  .about-image img { height: 75vh !important; width: auto !important; max-width: 100% !important; }
 }
- 
+
     </style>
 </head>
 <body>
