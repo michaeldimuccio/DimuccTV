@@ -1026,44 +1026,68 @@ nav a {
     }
 
 }
-        
-/* --- MASTER LANDSCAPE RESTORATION --- */
-@media screen and (orientation: landscape) and (max-width: 1100px) {
-    /* 1. FORCE DESKTOP NAV (Kill the Burger) */
-    #hamburger, #mobile-menu {
-        display: none !important;
-    }
-    .nav-links {
-        display: flex !important; /* Forces the text links back */
-        gap: 1.5rem !important;
-    }
-    nav { padding: 0.3rem 0 !important; }
-    .logo img { height: 26px !important; }
+/* 1. Force the sections to stay in their own high-priority layer */
+#about, #stats, #achievements, #videos, #contact {
+    isolation: isolate !important;
+    backface-visibility: hidden !important;
+    -webkit-backface-visibility: hidden !important;
+    /* This imitates the 'Menu' effect by keeping the layer active */
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+}
 
-    /* 2. RESTORE 3-COLUMN GRIDS */
-    .video-grid, .music-grid, .press-grid {
-        display: grid !important;
-        grid-template-columns: repeat(3, 1fr) !important;
-        gap: 1.2rem !important;
+/* 2. Ensure the stats and achievements start hidden so they can animate */
+.stat-item, .about-grid, .achievement-card {
+    will-change: transform, opacity;
+}
+
+        /* Removes the orange underline specifically from the logo link */
+.logo a::after, 
+.logo-link::after {
+    display: none !important;
+    width: 0 !important;
+}
+
+/* Ensures no border or shadow appears on hover for the logo */
+.logo-link:hover {
+    border: none !important;
+    text-decoration: none !important;
+}
+
+
+/* --- LANDSCAPE MASTER: BALANCED IMAGE SIZE --- */
+@media screen and (orientation: landscape) and (max-width: 1024px) {
+    /* 1. Reset container to standard desktop margins for balance */
+    #about .container {
+        max-width: 1200px !important;
+        padding-left: 5rem !important; 
+        padding-right: 5rem !important;
     }
 
-    /* 3. RESTORE ABOUT SECTION SIDE-BY-SIDE */
     .about-grid {
         display: grid !important;
-        grid-template-columns: 1.1fr 0.9fr !important;
+        /* Balanced split: 1.1fr for image, 0.9fr for text */
+        grid-template-columns: 1.1fr 0.9fr !important; 
         align-items: center !important;
-        gap: 3rem !important;
-    }
-    .about-image img {
-        height: 80vh !important;
-        width: auto !important;
-        aspect-ratio: 3 / 4 !important;
+        gap: 4rem !important; 
     }
 
-    /* 4. LAYOUT SPACING */
-    .container {
-        max-width: 95% !important;
-        padding: 0 2rem !important;
+    .about-image {
+        display: flex !important;
+        justify-content: center !important; /* Centers the bubble in its space */
+        width: 100% !important;
+    }
+
+    .about-image img {
+        /* Reducing height slightly from 94vh to 82vh for that "touch smaller" feel */
+        height: 82vh !important; 
+        width: auto !important;
+        aspect-ratio: 3 / 4 !important;
+        object-fit: cover !important;
+        
+        border-radius: 1rem !important;
+        border: 3px solid var(--bright-blue) !important;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25) !important;
     }
 }
 
@@ -2602,20 +2626,59 @@ nav a {
 
 
 <script>
+    document.getElementById('contactForm').addEventListener('submit', function(e) {
+        e.preventDefault(); // Stops the "Content Blocked" redirect
+        
+        // Get the values
+        var name = this.querySelector('input[type="text"]').value;
+        var email = this.querySelector('input[type="email"]').value;
+        var message = this.querySelector('textarea').value;
+        
+        // Construct the mailto link manually
+        var subject = encodeURIComponent("Business Inquiry from " + name);
+        var body = encodeURIComponent("Name: " + name + "\nEmail: " + email + "\n\nMessage:\n" + message);
+        
+        // This bypasses the iframe sandbox block
+        window.top.location.href = "mailto:dimuccbusiness@gmail.com?subject=" + subject + "&body=" + body;
+        
+        alert("Opening your mail app...");
+    });
+</script>
+<script>
+function toggleMenu() {
+    const menu = document.getElementById('mobile-menu');
+    // Only toggle if we are actually on mobile
+    if (window.innerWidth <= 768) {
+        // If it's flex (open), set to none (closed)
+        if (menu.style.display === 'flex') {
+            menu.style.display = 'none';
+        } else {
+            // Force flex with important to override any desktop blocks
+            menu.style.setProperty('display', 'flex', 'important');
+        }
+    }
+}
+</script>
+<script>
     (function() {
-        // 1. CLEAN VIEWPORT: Natural width, NO forced 1280px to stop zoom glitch
+        // 1. THE VIEWPORT SCALER (Fixed: Prevents half-zoom glitch)
         function handleOrientation() {
             const viewport = document.querySelector('meta[name="viewport"]');
             if (viewport) {
-                // width=device-width prevents the 200% magnification glitch
-                viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0');
+                if (window.innerWidth > window.innerHeight) {
+                    // LANDSCAPE: Set width only to let the browser scale naturally
+                    viewport.setAttribute('content', 'width=1280');
+                } else {
+                    // PORTRAIT: Reset to standard mobile behavior
+                    viewport.setAttribute('content', 'width=device-width, initial-scale=1.0');
+                }
             }
         }
         window.addEventListener('resize', handleOrientation);
         window.addEventListener('orientationchange', handleOrientation);
         handleOrientation(); 
 
-        // 2. SILENT FORMS: No alerts, no mail app pop-ups
+        // 2. SILENT FORM LOGIC (Newsletter & Contact - Alerts Removed)
         const scriptURL = 'https://script.google.com/macros/s/AKfycbwyD-d5Ka405oHl6FsBTQUJ95OYZVuFxmJsJL6hRSjcy8K_W8hqKyAMBCbUc6k-tcsCYg/exec';
 
         function setupSilentForm(formId, loadingText, successText) {
@@ -2623,17 +2686,22 @@ nav a {
             if (!form) return;
 
             form.addEventListener('submit', function(e) {
-                e.preventDefault(); // Kills the mail app trigger
+                e.preventDefault();
                 const btn = this.querySelector('button');
                 const originalText = btn.innerText;
+                
                 btn.innerText = loadingText;
                 btn.disabled = true;
 
                 fetch(scriptURL, { method: 'POST', mode: 'no-cors', body: new FormData(this) })
                     .then(() => {
+                        // Success: Update button text silently
                         btn.innerText = successText;
                         this.reset();
-                        setTimeout(() => { btn.innerText = originalText; btn.disabled = false; }, 3000);
+                        setTimeout(() => {
+                            btn.innerText = originalText;
+                            btn.disabled = false;
+                        }, 3000);
                     })
                     .catch(() => {
                         btn.innerText = "Error";
@@ -2641,10 +2709,11 @@ nav a {
                     });
             });
         }
+
         setupSilentForm('emailCaptureForm', 'Joining...', 'Joined!');
         setupSilentForm('contactForm', 'Sending...', 'Sent!');
 
-        // 3. REVEAL LOGIC
+        // 3. REVEAL LOGIC (Animations)
         const revealObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -2652,31 +2721,33 @@ nav a {
                     revealObserver.unobserve(entry.target);
                 }
             });
-        }, { threshold: 0.05 });
+        }, { threshold: 0.05, rootMargin: "0px 0px -20px 0px" });
+
         const items = document.querySelectorAll('.hero-content, .stat-item, .about-grid, .achievement-card, .platform-item, .video-item, .contact-reveal');
         items.forEach(el => revealObserver.observe(el));
 
-        // 4. NAVIGATION SPY
+        // 4. NAVIGATION SPY & BURGER MENU
         const sections = document.querySelectorAll("section[id]");
         const navLinks = document.querySelectorAll("nav ul li a");
+        const mobileLinks = document.querySelectorAll("#mobile-menu a");
+
         function updateNav() {
             let current = "";
             const scrollPos = window.pageYOffset;
             sections.forEach(s => {
                 if (scrollPos >= s.offsetTop - (window.innerHeight / 3)) current = s.getAttribute("id");
             });
-            navLinks.forEach(link => {
+            [...navLinks, ...mobileLinks].forEach(link => {
                 link.classList.remove("active");
                 if (link.getAttribute("href") === "#" + current) link.classList.add("active");
             });
         }
         window.addEventListener('scroll', updateNav, { passive: true });
 
-        // 5. BURGER MENU (Only active in Portrait)
         window.toggleMenu = function() {
             const menu = document.getElementById('mobile-menu');
             if (menu) {
-                const isOpen = (menu.style.display === 'flex');
+                const isOpen = menu.style.display === 'flex';
                 menu.style.setProperty('display', isOpen ? 'none' : 'flex', 'important');
             }
         };
