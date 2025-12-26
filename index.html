@@ -1055,41 +1055,34 @@ nav a {
 }
 
 
-/* --- LANDSCAPE MASTER: BALANCED IMAGE SIZE --- */
-@media screen and (orientation: landscape) and (max-width: 1024px) {
-    /* 1. Reset container to standard desktop margins for balance */
-    #about .container {
-        max-width: 1200px !important;
-        padding-left: 5rem !important; 
-        padding-right: 5rem !important;
+/* --- ADD THIS INSIDE YOUR MEDIA QUERY --- */
+
+    /* 1. Reduce overall Nav height */
+    nav {
+        padding: 0.4rem 0 !important; /* Forces a very slim bar */
     }
 
-    .about-grid {
-        display: grid !important;
-        /* Balanced split: 1.1fr for image, 0.9fr for text */
-        grid-template-columns: 1.1fr 0.9fr !important; 
-        align-items: center !important;
-        gap: 4rem !important; 
+    /* 2. Tighten the nav container spacing */
+    nav .container {
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+        height: auto !important;
     }
 
-    .about-image {
-        display: flex !important;
-        justify-content: center !important; /* Centers the bubble in its space */
-        width: 100% !important;
-    }
-
-    .about-image img {
-        /* Reducing height slightly from 94vh to 82vh for that "touch smaller" feel */
-        height: 82vh !important; 
+    /* 3. Shrink Logo to prevent it from stretching the bar */
+    .logo img {
+        height: 28px !important; /* Adjust this to make the bar even thinner */
         width: auto !important;
-        aspect-ratio: 3 / 4 !important;
-        object-fit: cover !important;
-        
-        border-radius: 1rem !important;
-        border: 3px solid var(--bright-blue) !important;
-        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25) !important;
     }
-}
+
+    /* 4. Ensure Nav Links align with the smaller bar */
+    .nav-links {
+        gap: 1.5rem !important;
+    }
+
+    .nav-links a {
+        font-size: 0.9rem !important;
+    }
 
         
     </style>
