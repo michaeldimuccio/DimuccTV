@@ -2656,10 +2656,12 @@ function toggleMenu() {
 // YOUR MASTER DEPLOYMENT URL
 const scriptURL = 'https://script.google.com/macros/s/AKfycbwyD-d5Ka405oHl6FsBTQUJ95OYZVuFxmJsJL6hRSjcy8K_W8hqKyAMBCbUc6k-tcsCYg/exec';
 
-// --- 1. HANDLE NEWSLETTER SIGNUP ---
+// --- 1. HANDLE NEWSLETTER SIGNUP (SILENT VERSION) ---
 document.getElementById('emailCaptureForm').addEventListener('submit', function(e) {
     e.preventDefault();
     const btn = this.querySelector('button');
+    const originalText = btn.innerText; // Saves "Join" or "Subscribe"
+    
     btn.innerText = "Joining...";
     btn.disabled = true;
 
@@ -2669,9 +2671,15 @@ document.getElementById('emailCaptureForm').addEventListener('submit', function(
         body: new FormData(this) 
     })
     .then(() => {
-        alert("Thanks! If you're new, you've been added. If you're already here, we've got you!");
+        // SUCCESS: No popup, just change button state
         btn.innerText = "Joined!";
         this.reset();
+        
+        // Revert the button back to normal after 3 seconds
+        setTimeout(() => {
+            btn.innerText = originalText;
+            btn.disabled = false;
+        }, 3000);
     })
     .catch(error => {
         console.error('Error!', error.message);
@@ -2680,10 +2688,12 @@ document.getElementById('emailCaptureForm').addEventListener('submit', function(
     });
 });
 
-// --- 2. HANDLE CONTACT MESSAGE FORM ---
+// --- 2. HANDLE CONTACT MESSAGE FORM (SILENT VERSION) ---
 document.getElementById('contactForm').addEventListener('submit', function(e) {
     e.preventDefault();
     const btn = this.querySelector('button');
+    const originalText = btn.innerText; // Saves "Send Message"
+    
     btn.innerText = "Sending...";
     btn.disabled = true;
 
@@ -2693,17 +2703,22 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
         body: new FormData(this) 
     })
     .then(() => {
-        alert("Message sent! I'll get back to you soon at the email provided.");
+        // SUCCESS: No popup, just change button state
         btn.innerText = "Sent!";
         this.reset();
+        
+        // Revert the button back to normal after 3 seconds
+        setTimeout(() => {
+            btn.innerText = originalText;
+            btn.disabled = false;
+        }, 3000);
     })
     .catch(error => {
         console.error('Error!', error.message);
-        btn.innerText = "Try Again";
+        btn.innerText = "Error";
         btn.disabled = false;
     });
 });
-</script>
 
 <script>
     (function() {
