@@ -3,7 +3,7 @@
 <head>
 <base target="_self">
     <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Michael "Dimucc" DiMuccio - Digital Creator</title>
     <style>
 /* 1. THE DESKTOP & WIDE TABLET "BLACK SCREEN" KILLER */
@@ -28,7 +28,7 @@
 }
 
 /* 3. TABLET & MOBILE RESPONSIVE FIX (Prevents About Cut-off) */
-@media screen and (max-width: 1024px) {
+@media screen and (max-width: 1024px) and (orientation: portrait) {
     #mobile-menu {
         display: none; /* Stays hidden until toggled */
     }
@@ -79,11 +79,11 @@
             color: #333;
         }
 
-        .container {
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: 0 5rem;
-        }
+.container {
+    width: min(1280px, 100%); /* Fills screen on phone, centers on PC */
+    margin: 0 auto;
+    padding-inline: clamp(1.25rem, 5vw, 5rem); /* Slim on phone, 5rem on PC */
+}
 
         /* Navigation */
         nav {
@@ -147,7 +147,11 @@ nav a {
             background: var(--vivid-orange);
             transition: width 0.3s ease-in-out;
         }
-
+/* Tightens nav bar only in landscape to save vertical space */
+@media screen and (orientation: landscape) and (max-height: 500px) {
+    nav { padding: 0.5rem 0 !important; }
+    nav img { height: 24px !important; }
+}
         nav a:hover::after,
         nav a.active::after {
             width: 100%;
@@ -171,6 +175,10 @@ nav a {
             padding: 8rem 1.5rem 5rem;
         }
 
+@media screen and (orientation: landscape) and (max-height: 500px) {
+    .hero { min-height: 120vh !important; padding-top: 6rem !important; }
+}
+        
         .hero::before {
             content: '';
             position: absolute;
@@ -267,6 +275,17 @@ nav a {
             box-shadow: 0 8px 20px rgba(29, 161, 255, 0.4);
         }
 
+/* Forces buttons side-by-side in landscape */
+@media screen and (orientation: landscape) and (max-height: 500px) {
+    .hero-btn-container { 
+        display: flex !important; 
+        flex-direction: row !important; 
+        justify-content: center !important; 
+        gap: 1rem !important; 
+    }
+    .btn { width: auto !important; margin: 0 !important; }
+}
+        
         /* Stats */
         .stats {
             background: var(--slate-gray);
@@ -279,7 +298,15 @@ nav a {
             gap: 2rem;
             text-align: center;
         }
-
+/* Force stats into a single horizontal row for landscape phones */
+@media screen and (orientation: landscape) and (max-width: 932px) {
+    .stats-grid { 
+        grid-template-columns: repeat(4, 1fr) !important; 
+        gap: 1rem !important; 
+    }
+    .stat-value { font-size: 2rem !important; }
+}
+        
         .stat-icon {
             width: 48px;
             height: 48px;
@@ -744,7 +771,7 @@ nav a {
             font-size: 0.875rem;
         }
 
-        @media (max-width: 768px) {
+        @media screen and (max-width: 932px) and (orientation: portrait) {
             nav ul {
                 display: none;
             }
@@ -770,119 +797,60 @@ nav a {
         
 /* --- THE UNIVERSAL NO-CUTOFF RESET (1 SONG PER ROW) --- */
 
-@media screen and (max-width: 768px) {
-
+@media screen and (max-width: 768px) and (orientation: portrait){
     /* 1. Global Lock: Prevents side-scrolling */
-
     html, body {
-
         overflow-x: hidden !important;
-
         width: 100% !important;
-
         margin: 0 !important;
-
         padding: 0 !important;
-
     }
-
-
-
     * { box-sizing: border-box !important; }
 
-
-
     /* 2. Logo Restore: Dimucc LLC Image */
-
     .logo img, .nav-logo img, .brand img {
-
         display: block !important;
-
         height: 35px !important;
-
         width: auto !important;
-
         visibility: visible !important;
-
     }
-
-
 
     /* 3. Section Reset: Removes Massive Borders */
-
     .container, section, .hero {
-
         width: 100% !important;
-
         max-width: 100% !important;
-
         padding-left: 15px !important;
-
         padding-right: 15px !important;
-
         margin: 0 auto !important;
-
         display: flex !important;
-
         flex-direction: column !important;
-
         align-items: center !important;
-
         text-align: center !important;
-
     }
-
-
 
     /* 4. Home (Hero) & Buttons Fix */
-
     .hero { padding-top: 8rem !important; }
-
-    
-
     .hero-btn-container {
-
         display: flex !important;
-
         flex-direction: column !important;
-
         gap: 12px !important;
-
         width: 100% !important;
-
     }
-
-
-
     .btn {
-
         width: 260px !important;
-
         border-radius: 50px !important;
-
         margin: 0 auto !important;
-
     }
-
-    
-
 
     /* 5. VIDEOS: 2 Per Row (3 Rows of 2) */
-
     .video-grid, .videos-container {
-
         display: grid !important;
-
         grid-template-columns: 1fr 1fr !important; 
-
         gap: 10px !important;
-
         width: 100% !important;
-
     }
 
-/* --- AUDIENCE & REACH STATS FIX (Compact Right-Align) --- */
-    
+/* --- AUDIENCE & REACH STATS FIX (Compact Right-Align) --- */ 
     #audience .platform-item {
         display: flex !important;
         flex-direction: row !important;
@@ -942,73 +910,40 @@ nav a {
     /* Forces music items to stack vertically */
 
     .music-grid, .music-container {
-
         display: flex !important;
-
         flex-direction: column !important;
-
         align-items: center !important;
-
         width: 100% !important;
-
         gap: 20px !important;
-
     }
-
-
 
     /* 7. Contact & Socials: FIXING THE CUT-OFF */
-
     #contact .container, .contact-grid, .connect-grid {
-
         width: 100% !important;
-
         padding: 0 !important;
-
     }
-
-
 
     .social-links, .social-grid {
-
         display: flex !important;
-
         flex-wrap: wrap !important;
-
         justify-content: center !important;
-
         gap: 10px !important;
-
         width: 100% !important;
-
     }
-
-
 
     /* 8. Footer Fix: Aligned Left */
 
     footer .container {
-
         display: flex !important;
-
         flex-direction: column !important;
-
         align-items: flex-start !important;
-
         text-align: left !important;
-
         padding-left: 1.5rem !important;
-
     }
 
-
-
 /* 9. Navigation: Hamburger Logic (Slimmed Down) */
-
     .nav-links { display: none !important; } 
-
     #hamburger { display: flex !important; }
-
     nav {
         padding: 0.5rem 0 !important; /* Reduced from 1rem to make it thinner */
     }
@@ -1024,95 +959,63 @@ nav a {
         height: 28px !important; /* Slightly smaller logo to help slim the bar */
         width: auto !important;
     }
-
 }
+
+/* --- LANDSCAPE FORCE: RESTORES DESKTOP LOOK --- */
+        @media screen and (orientation: landscape) and (max-height: 600px) {
+            section { padding: 3rem 0 !important; }
+            
+            /* 1. GRIDS: Force Desktop Columns */
+            .about-grid, .contact-grid, .audience-cards, .achievements-grid { 
+                display: grid !important;
+                grid-template-columns: 1fr 1fr !important; 
+                gap: 2rem !important; 
+                max-width: 100% !important;
+            }
+            
+            .video-grid, .music-grid {
+                display: grid !important;
+                grid-template-columns: repeat(3, 1fr) !important;
+                gap: 1.2rem !important;
+            }
+
+            .brand-grid {
+                display: grid !important;
+                grid-template-columns: repeat(4, 1fr) !important;
+                gap: 1rem !important;
+            }
+
+            /* 2. SIZING & PADDING */
+            .about-image img { height: 70vh !important; width: auto !important; margin: 0 auto !important; }
+            .platform-card { padding: 1.5rem !important; }
+            .platform-list { gap: 0.8rem !important; }
+            .platform-item { padding: 0.6rem !important; }
+            .contact-form { padding: 1.5rem !important; }
+            .form-group { margin-bottom: 0.8rem !important; }
+            .form-group textarea { min-height: 80px !important; }
+
+            /* 3. FORMS: Horizontal Layout */
+            .email-capture { padding: 3rem 0 !important; }
+            .email-form { 
+                display: flex !important;
+                flex-direction: row !important; 
+                max-width: 500px !important; 
+                margin: 1rem auto 0 !important; 
+            }
+            .email-form input { padding: 0.7rem 1.2rem !important; }
+            .email-form button { padding: 0.7rem 1.5rem !important; }
+
+            /* 4. FOOTER: Restore Layout */
+            .footer-grid { grid-template-columns: repeat(3, 1fr) !important; gap: 1.5rem !important; margin-bottom: 1.5rem !important; }
+            footer { padding: 2rem 0 1rem !important; }
+            .footer-bottom { 
+                display: flex !important;
+                flex-direction: row !important; 
+                justify-content: space-between !important; 
+                padding-top: 1rem !important; 
+            }
+        }
         
-/* --- ADAPTIVE LANDSCAPE: 3-COLUMNS WITHOUT ZOOM --- */
-@media screen and (orientation: landscape) and (max-width: 1024px) {
-    /* 1. Reset container for mobile-friendly landscape margins */
-    .container {
-        max-width: 95% !important;
-        padding-left: 1rem !important;
-        padding-right: 1rem !important;
-    }
-
-    /* 2. Force 3-Column Layouts on actual device width */
-    .video-grid, .music-grid, .press-grid {
-        display: grid !important;
-        grid-template-columns: repeat(3, 1fr) !important;
-        gap: 1rem !important;
-    }
-
-    /* 3. About Section Side-by-Side */
-    .about-grid {
-        display: grid !important;
-        grid-template-columns: 1fr 1.2fr !important;
-        align-items: center !important;
-        gap: 2rem !important;
-    }
-
-    .about-image img {
-        height: 75vh !important; /* Scaled for shorter landscape screens */
-        width: auto !important;
-        aspect-ratio: 3 / 4 !important;
-        object-fit: cover !important;
-        border-radius: 1rem !important;
-        border: 3px solid var(--bright-blue) !important;
-    }
-
-    /* 4. Slim Navigation for Landscape */
-    nav { padding: 0.3rem 0 !important; }
-    .logo img { height: 24px !important; }
-    .nav-links { gap: 1rem !important; }
-}   
-
-        /* --- LANDSCAPE PHONES: MAKE IT MATCH DESKTOP --- */
-@media screen and (orientation: landscape) and (max-width: 1024px) and (min-width: 740px) {
-
-  /* Undo the "mobile centering + flex" resets */
-  .container, section, .hero {
-    display: block !important;
-    text-align: left !important;
-    align-items: unset !important;
-  }
-
-  /* Restore desktop container spacing */
-  .container {
-    max-width: 1280px !important;
-    width: 100% !important;
-    padding: 0 3rem !important;
-    margin: 0 auto !important;
-  }
-
-  /* Restore desktop nav links (and hide hamburger/menu if you have one) */
-  nav ul, .nav-links {
-    display: flex !important;
-  }
-  #hamburger, #mobile-menu {
-    display: none !important;
-  }
-
-  /* Restore desktop About layout */
-  .about-grid {
-    display: grid !important;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)) !important;
-    gap: 4rem !important;
-    align-items: center !important;
-  }
-
-  /* Restore desktop-ish cards */
-  .audience-cards,
-  .contact-grid {
-    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)) !important;
-  }
-
-  /* Restore video grid behavior like desktop */
-  .video-grid {
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)) !important;
-    gap: 2rem !important;
-  }
-}
-
     </style>
 </head>
     
@@ -2649,19 +2552,18 @@ nav a {
 
 <script>
     (function() {
-        // 1. CLEAN VIEWPORT: Stops the 200% zoom by using natural device width
+        // 1. ORIENTATION LOCK: Physically prevents the "auto-zoom" glitch when rotating
         function handleOrientation() {
             const viewport = document.querySelector('meta[name="viewport"]');
             if (viewport) {
-                // width=device-width ensures the browser doesn't "blow up" the page
-                viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0');
+                viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover');
             }
         }
         window.addEventListener('resize', handleOrientation);
         window.addEventListener('orientationchange', handleOrientation);
         handleOrientation(); 
 
-        // 2. SILENT FORMS: No alerts, no pop-ups, no mail app triggers
+        // 2. SILENT FORMS: Background fetch to Google Sheets (No Mail App popups)
         const scriptURL = 'https://script.google.com/macros/s/AKfycbwyD-d5Ka405oHl6FsBTQUJ95OYZVuFxmJsJL6hRSjcy8K_W8hqKyAMBCbUc6k-tcsCYg/exec';
 
         function setupSilentForm(formId, loadingText, successText) {
@@ -2669,7 +2571,7 @@ nav a {
             if (!form) return;
 
             form.addEventListener('submit', function(e) {
-                e.preventDefault(); // Prevents the browser from opening the mail app
+                e.preventDefault(); 
                 const btn = this.querySelector('button');
                 const originalText = btn.innerText;
                 
@@ -2695,7 +2597,7 @@ nav a {
         setupSilentForm('emailCaptureForm', 'Joining...', 'Joined!');
         setupSilentForm('contactForm', 'Sending...', 'Sent!');
 
-        // 3. REVEAL LOGIC: Animations
+        // 3. REVEAL LOGIC: Intersection Observer for smooth animations
         const revealObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -2708,7 +2610,7 @@ nav a {
         const items = document.querySelectorAll('.hero-content, .stat-item, .about-grid, .achievement-card, .platform-item, .video-item, .contact-reveal');
         items.forEach(el => revealObserver.observe(el));
 
-        // 4. NAVIGATION SPY & BURGER MENU
+        // 4. NAVIGATION SPY & BURGER MENU LOGIC
         const sections = document.querySelectorAll("section[id]");
         const navLinks = document.querySelectorAll("nav ul li a");
         const mobileLinks = document.querySelectorAll("#mobile-menu a");
@@ -2726,6 +2628,7 @@ nav a {
         }
         window.addEventListener('scroll', updateNav, { passive: true });
 
+        // Toggle Mobile Menu Visibility
         window.toggleMenu = function() {
             const menu = document.getElementById('mobile-menu');
             if (menu) {
@@ -2733,9 +2636,17 @@ nav a {
                 menu.style.setProperty('display', isOpen ? 'none' : 'flex', 'important');
             }
         };
+
+        // NEW ADJUSTMENT: Automatically close menu when a mobile link is clicked
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                const menu = document.getElementById('mobile-menu');
+                if (menu) menu.style.setProperty('display', 'none', 'important');
+            });
+        });
     })();
 </script>
     
 </body>
 </html>
-`update 2
+`update 3
