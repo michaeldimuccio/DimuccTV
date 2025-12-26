@@ -2560,67 +2560,39 @@ nav a {
 
 <script>
     (function() {
-        // --- 1. UNIVERSAL REVEAL LOGIC ---
-        // This handles About, Achievements, Stats, Videos, and Contact
-        const revealOptions = {
-            threshold: 0.01,
-            rootMargin: "0px 0px -50px 0px"
-        };
-
+        // 1. REVEAL LOGIC
         const revealObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
-                const rect = entry.target.getBoundingClientRect();
-                
                 if (entry.isIntersecting) {
                     entry.target.classList.add('reveal-active');
-                } else {
-                    // Only reset if the element is BELOW the screen (scrolling back up)
-                    // This keeps sections visible while you are reading them
-                    if (rect.top > (window.innerHeight || document.documentElement.clientHeight)) {
-                        entry.target.classList.remove('reveal-active');
-                    }
+                    // This is the only way to stop Safari from hiding it again:
+                    // We stop the script from watching the element once it's shown.
+                    revealObserver.unobserve(entry.target);
                 }
             });
-        }, revealOptions);
+        }, { threshold: 0.01 });
 
-        // Target all animated elements
-        const animatedElements = document.querySelectorAll(
-            '.hero-content, .stat-item, .about-grid, .achievement-card, .platform-item, .video-item, .contact-reveal'
-        );
-        animatedElements.forEach(el => revealObserver.observe(el));
+        // Apply only to the sections that were disappearing
+        const items = document.querySelectorAll('.stat-item, .about-grid, .achievement-card, .platform-item, .video-item, .contact-reveal');
+        items.forEach(el => revealObserver.observe(el));
 
-
-        // --- 2. NAVIGATION SPY LOGIC ---
-        // Handles the active orange line in the menu
+        // 2. NAVIGATION SPY
         const sections = document.querySelectorAll("section[id]");
         const navLinks = document.querySelectorAll("nav ul li a");
-
         function updateNav() {
-            let currentSectionId = "";
-            sections.forEach((section) => {
-                const sectionTop = section.offsetTop;
-                // Switch active link when section is 30% down the viewport
-                if (window.pageYOffset >= sectionTop - (window.innerHeight / 3)) {
-                    currentSectionId = section.getAttribute("id");
+            let current = "";
+            sections.forEach(s => {
+                if (window.pageYOffset >= s.offsetTop - (window.innerHeight / 3)) {
+                    current = s.getAttribute("id");
                 }
             });
-
-            navLinks.forEach((link) => {
-                link.classList.remove("active");
-                const href = link.getAttribute("href");
-                if (href === "#" + currentSectionId) {
-                    link.classList.add("active");
-                }
+            navLinks.forEach(l => {
+                l.classList.remove("active");
+                if (l.getAttribute("href") === "#" + current) l.classList.add("active");
             });
         }
-
-
-        // --- 3. EVENT LISTENERS ---
-        window.addEventListener('scroll', () => {
-            updateNav();
-        }, { passive: true });
-
-        updateNav(); // Initial run on load
+        window.addEventListener('scroll', updateNav, { passive: true });
+        updateNav();
     })();
 </script>
 
