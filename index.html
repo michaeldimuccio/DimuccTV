@@ -1026,7 +1026,6 @@ nav a {
     }
 
 }
-        
 /* 1. Force the sections to stay in their own high-priority layer */
 #about, #stats, #achievements, #videos, #contact {
     isolation: isolate !important;
@@ -1056,11 +1055,11 @@ nav a {
 }
 
 
-/* --- SLIM NAV FOR MOBILE LANDSCAPE ONLY --- */
-@media screen and (orientation: landscape) and (max-height: 600px) {
+/* --- ADD THIS INSIDE YOUR MEDIA QUERY --- */
+
     /* 1. Reduce overall Nav height */
     nav {
-        padding: 0.4rem 0 !important; 
+        padding: 0.4rem 0 !important; /* Forces a very slim bar */
     }
 
     /* 2. Tighten the nav container spacing */
@@ -1070,27 +1069,20 @@ nav a {
         height: auto !important;
     }
 
-    /* 3. Shrink Logo */
+    /* 3. Shrink Logo to prevent it from stretching the bar */
     .logo img {
-        height: 28px !important; 
+        height: 28px !important; /* Adjust this to make the bar even thinner */
         width: auto !important;
     }
 
-    /* 4. Ensure Nav Links align */
+    /* 4. Ensure Nav Links align with the smaller bar */
     .nav-links {
         gap: 1.5rem !important;
-        display: flex !important; /* Forces nav to stay a bar, not a menu */
     }
 
     .nav-links a {
         font-size: 0.9rem !important;
     }
-    
-    /* Hide the burger menu so it doesn't overlap the slim bar */
-    #hamburger {
-        display: none !important;
-    }
-}
 
         
     </style>
@@ -2627,26 +2619,47 @@ nav a {
 
 
 <script>
-// YOUR MASTER DEPLOYMENT URL
-const scriptURL = 'https://script.google.com/macros/s/AKfycbwyD-d5Ka405oHl6FsBTQUJ95OYZVuFxmJsJL6hRSjcy8K_W8hqKyAMBCbUc6k-tcsCYg/exec';
-
-// --- 1. MOBILE MENU TOGGLE ---
+    document.getElementById('contactForm').addEventListener('submit', function(e) {
+        e.preventDefault(); // Stops the "Content Blocked" redirect
+        
+        // Get the values
+        var name = this.querySelector('input[type="text"]').value;
+        var email = this.querySelector('input[type="email"]').value;
+        var message = this.querySelector('textarea').value;
+        
+        // Construct the mailto link manually
+        var subject = encodeURIComponent("Business Inquiry from " + name);
+        var body = encodeURIComponent("Name: " + name + "\nEmail: " + email + "\n\nMessage:\n" + message);
+        
+        // This bypasses the iframe sandbox block
+        window.top.location.href = "mailto:dimuccbusiness@gmail.com?subject=" + subject + "&body=" + body;
+        
+        alert("Opening your mail app...");
+    });
+</script>
+<script>
 function toggleMenu() {
     const menu = document.getElementById('mobile-menu');
+    // Only toggle if we are actually on mobile
     if (window.innerWidth <= 768) {
+        // If it's flex (open), set to none (closed)
         if (menu.style.display === 'flex') {
             menu.style.display = 'none';
         } else {
+            // Force flex with important to override any desktop blocks
             menu.style.setProperty('display', 'flex', 'important');
         }
     }
 }
+</script>
+<script>
+// YOUR MASTER DEPLOYMENT URL
+const scriptURL = 'https://script.google.com/macros/s/AKfycbwyD-d5Ka405oHl6FsBTQUJ95OYZVuFxmJsJL6hRSjcy8K_W8hqKyAMBCbUc6k-tcsCYg/exec';
 
-// --- 2. HANDLE NEWSLETTER SIGNUP (SILENT) ---
+// --- 1. HANDLE NEWSLETTER SIGNUP ---
 document.getElementById('emailCaptureForm').addEventListener('submit', function(e) {
     e.preventDefault();
     const btn = this.querySelector('button');
-    const originalText = btn.innerText;
     btn.innerText = "Joining...";
     btn.disabled = true;
 
@@ -2656,22 +2669,21 @@ document.getElementById('emailCaptureForm').addEventListener('submit', function(
         body: new FormData(this) 
     })
     .then(() => {
+        alert("Thanks! If you're new, you've been added. If you're already here, we've got you!");
         btn.innerText = "Joined!";
         this.reset();
-        // Returns button to normal after 3 seconds
-        setTimeout(() => { btn.innerText = originalText; btn.disabled = false; }, 3000);
     })
-    .catch(() => {
-        btn.innerText = "Error";
+    .catch(error => {
+        console.error('Error!', error.message);
+        btn.innerText = "Try Again";
         btn.disabled = false;
     });
 });
 
-// --- 3. HANDLE CONTACT MESSAGE FORM (SILENT & NO MAIL APP) ---
+// --- 2. HANDLE CONTACT MESSAGE FORM ---
 document.getElementById('contactForm').addEventListener('submit', function(e) {
     e.preventDefault();
     const btn = this.querySelector('button');
-    const originalText = btn.innerText;
     btn.innerText = "Sending...";
     btn.disabled = true;
 
@@ -2681,13 +2693,13 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
         body: new FormData(this) 
     })
     .then(() => {
+        alert("Message sent! I'll get back to you soon at the email provided.");
         btn.innerText = "Sent!";
         this.reset();
-        // Returns button to normal after 3 seconds
-        setTimeout(() => { btn.innerText = originalText; btn.disabled = false; }, 3000);
     })
-    .catch(() => {
-        btn.innerText = "Error";
+    .catch(error => {
+        console.error('Error!', error.message);
+        btn.innerText = "Try Again";
         btn.disabled = false;
     });
 });
@@ -2695,18 +2707,16 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
 
 <script>
     (function() {
-        // 1. THE VIEWPORT SCALER (Fixed Zoom for Landscape)
-        function handleOrientation() {
+        // 1. THE VIEWPORT SCALER (Fixed for 3-Column Video Grid)
+function handleOrientation() {
             const viewport = document.querySelector('meta[name="viewport"]');
             if (window.innerWidth > window.innerHeight) {
-                // LANDSCAPE: Set width but reset scale so it doesn't zoom in
-                viewport.setAttribute('content', 'width=1280, initial-scale=1.0, maximum-scale=1.0, user-scalable=0');
+                // LANDSCAPE: 1280px provides more horizontal room for a large image
+                viewport.setAttribute('content', 'width=1280');
             } else {
-                // PORTRAIT: Standard mobile view
                 viewport.setAttribute('content', 'width=device-width, initial-scale=1.0');
             }
         }
-        
         window.addEventListener('resize', handleOrientation);
         window.addEventListener('orientationchange', handleOrientation);
         handleOrientation(); 
