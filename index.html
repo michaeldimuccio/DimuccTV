@@ -1055,39 +1055,51 @@ nav a {
 }
 
 
-/* --- LANDSCAPE: SMALLER IMAGE / LARGER TEXT --- */
+/* --- LANDSCAPE: FORCED IMAGE SHRINK --- */
 @media screen and (orientation: landscape) and (max-width: 1024px) {
+    /* 1. Slim the Nav (Keep your slim settings) */
+    nav { padding: 0.2rem 0 !important; }
+
+    /* 2. The About Section Re-balance */
     .about-grid {
         display: grid !important;
-        /* Image column is now 40%, Text column is 60% */
-        grid-template-columns: 0.8fr 1.2fr !important; 
+        /* Give the text column significantly more room */
+        grid-template-columns: 1fr 1.5fr !important; 
         align-items: center !important;
-        gap: 4rem !important;
+        gap: 5rem !important;
     }
 
     .about-image {
         display: flex !important;
         justify-content: center !important;
+        width: 100% !important;
     }
 
     .about-image img {
-        /* SHRINKING: Lock height at 70% of screen to make it 'smaller' */
-        height: 70vh !important; 
-        width: auto !important;
+        /* This is the 'Choke Point' - adjust this % to go smaller/larger */
+        width: 70% !important; 
+        max-width: 350px !important; /* Hard cap on how big it can get */
+        
+        height: auto !important;
         aspect-ratio: 3 / 4 !important;
         object-fit: cover !important;
         
         border-radius: 1rem !important;
         border: 3px solid var(--bright-blue) !important;
-        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2) !important;
+    }
+
+    /* 3. Make the text column larger and readable */
+    .about-content {
+        text-align: left !important;
     }
 
     .about-content h2 {
-        font-size: 2.5rem !important; /* Larger Section Title */
+        font-size: 2.8rem !important; /* Larger heading */
+        margin-bottom: 1.5rem !important;
     }
 
     .about-content p {
-        font-size: 1.1rem !important; /* Larger Body Text */
+        font-size: 1.25rem !important; /* Larger body text */
         line-height: 1.6 !important;
     }
 }
